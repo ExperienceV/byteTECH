@@ -6,7 +6,7 @@ from database.base import User
 
 def create_user(db: Session, name: str, email: str, password: str, is_sensei: bool):
     new_user = User(
-        name=name, 
+        username=name, 
         email=email, 
         password=password,
         is_sensei=is_sensei
@@ -31,11 +31,38 @@ def get_user_by_id(db: Session, user_id: int):
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(User).filter(User.email == email).first()
+    user = db.query(User).filter(User.email == email).first()
+
+    user_data = {
+        "id": user.id,
+        "name": user.username,
+        "email": user.email,
+        "password": user.password,
+        "is_sensei": user.is_sensei
+    } if user else None
+
+    print(f"User data: {user_data}")
+
+    return user_data
 
 
 def get_all_users(db: Session):
-    return db.query(User).all()
+    users = db.query(User).all()
+    if not users:
+        return None
+    
+    user_list = []
+
+    for user in users:
+        user_data = {
+            "id": user.id,
+            "name": user.username,
+            "email": user.email,
+            "is_sensei": user.is_sensei
+        }
+        user_list.append(user_data)
+
+    return user_list
 
 
 def update_user(db: Session, user_id: int, name: str = None, email: str = None, password: str = None):

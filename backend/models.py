@@ -2,8 +2,13 @@ from pydantic import BaseModel
 from typing import Optional
 
 class User(BaseModel):
-    id: Optional[int] = None
-    name: str
+    name: Optional[str] = None
     email: str
     password: str
-    is_sensei: int = 0
+    is_sensei: Optional[bool] = False
+
+
+class Message(BaseModel):
+    thread_id: int
+    user_id: int
+    message: str
