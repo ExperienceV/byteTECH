@@ -1,11 +1,16 @@
 # Queries especificas para la tabla User
 
 from sqlalchemy.orm import Session
-from backend.database.base import User
+from database.base import User
 
 
-def create_user(db: Session, name: str, email: str, password: str):
-    new_user = User(name=name, email=email, password=password)
+def create_user(db: Session, name: str, email: str, password: str, is_sensei: bool):
+    new_user = User(
+        name=name, 
+        email=email, 
+        password=password,
+        is_sensei=is_sensei
+        )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
