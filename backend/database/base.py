@@ -7,14 +7,6 @@ Base = declarative_base()
 
 # ---------------------------------------------- Define Models ----------------------------------------------
 
-class User(Base):
-    __tablename__ = "users"
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    email = Column(String)
-    password = Column(String)
-    is_sensei = Column(Integer, default=0)  # 0: No, 1: Yes
-
 # Panda
 class User(Base):
     __tablename__ = "users"
@@ -52,3 +44,11 @@ class Message(Base):
     message = Column(String)
 
     thread = relationship("Thread", back_populates="messages")
+
+# ------------------------------
+
+# Liba
+
+
+
+# ------------------------------

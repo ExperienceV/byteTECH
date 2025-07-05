@@ -6,12 +6,18 @@ app = FastAPI()
 
 
 # -------- Middleware Configuration --------
-CORSMiddleware(
-    app,
-    allow_origins=["*"],
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Orígenes permitidos
     allow_credentials=True,
-    allow_methods=["*"],  
-    allow_headers=["*"],  
+    allow_methods=["*"],  # Métodos permitidos: GET, POST, etc.
+    allow_headers=["*"],  # Headers permitidos
 )
 
 
@@ -33,8 +39,8 @@ for router in router_list:
 
 
 # -------- Setup Database --------
-from backend.database.base import Base
-from backend.database.config import engine
+from database.base import Base
+from database.config import engine
 
 Base.metadata.create_all(bind=engine)
 
