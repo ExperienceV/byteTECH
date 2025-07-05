@@ -26,12 +26,14 @@ from routers.auth import auth_router
 from routers.media import media_router
 from routers.menu import menu_router
 from routers.payment import payment_router
+from routers.forums import forums_router
 
 router_list = [
     auth_router,
     media_router,
     menu_router,
     payment_router,
+    forums_router
 ]
 
 for router in router_list:

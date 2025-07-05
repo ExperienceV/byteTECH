@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from database.base import Message
+from database.queries.user import get_user_by_id
 
 def create_message(db: Session, thread_id: int, user_id: str, message: str):
     msg = Message(thread_id=thread_id, user_id=user_id, message=message)
@@ -16,4 +17,20 @@ def delete_message_by_id(db: Session, message_id: int):
     return msg
 
 def get_messages_by_thread_id(db: Session, thread_id: int):
-    return db.query(Message).filter(Message.thread_id == thread_id).all()
+    messages = db.query(Message).filter(Message.thread_id == thread_id).all()
+
+    if not messages:
+        return None
+    
+    message_list = []
+    for msg in messages:
+        user_data = get_user_by_id(db, msg.user_id)
+        message_data = {
+            "id": msg.id,
+            "thread_id": msg.thread_id,
+            "username": user_data["name"],
+            "message": msg.message
+        }
+        message_list.append(message_data)
+
+    return message_list
