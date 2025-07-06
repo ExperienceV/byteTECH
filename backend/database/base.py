@@ -1,6 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
+from datetime import datetime
+from sqlalchemy import UniqueConstraint
 
 Base = declarative_base()
 
@@ -52,17 +54,20 @@ class Message(Base):
 class Course(Base):
     __tablename__ = "courses"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    sensei_id = Column(Integer)
+    sensei_id = Column(Integer)  # ID del usuario que subió el curso
     name = Column(String)
     description = Column(String)
-    sections = Column(Integer)
+    section_count = Column(Integer)  # ✅ Evita conflicto con relación
     hours = Column(float)
     miniature_path = Column(String)
     video_path = Column(String)
     price = Column(float)
 
+    # Relaciones
+    sections = relationship("Section", back_populates="course", cascade="all, delete")
     lessons = relationship("Lesson", back_populates="course", cascade="all, delete")
-
+    uploaded_by = relationship("UploadedCourse", backref="course", cascade="all, delete")
+    purchased_by = relationship("Purchase", backref="course", cascade="all, delete")
 
 
 class Section(Base):
@@ -73,11 +78,20 @@ class Section(Base):
     course = relationship("Course", back_populates="sections")
     lessons = relationship("Lesson", back_populates="section", cascade="all, delete")
 
-class Purchase(Base):
-    __tablename__ = "MY_BYD_COURSES"
 
+class Purchase(Base):
+    __tablename__ = "my_byd_courses"
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
 
+
+class UploadedCourse(Base):
+    __tablename__ = "my_upldd_courses"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
+    uploaded_at = Column(datetime, default=datetime.utcnow)
+
+    __table_args__ = (UniqueConstraint('user_id', 'course_id'),)
 # ------------------------------

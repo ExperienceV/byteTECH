@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from database.base import Course, Purchase
+from database.base import Course, Purchase, UploadedCourse
 
 
 
@@ -44,8 +44,12 @@ def update_course(db: Session, course_id: int, update_data: dict) -> Course | No
 
 
 def get_uploaded_courses_by_user(db: Session, user_id: int) -> list[Course]:
-    return db.query(Course).filter(Course.sensei_id == user_id).all()
-
+    return (
+        db.query(Course)
+        .join(UploadedCourse, UploadedCourse.course_id == Course.id)
+        .filter(UploadedCourse.user_id == user_id)
+        .all()
+    )
 def get_purchased_courses_by_user(db: Session, user_id: int) -> list[Course]:
     return (
         db.query(Course)
