@@ -19,12 +19,13 @@ class User(Base):
 class Lesson(Base):
     __tablename__ = "lessons"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    section_id = Column(Integer, index=True)
+    section_id = Column(Integer, ForeignKey("sections.id", ondelete="CASCADE"))
     title = Column(String)
     is_video = Column(Boolean)
     file_path = Column(String)
 
-    threads = relationship("Thread", back_populates="lesson")
+    section = relationship("Section", back_populates="lessons")
+    threads = relationship("Thread", back_populates="lesson", cascade="all, delete")
 
 class Thread(Base):
     __tablename__ = "threads"
@@ -48,7 +49,35 @@ class Message(Base):
 # ------------------------------
 
 # Liba
+class Course(Base):
+    __tablename__ = "courses"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    sensei_id = Column(Integer)
+    name = Column(String)
+    description = Column(String)
+    sections = Column(Integer)
+    hours = Column(float)
+    miniature_path = Column(String)
+    video_path = Column(String)
+    price = Column(float)
+
+    lessons = relationship("Lesson", back_populates="course", cascade="all, delete")
 
 
+
+class Section(Base):
+    __tablename__ = "sections"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
+
+    course = relationship("Course", back_populates="sections")
+    lessons = relationship("Lesson", back_populates="section", cascade="all, delete")
+
+class Purchase(Base):
+    __tablename__ = "MY_BYD_COURSES"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
 
 # ------------------------------
