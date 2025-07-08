@@ -1,38 +1,60 @@
-from fastapi import APIRouter
-from google.oauth2 import service_account
+from __future__ import print_function
+import os.path
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
-import io
+from googleapiclient.http import MediaFileUpload
+from google.auth.transport.requests import Request
 
-drive_router = APIRouter()
 
-SCOPES = ['https://www.googleapis.com/auth/drive']
-SERVICE_ACCOUNT_FILE = 'path/to/your/service-account.json'
+SCOPES = ['https://www.googleapis.com/auth/drive.file']  # Acceso solo a archivos creados por tu app
 
-def get_drive_service():
-    credentials = service_account.Credentials.from_service_account_file(
-        SERVICE_ACCOUNT_FILE, scopes=SCOPES)
-    return build('drive', 'v3', credentials=credentials)
 
-def upload_private_file(file_path, file_name, parent_folder_id=None):
-    service = get_drive_service()
-    file_metadata = {'name': file_name}
-    if parent_folder_id:
-        file_metadata['parents'] = [parent_folder_id]
+def authenticate():
+    creds = None
+    if os.path.exists('token.json'):
+        creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+
+        with open('token.json', 'w') as token:
+            token.write(creds.to_json())
+    
+    return creds
+
+
+def upload_file(file_path):
+    creds = authenticate()
+    service = build('drive', 'v3', credentials=creds)
+
+    original_name = os.path.basename(file_path)
+
+    file_metadata = {'name': original_name}
     media = MediaFileUpload(file_path, resumable=True)
-    file = service.files().create(
-        body=file_metadata,
-        media_body=media,
-        fields='id'
-    ).execute()
-    return file.get('id')
+    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    
+    file_id = file.get('id')
+    print(f"Archivo subido con ID: {file_id}")
 
-def download_private_file(file_id, destination_path):
-    service = get_drive_service()
-    request = service.files().get_media(fileId=file_id)
-    fh = io.FileIO(destination_path, 'wb')
-    downloader = MediaIoBaseDownload(fh, request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-    fh.close()
+    new_name = f"{file_id}{os.path.splitext(file_path)[1]}"
+    updated_file = service.files().update(
+        fileId=file_id,
+        body={"name": new_name}
+    ).execute()
+
+    print(f"Archivo renombrado a: {updated_file['name']}")
+    return file_id
+
+
+def delete_file(file_id):
+    creds = authenticate()
+    service = build('drive', 'v3', credentials=creds)
+
+    service.files().delete(fileId=file_id).execute()
+
+    return True

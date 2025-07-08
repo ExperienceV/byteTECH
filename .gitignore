@@ -1,2 +1,4 @@
 .venv
 __pycache__
+backend/services/credentials.json
+backend/services/token.json
