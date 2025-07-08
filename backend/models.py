@@ -12,3 +12,12 @@ class Message(BaseModel):
     thread_id: int
     user_id: int
     message: str
+
+
+class Course(BaseModel):
+    id: Optional[int] = None
+    name: str
+    description: str
+    price: float
+    duration: float
+    
