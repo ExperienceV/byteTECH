@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI()
 
 
-# -------- Middleware Configuration --------
+# -------- MiddlWeware Configuration --------
 
 origins = [
     "http://localhost",
@@ -23,15 +23,14 @@ app.add_middleware(
 
 # -------- Include Routers --------
 from routers.auth import auth_router
-from routers.media import media_router
-from routers.menu import menu_router
 from routers.payment import payment_router
+from routers.courses import courses_router
 from routers.forums import forums_router
+from routers.example import example_router
 
 router_list = [
     auth_router,
-    media_router,
-    menu_router,
+    courses_router,
     payment_router,
     forums_router
 ]

@@ -7,9 +7,8 @@ from sqlalchemy import UniqueConstraint
 Base = declarative_base()
 
 
-# ---------------------------------------------- Define Models ----------------------------------------------
+# ---------------------------------------------- PostgeSQL Models ----------------------------------------------
 
-# Panda
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -17,6 +16,7 @@ class User(Base):
     email = Column(String, unique=True)
     password = Column(String)
     is_sensei = Column(Boolean, default=False)  
+
 
 class Lesson(Base):
     __tablename__ = "lessons"
@@ -29,6 +29,7 @@ class Lesson(Base):
     section = relationship("Section", back_populates="lessons")
     threads = relationship("Thread", back_populates="lesson", cascade="all, delete")
 
+
 class Thread(Base):
     __tablename__ = "threads"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -39,6 +40,7 @@ class Thread(Base):
     lesson = relationship("Lesson", back_populates="threads")
     messages = relationship("Message", back_populates="thread")
 
+
 class Message(Base):
     __tablename__ = "messages"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
@@ -48,16 +50,14 @@ class Message(Base):
 
     thread = relationship("Thread", back_populates="messages")
 
-# ------------------------------
 
-# Liba
 class Course(Base):
     __tablename__ = "courses"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    sensei_id = Column(Integer)  # ID del usuario que subió el curso
+    sensei_id = Column(Integer) 
     name = Column(String)
     description = Column(String)
-    section_count = Column(Integer)  # ✅ Evita conflicto con relación
+    section_count = Column(Integer)  
     hours = Column(float)
     miniature_path = Column(String)
     video_path = Column(String)
