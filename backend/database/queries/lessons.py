@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 from database.base import Lesson
 
-def create_lesson(db: Session, section_id: int, title: str, is_video: bool, file_path: str):
-    lesson = Lesson(section_id=section_id, title=title, is_video=is_video, file_path=file_path)
+def create_lesson(db: Session, section_id: int, title: str, is_video: bool, file_path: str, course_id: int):
+    lesson = Lesson(section_id=section_id, title=title, is_video=is_video, file_path=file_path, course_id=course_id)
     db.add(lesson)
     db.commit()
     db.refresh(lesson)
@@ -15,7 +15,7 @@ def delete_lesson_by_id(db: Session, lesson_id: int):
         db.commit()
     return lesson
 
-def get_lessons_by_sectionid(db: Session, sections_id: list):
+def get_lessons_by_section_id(db: Session, sections_id: list):
 
     for id in sections_id:
         lessons = db.query(Lesson).filter(Lesson.section_id == id).all()
@@ -28,7 +28,7 @@ def get_lessons_by_sectionid(db: Session, sections_id: list):
                     "section_id": lesson.section_id,
                     "title": lesson.title,
                     "is_video": lesson.is_video,
-                    "file_path": lesson.file_path
+                    "file_id": lesson.file_id
                 }
                 lessons_data.append(lesson_info)
 

@@ -10,7 +10,7 @@ def add_section(db: Session, section_data: dict) -> Section:
     return section
 
 
-def delete_section(db: Session, section_id: int) -> bool:
+def delete_section_by_id(db: Session, section_id: int) -> bool:
     section = db.query(Section).filter(Section.id == section_id).first()
     if section:
         db.delete(section)

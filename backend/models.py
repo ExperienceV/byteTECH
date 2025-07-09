@@ -19,5 +19,11 @@ class Course(BaseModel):
     name: str
     description: str
     price: float
-    duration: float
+    hours: float 
     
+
+class Lesson(BaseModel):
+    section_id: int
+    course_id: int
+    title: str
+    is_video: bool

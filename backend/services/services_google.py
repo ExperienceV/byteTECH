@@ -3,9 +3,9 @@ import os.path
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
+from googleapiclient.http import MediaIoBaseUpload
 from google.auth.transport.requests import Request
-
+from fastapi import UploadFile
 
 SCOPES = ['https://www.googleapis.com/auth/drive.file']  # Acceso solo a archivos creados por tu app
 
@@ -28,26 +28,29 @@ def authenticate():
     return creds
 
 
-def upload_file(file_path):
+def upload_file(file: UploadFile):
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
 
-    original_name = os.path.basename(file_path)
+    # Obtener extensión del archivo
+    _, ext = os.path.splitext(upload_file.filename)
 
-    file_metadata = {'name': original_name}
-    media = MediaFileUpload(file_path, resumable=True)
-    file = service.files().create(body=file_metadata, media_body=media, fields='id').execute()
+    # Subir archivo a Drive
+    media = MediaIoBaseUpload(upload_file.file, mimetype=upload_file.content_type, resumable=True)
+    file_metadata = {"name": upload_file.filename}
+    file = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
     
-    file_id = file.get('id')
+    file_id = file.get("id")
     print(f"Archivo subido con ID: {file_id}")
 
-    new_name = f"{file_id}{os.path.splitext(file_path)[1]}"
-    updated_file = service.files().update(
+    # Renombrar archivo usando su ID
+    new_name = f"{file_id}{ext}"
+    updated = service.files().update(
         fileId=file_id,
         body={"name": new_name}
     ).execute()
 
-    print(f"Archivo renombrado a: {updated_file['name']}")
+    print(f"Archivo renombrado a: {updated['name']}")
     return file_id
 
 
@@ -58,3 +61,5 @@ def delete_file(file_id):
     service.files().delete(fileId=file_id).execute()
 
     return True
+
+
