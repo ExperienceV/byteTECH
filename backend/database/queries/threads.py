@@ -28,7 +28,7 @@ def get_threads_by_lesson_id(db: Session, lesson_id: int):
         thread_data = {
             "id": thread.id,
             "lesson_id": thread.lesson_id,
-            "username": user_data["name"],
+            "username": user_data.username,
             "topic": thread.topic
         }
         thread_list.append(thread_data)

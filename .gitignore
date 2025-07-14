@@ -2,3 +2,8 @@
 __pycache__
 backend/services/credentials.json
 backend/services/token.json
+frontend
+backend/.env
+backend/token.json
+backend/credentials.json
+docker-compose.yml

@@ -5,21 +5,22 @@ class User(BaseModel):
     name: Optional[str] = None
     email: str
     password: str
-    is_sensei: Optional[bool] = False
 
+class Thread(BaseModel):
+    lesson_id: int
+    topic: str
 
 class Message(BaseModel):
     thread_id: int
-    user_id: int
     message: str
 
 
 class Course(BaseModel):
-    id: Optional[int] = None
-    name: str
-    description: str
-    price: float
-    hours: float 
+    course_id: Optional[int]
+    name: Optional[str]
+    description: Optional[str]
+    price: Optional[float]
+    hours: Optional[float] 
     
 
 class Lesson(BaseModel):

@@ -1,28 +1,73 @@
 # dependencies.py
-from fastapi import Cookie, HTTPException
-from database.config import SessionLocal as Session
-from database.queries.user import get_user_by_email
+from icecream import ic
+from parameters import settings
+from jose.exceptions import ExpiredSignatureError
+from fastapi import (
+    Cookie, 
+    HTTPException, 
+    status, 
+    Request
+    )
+from jose import (
+    JWTError, 
+    jwt
+    )
+from utils.signature import (
+    create_access_token, 
+    verify_token
+    )
+
 
 def get_cookies(
-    user_email: str = Cookie(default=None),
-    user_name: str = Cookie(default=None),
-    user_id: str = Cookie(default=None),
-    is_sensei: str = Cookie(default=None)
+    request: Request,
+    access_token: str = Cookie(None),
+    refresh_token: str = Cookie(None)
 ):
-    if not user_email or not user_id or not user_name or not is_sensei:
-        raise HTTPException(status_code=401, detail="Faltan cookies")
+    try:
+        ic("Token check started")
 
-    usuario = get_user_by_email(
-        db=Session(),
-        email=user_email    
-    )
-    
-    if not usuario:
-        raise HTTPException(status_code=401, detail="Usuario no encontrado en la base de datos")
+        # 1. first check if tokens are provided
+        if not access_token and not refresh_token:
+            ic("No tokens provided")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Unathorize, login."
+            )
 
-    return {
-        "user_email": user_email,
-        "user_name": user_name,
-        "user_id": user_id,
-        "is_sensei": is_sensei
-    }
+        # 2. Next, check if access token is provided
+        try:
+            if not access_token:
+                ic("Access token missing, using refresh token")
+                payload = jwt.decode(refresh_token.replace("Bearer ", ""), 
+                                  settings.SECRET_KEY, 
+                                  algorithms=[settings.ALGORITHM])
+                new_access_token = create_access_token(data=payload)
+                request.state.new_token = new_access_token
+                return {"user_name": payload["user_name"]}
+            
+            clean_token = access_token.replace("Bearer ", "")
+            payload = verify_token(clean_token)
+            return payload
+
+        except ExpiredSignatureError:
+            ic("Token expired error")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Expired token, please login again."
+            )
+        except JWTError:
+            ic("Invalid token error")
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Invalid token, please login again."
+            )
+
+    except HTTPException:
+        # Re-raise the HTTPException to be handled by FastAPI
+        raise
+    except Exception as e:
+        ic("Unexpected error", e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Server error, please try again later."
+        )

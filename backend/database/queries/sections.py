@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from database.base import Section
+from database.queries.lessons import get_lessons_by_section_id
 
 
 def add_section(db: Session, section_data: dict) -> Section:
@@ -30,3 +31,10 @@ def get_sections_by_course_id(db: Session, course_id: int) -> list[Section]:
 
     
     return sections_id
+
+
+def get_file_ids_by_section_id(db, section_id: int):
+    lessons = get_lessons_by_section_id(db, [section_id])
+    return [lesson['file_id'] for lesson in lessons if lesson.get('file_id')]
+
+

@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from sqlalchemy import UniqueConstraint
@@ -26,11 +26,10 @@ class Course(Base):
     sensei_id = Column(Integer)
     name = Column(String)
     description = Column(String)
-    section_count = Column(Integer)
-    hours = Column(float)
+    hours = Column(Float)
     miniature_id = Column(String)
     video_id = Column(String)
-    price = Column(float)
+    price = Column(Float)
 
     sections = relationship("Section", back_populates="course", cascade="all, delete")
     lessons = relationship("Lesson", back_populates="course", cascade="all, delete")
@@ -53,7 +52,6 @@ class Lesson(Base):
     section_id = Column(Integer, ForeignKey("sections.id", ondelete="CASCADE"))
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
     title = Column(String)
-    is_video = Column(Boolean)
     file_id = Column(String)
 
     section = relationship("Section", back_populates="lessons")
@@ -91,3 +89,15 @@ class Purchase(Base):
     user = relationship("User", back_populates="purchases")
     course = relationship("Course", back_populates="purchased_by")
 
+
+class UploadedCourse(Base):
+    __tablename__ = "my_upldd_courses"
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
+
+    user = relationship("User", back_populates="uploads")
+    course = relationship("Course", back_populates="uploaded_by")
+
+    __table_args__ = (UniqueConstraint('user_id', 'course_id'),)
+# ------------------------------

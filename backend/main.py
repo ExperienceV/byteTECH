@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from middlewares import TokenRefreshMiddleware
+from dotenv import load_dotenv
 
-
+load_dotenv(".env")
 app = FastAPI()
 
 
@@ -20,19 +22,22 @@ app.add_middleware(
     allow_headers=["*"],  # Headers permitidos
 )
 
+app.add_middleware(TokenRefreshMiddleware)
 
 # -------- Include Routers --------
 from routers.auth import auth_router
-from routers.payment import payment_router
 from routers.courses import courses_router
 from routers.forums import forums_router
-from routers.example import example_router
+from routers.media import media_router
+from routers.workbrench import workbrench_router
+
 
 router_list = [
     auth_router,
     courses_router,
-    payment_router,
-    forums_router
+    forums_router,
+    media_router,
+    workbrench_router
 ]
 
 for router in router_list:

@@ -1,4 +1,3 @@
-from database.queries.lessons import get_lessons_of_course
 from database.queries.threads import get_threads_by_lesson_id
 from database.config import SessionLocal
 from database.base import Course

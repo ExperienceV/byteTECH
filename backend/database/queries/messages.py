@@ -28,7 +28,7 @@ def get_messages_by_thread_id(db: Session, thread_id: int):
         message_data = {
             "id": msg.id,
             "thread_id": msg.thread_id,
-            "username": user_data["name"],
+            "username": user_data.username,
             "message": msg.message
         }
         message_list.append(message_data)
