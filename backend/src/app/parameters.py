@@ -17,8 +17,12 @@ class Settings(BaseSettings):
     SAMESITE: str = "none"  
     HTTPONLY: bool = True  
     SECURE: bool = False    
-    FRONTEND_URL: str = "https://http:localhost:3000"
-    BACKEND_URL: str = "https://http:localhost:8000"
+
+    # URL SETTINGS
+    FRONTEND_PROD_URL: str = "https://bytetechedu.com"
+    BACKEND_PROD_URL: str = "https://api.bytetechedu.com"
+    FRONTEND_DB_URL: str = "http://localhost:3000"
+    BACKEND_DB_URL: str = "http://localhost:8000"
     DOMAIN: str = ".bytetechedu.com"
     
     # CORS SETTINGS

@@ -170,6 +170,7 @@ async def buy_course(
         409: Usuario ya posee el curso
         500: Error en Stripe Checkout
     """
+    print("Eta e la userinfo ", user_info)
     get_response = get_purchased_courses_by_user(user_id=user_info["user_id"], db=db)
     if course_id in get_response:
         return JSONResponse(
@@ -185,6 +186,11 @@ async def buy_course(
         )
 
     try:
+
+        succes = "/success?session_id={CHECKOUT_SESSION_ID}"
+        cancel= "/cancel"
+        success_path = settings.FRONTEND_DB_URL + succes if settings.DEBUG else settings.FRONTEND_PROD_URL + succes,
+        cancel_path = settings.FRONTEND_DB_URL + cancel if settings.DEBUG else settings.FRONTEND_PROD_URL + cancel,
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
@@ -199,9 +205,9 @@ async def buy_course(
                 "quantity": 1,
             }],
             mode="payment",
-            customer_email=user_info["user_email"],
-            success_url=f"https://bytetechedu.com/success?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url="https://bytetechedu.com/cancel",
+            customer_email=user_info["email"],
+            success_url=success_path[0],
+            cancel_url=cancel_path[0],
             metadata={
                 "user_id": str(user_info["user_id"]),
                 "course_id": str(course_id),
@@ -211,12 +217,13 @@ async def buy_course(
         return JSONResponse(content={"checkout_url": session.url}, status_code=200)
 
     except Exception as e:
-        return JSONResponse(content=str(e), status_code=500)
+        return JSONResponse(content="sabra la bola" + str(e), status_code=500)
 
 
 @courses_router.post("/webhook")
 async def stripe_webhook(
-    request: Request
+    request: Request,
+    db: Session = Depends(get_db)
 ):
     """
     Webhook para recibir eventos de Stripe (pagos completados)
@@ -235,6 +242,7 @@ async def stripe_webhook(
         - Requiere firma válida de Stripe
         - Secreto del webhook en configuración
     """
+    print("Eta e la request ", request)
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
     webhook_secret = settings.STRIPE_WEBHOOK
@@ -247,7 +255,11 @@ async def stripe_webhook(
             user_id = int(session["metadata"]["user_id"])
             course_id = int(session["metadata"]["course_id"])
 
-            save_purchase(user_id=user_id, course_id=course_id)
+            save_purchase(
+                db=db,
+                user_id=user_id, 
+                course_id=course_id
+                )
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=400)

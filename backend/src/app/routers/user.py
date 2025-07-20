@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Form, Depends
 from fastapi.responses import JSONResponse
 from app.dependencies import get_cookies, get_db
-from app.database.config import Session
+from sqlalchemy.orm import Session
 from app.database.queries.user import update_user
 
 user_router = APIRouter()
