@@ -4,13 +4,16 @@ import type React from "react"
 
 import { useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
 import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
-import { Terminal, Mail, Lock, Eye, EyeOff, User, UserPlus, Check } from "lucide-react"
+import { Terminal, Mail, Lock, Eye, EyeOff, User, UserPlus, Check, AlertCircle } from "lucide-react"
+import { authApi, type ApiError } from "@//lib/api"
 
 export default function RegisterPage() {
+  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
@@ -21,6 +24,7 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
+    general: "",
   })
   const [isLoading, setIsLoading] = useState(false)
   const [terminalMessages, setTerminalMessages] = useState<string[]>([])
@@ -34,7 +38,7 @@ export default function RegisterPage() {
   }
 
   const validateForm = () => {
-    const newErrors = { name: "", email: "", password: "" }
+    const newErrors = { name: "", email: "", password: "", general: "" }
 
     if (!formData.name) {
       newErrors.name = "Nombre requerido"
@@ -70,25 +74,66 @@ export default function RegisterPage() {
 
     setIsLoading(true)
     setTerminalMessages([])
+    setErrors({ name: "", email: "", password: "", general: "" })
 
     // Progressive terminal messages
     addTerminalMessage("$ npm run auth:register", 0)
     addTerminalMessage("→ Validando datos...", 500)
-    addTerminalMessage("→ Creando usuario...", 1000)
-    addTerminalMessage("→ Configurando perfil...", 1500)
+    addTerminalMessage("→ Conectando con el servidor...", 1000)
+    addTerminalMessage("→ Creando usuario...", 1500)
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 2500))
+    try {
+      // Llamada real a la API
+      const response = await authApi.register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      })
 
-    addTerminalMessage("✓ Cuenta creada exitosamente", 2500)
+      addTerminalMessage("✓ Cuenta creada exitosamente", 2000)
+      addTerminalMessage("→ Redirigiendo al login...", 2500)
 
-    // Reset form and show success
+      // Reset form and redirect to login
     setTimeout(() => {
       setFormData({ name: "", email: "", password: "" })
       setTerminalMessages([])
       setIsLoading(false)
-      // Show success message or redirect to login
+        router.push("/login")
     }, 3000)
+
+    } catch (error) {
+      console.error("Error en el registro:", error)
+      
+      const apiError = error as ApiError
+      let errorMessage = "Error al crear la cuenta"
+
+      // Manejar diferentes tipos de errores
+      if (apiError.detail) {
+        if (Array.isArray(apiError.detail)) {
+          // Error de validación
+          const firstError = apiError.detail[0]
+          if (firstError.loc.includes("email")) {
+            setErrors(prev => ({ ...prev, email: "Email ya está registrado" }))
+          } else if (firstError.loc.includes("name")) {
+            setErrors(prev => ({ ...prev, name: "Nombre inválido" }))
+          } else if (firstError.loc.includes("password")) {
+            setErrors(prev => ({ ...prev, password: "Contraseña inválida" }))
+          } else {
+            setErrors(prev => ({ ...prev, general: firstError.msg }))
+          }
+        } else {
+          // Error de string
+          setErrors(prev => ({ ...prev, general: apiError.detail as string }))
+        }
+      } else if (apiError.message) {
+        setErrors(prev => ({ ...prev, general: apiError.message ?? "" }))
+      } else {
+        setErrors(prev => ({ ...prev, general: errorMessage }))
+      }
+
+      addTerminalMessage("✗ Error en el registro", 2000)
+      setIsLoading(false)
+    }
   }
 
   const getPasswordStrength = () => {
@@ -238,6 +283,14 @@ export default function RegisterPage() {
                     <p className="text-red-400 text-xs font-mono mt-1">// Error: {errors.password}</p>
                   )}
                 </div>
+
+                {/* Error general */}
+                {errors.general && (
+                  <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-red-400" />
+                    <p className="text-red-400 text-sm font-mono">// Error: {errors.general}</p>
+                  </div>
+                )}
 
                 <div className="space-y-4 pt-4">
                   <Button

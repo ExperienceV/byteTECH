@@ -10,8 +10,9 @@ import { UniqueFooter } from "@//components/unique-footer"
 import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
 import { Badge } from "@//components/ui/badge"
-import { Terminal, Mail, Lock, Eye, EyeOff, User, ArrowRight, Info } from "lucide-react"
+import { Terminal, Mail, Lock, Eye, EyeOff, User, ArrowRight, Info, AlertCircle } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
+import { authApi, type ApiError } from "@//lib/api"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -85,19 +86,26 @@ export default function LoginPage() {
 
     setIsLoading(true)
     setTerminalMessages([])
+    setErrors({ email: "", password: "", general: "" })
 
     // Progressive terminal messages
     addTerminalMessage("$ npm run auth:login", 0)
     addTerminalMessage("→ Validando credenciales...", 500)
-    addTerminalMessage("→ Estableciendo sesión segura...", 1000)
-    addTerminalMessage("→ Conectando...", 1500)
+    addTerminalMessage("→ Conectando con el servidor...", 1000)
+    addTerminalMessage("→ Estableciendo sesión...", 1500)
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // Llamada real a la API
+      const response = await authApi.login({
+        email: formData.email,
+        password: formData.password
+      })
 
-    console.log("🔐 Llamando a login() del contexto...")
+      console.log("🔐 Respuesta del servidor:", response)
+
+      // También llamar al contexto local para mantener compatibilidad
     const success = await login(formData.email, formData.password)
-    console.log("📊 Resultado del login:", success ? "ÉXITO" : "FALLO")
+      console.log("📊 Resultado del login local:", success ? "ÉXITO" : "FALLO")
 
     if (success) {
       addTerminalMessage("✓ Login exitoso", 2000)
@@ -109,13 +117,45 @@ export default function LoginPage() {
         router.push("/")
       }, 2500)
     } else {
-      console.log("❌ Login falló")
-      setErrors((prev) => ({
-        ...prev,
-        general: "Credenciales incorrectas. Usa las cuentas de prueba.",
-      }))
+        throw new Error("Error en el contexto local")
+      }
+
+    } catch (error) {
+      console.error("Error en el login:", error)
+      
+      const apiError = error as ApiError
+      let errorMessage = "Credenciales incorrectas"
+
+      // Manejar diferentes tipos de errores
+      if (apiError.detail) {
+        if (Array.isArray(apiError.detail)) {
+          // Error de validación
+          const firstError = apiError.detail[0]
+          if (firstError.loc.includes("email")) {
+            setErrors(prev => ({ ...prev, email: "Email inválido" }))
+          } else if (firstError.loc.includes("password")) {
+            setErrors(prev => ({ ...prev, password: "Contraseña inválida" }))
+          } else {
+            setErrors(prev => ({ ...prev, general: firstError.msg }))
+          }
+        } else {
+          // Error de string
+          setErrors(prev => ({ ...prev, general: apiError.detail as string }))
+        }
+      } else if (apiError.message) {
+        if (apiError.message.includes("404")) {
+          setErrors(prev => ({ ...prev, general: "Usuario no encontrado" }))
+        } else if (apiError.message.includes("401")) {
+          setErrors(prev => ({ ...prev, general: "Contraseña incorrecta" }))
+        } else {
+          setErrors(prev => ({ ...prev, general: apiError.message || "Error desconocido" }))
+        }
+      } else {
+        setErrors(prev => ({ ...prev, general: errorMessage }))
+      }
+
+      addTerminalMessage("✗ Error en el login", 2000)
       setIsLoading(false)
-      setTerminalMessages([])
     }
   }
 
@@ -341,12 +381,9 @@ export default function LoginPage() {
 
             {/* Additional Options */}
             <div className="mt-6 text-center">
-              <Link
-                href="/forgot-password"
-                className="text-xs font-mono text-slate-500 hover:text-slate-300 transition-colors"
-              >
-                // ¿Olvidaste tu contraseña?
-              </Link>
+              <p className="text-xs font-mono text-slate-500">
+                // ¿Necesitas ayuda? Contacta soporte
+              </p>
             </div>
           </div>
         </div>

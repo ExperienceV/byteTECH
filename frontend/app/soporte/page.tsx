@@ -1,8 +1,12 @@
+"use client"
+
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
 import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
 import { Textarea } from "@//components/ui/textarea"
+import { supportApi } from "@/lib/api"
+import { useState } from "react"
 import {
   Terminal,
   Mail,
@@ -16,9 +20,43 @@ import {
   CheckCircle,
   AlertCircle,
   Zap,
+  Send,
+  Check,
 } from "lucide-react"
 
 export default function SoportePage() {
+  const [formData, setFormData] = useState({
+    name: "",
+    mail: "",
+    issue: "",
+    message: "",
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [errorMessage, setErrorMessage] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    setSubmitStatus("idle")
+    setErrorMessage("")
+
+    try {
+      await supportApi.sendEmail(formData)
+      setSubmitStatus("success")
+      setFormData({ name: "", mail: "", issue: "", message: "" })
+    } catch (error: any) {
+      setSubmitStatus("error")
+      setErrorMessage(error.message || "Error al enviar el mensaje")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
   return (
     <div className="min-h-screen bg-dynamic-gradient">
       <UniqueHeader />
@@ -67,7 +105,7 @@ export default function SoportePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
               {/* FAQ */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-blue-400/50 transition-all group">
+              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 group">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center mb-4">
                   <HelpCircle className="w-6 h-6 text-white" />
                 </div>
@@ -78,7 +116,7 @@ export default function SoportePage() {
               </div>
 
               {/* Documentación */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-green-400/50 transition-all group">
+              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 group">
                 <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center mb-4">
                   <Book className="w-6 h-6 text-white" />
                 </div>
@@ -89,7 +127,7 @@ export default function SoportePage() {
               </div>
 
               {/* Video Tutoriales */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-purple-400/50 transition-all group">
+              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 group">
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mb-4">
                   <Video className="w-6 h-6 text-white" />
                 </div>
@@ -97,42 +135,6 @@ export default function SoportePage() {
                 <p className="text-slate-400 text-sm leading-relaxed mb-4">
                   Aprende visualmente con nuestros tutoriales en video sobre cómo usar la plataforma.
                 </p>
-              </div>
-            </div>
-
-            {/* Estado del Sistema */}
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 mb-12">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-black" />
-                </div>
-                <h3 className="text-xl font-bold text-white font-mono">Estado del Sistema</h3>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <div>
-                    <div className="text-white font-mono text-sm">Plataforma</div>
-                    <div className="text-green-400 text-xs font-mono">Operacional</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                  <div>
-                    <div className="text-white font-mono text-sm">Videos</div>
-                    <div className="text-green-400 text-xs font-mono">Operacional</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 p-4 bg-slate-800/50 rounded-lg">
-                  <AlertCircle className="w-5 h-5 text-yellow-400" />
-                  <div>
-                    <div className="text-white font-mono text-sm">API</div>
-                    <div className="text-yellow-400 text-xs font-mono">Mantenimiento</div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -171,13 +173,16 @@ export default function SoportePage() {
                   </div>
                 </div>
 
-                <form className="p-6 space-y-4">
+                <form onSubmit={handleSubmit} className="p-6 space-y-4">
                   <div>
                     <label className="block text-sm font-mono text-slate-300 mb-2">
                       <span className="text-cyan-400">const</span> nombre =
                     </label>
                     <Input
                       placeholder="Tu nombre completo"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      required
                       className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
                     />
                   </div>
@@ -189,50 +194,75 @@ export default function SoportePage() {
                     <Input
                       type="email"
                       placeholder="ejemplo@email.com"
+                      value={formData.mail}
+                      onChange={(e) => handleInputChange("mail", e.target.value)}
+                      required
                       className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> categoria =
+                      <span className="text-cyan-400">const</span> asunto =
                     </label>
-                    <select className="w-full bg-slate-800/50 border border-slate-700 text-white font-mono rounded-md px-3 py-2 text-sm">
-                      <option value="">Selecciona una categoría</option>
-                      <option value="tecnico">Problema Técnico</option>
-                      <option value="curso">Pregunta sobre Curso</option>
-                      <option value="pago">Problema de Pago</option>
-                      <option value="cuenta">Problema de Cuenta</option>
-                      <option value="otro">Otro</option>
-                    </select>
+                    <Input
+                      placeholder="Asunto del problema"
+                      value={formData.issue}
+                      onChange={(e) => handleInputChange("issue", e.target.value)}
+                      required
+                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
+                    />
                   </div>
 
                   <div>
                     <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> prioridad =
-                    </label>
-                    <select className="w-full bg-slate-800/50 border border-slate-700 text-white font-mono rounded-md px-3 py-2 text-sm">
-                      <option value="baja">Baja</option>
-                      <option value="media">Media</option>
-                      <option value="alta">Alta</option>
-                      <option value="urgente">Urgente</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> descripcion =
+                      <span className="text-cyan-400">const</span> mensaje =
                     </label>
                     <Textarea
                       placeholder="Describe tu problema o pregunta en detalle..."
                       rows={4}
+                      value={formData.message}
+                      onChange={(e) => handleInputChange("message", e.target.value)}
+                      required
                       className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono resize-none"
                     />
                   </div>
 
-                  <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3 rounded-lg">
-                    <Mail className="mr-2 h-4 w-4" />
-                    Enviar Ticket de Soporte
+                  {/* Status Messages */}
+                  {submitStatus === "success" && (
+                    <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 text-green-400 font-mono text-sm">
+                        <Check className="w-4 h-4" />
+                        ¡Mensaje enviado exitosamente! Te responderemos pronto.
+                      </div>
+                    </div>
+                  )}
+
+                  {submitStatus === "error" && (
+                    <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                      <div className="flex items-center gap-2 text-red-400 font-mono text-sm">
+                        <AlertCircle className="w-4 h-4" />
+                        {errorMessage}
+                      </div>
+                    </div>
+                  )}
+
+                  <Button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3 rounded-lg disabled:opacity-50"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
+                        Enviando...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        Enviar Mensaje de Soporte
+                      </>
+                    )}
                   </Button>
 
                   <div className="text-xs font-mono text-slate-500 text-center">
@@ -324,28 +354,6 @@ export default function SoportePage() {
                     <div className="text-xs font-mono text-slate-400">
                       <span className="text-green-400">// Nota:</span> Para problemas urgentes, usa Telegram para
                       respuesta más rápida
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-white mb-4 font-mono">Tiempos de Respuesta</h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-mono">Baja prioridad:</span>
-                      <span className="text-white font-mono">24-48h</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-mono">Media prioridad:</span>
-                      <span className="text-white font-mono">4-8h</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-mono">Alta prioridad:</span>
-                      <span className="text-cyan-400 font-mono">2-4h</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-slate-400 font-mono">Urgente:</span>
-                      <span className="text-red-400 font-mono">{"<"}1h</span>
                     </div>
                   </div>
                 </div>

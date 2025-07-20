@@ -13,27 +13,24 @@ interface AddCourseModalProps {
   isOpen: boolean
   onClose: () => void
   onSubmit: (courseData: any) => void
+  isLoading?: boolean
 }
 
-export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProps) {
+export function AddCourseModal({ isOpen, onClose, onSubmit, isLoading = false }: AddCourseModalProps) {
   const [courseData, setCourseData] = useState({
-    title: "",
+    name: "",
     description: "",
     price: "",
-    duration: "",
-    difficulty: "Beginner",
-    language: "JavaScript",
-    tags: [] as string[],
-    image: null as File | null,
+    hours: "",
+    miniature: null as File | null,
   })
 
-  const [newTag, setNewTag] = useState("")
   const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setCourseData({ ...courseData, image: file })
+      setCourseData({ ...courseData, miniature: file })
       const reader = new FileReader()
       reader.onload = (e) => {
         setImagePreview(e.target?.result as string)
@@ -42,39 +39,22 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
     }
   }
 
-  const addTag = () => {
-    if (newTag.trim() && !courseData.tags.includes(newTag.trim())) {
-      setCourseData({
-        ...courseData,
-        tags: [...courseData.tags, newTag.trim()],
-      })
-      setNewTag("")
-    }
-  }
-
-  const removeTag = (tagToRemove: string) => {
-    setCourseData({
-      ...courseData,
-      tags: courseData.tags.filter((tag) => tag !== tagToRemove),
-    })
-  }
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!courseData.miniature) {
+      alert("Debes seleccionar una imagen para el curso")
+      return
+    }
     onSubmit(courseData)
     // Reset form
     setCourseData({
-      title: "",
+      name: "",
       description: "",
       price: "",
-      duration: "",
-      difficulty: "Beginner",
-      language: "JavaScript",
-      tags: [],
-      image: null,
+      hours: "",
+      miniature: null,
     })
     setImagePreview(null)
-    onClose()
   }
 
   return (
@@ -100,7 +80,7 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
                     type="button"
                     onClick={() => {
                       setImagePreview(null)
-                      setCourseData({ ...courseData, image: null })
+                      setCourseData({ ...courseData, miniature: null })
                     }}
                     className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
                   >
@@ -117,6 +97,7 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
                     onChange={handleImageUpload}
                     className="hidden"
                     id="image-upload"
+                    required
                   />
                   <label
                     htmlFor="image-upload"
@@ -129,12 +110,12 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
             </div>
           </div>
 
-          {/* Title */}
+          {/* Name */}
           <div className="space-y-2">
-            <label className="text-sm font-mono text-slate-300">Título del Curso</label>
+            <label className="text-sm font-mono text-slate-300">Nombre del Curso</label>
             <Input
-              value={courseData.title}
-              onChange={(e) => setCourseData({ ...courseData, title: e.target.value })}
+              value={courseData.name}
+              onChange={(e) => setCourseData({ ...courseData, name: e.target.value })}
               placeholder="Ej: React Fundamentals"
               className="bg-slate-800 border-slate-700 text-white font-mono"
               required
@@ -153,7 +134,7 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
             />
           </div>
 
-          {/* Price and Duration */}
+          {/* Price and Hours */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-mono text-slate-300">Precio ($)</label>
@@ -167,84 +148,44 @@ export function AddCourseModal({ isOpen, onClose, onSubmit }: AddCourseModalProp
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-mono text-slate-300">Duración</label>
+              <label className="text-sm font-mono text-slate-300">Horas</label>
               <Input
-                value={courseData.duration}
-                onChange={(e) => setCourseData({ ...courseData, duration: e.target.value })}
-                placeholder="12 weeks"
+                type="number"
+                value={courseData.hours}
+                onChange={(e) => setCourseData({ ...courseData, hours: e.target.value })}
+                placeholder="12"
                 className="bg-slate-800 border-slate-700 text-white font-mono"
                 required
               />
             </div>
           </div>
 
-          {/* Difficulty and Language */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <label className="text-sm font-mono text-slate-300">Dificultad</label>
-              <select
-                value={courseData.difficulty}
-                onChange={(e) => setCourseData({ ...courseData, difficulty: e.target.value })}
-                className="w-full bg-slate-800 border border-slate-700 text-white font-mono px-3 py-2 rounded-md"
-              >
-                <option value="Beginner">Principiante</option>
-                <option value="Intermediate">Intermedio</option>
-                <option value="Advanced">Avanzado</option>
-              </select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-mono text-slate-300">Lenguaje</label>
-              <select
-                value={courseData.language}
-                onChange={(e) => setCourseData({ ...courseData, language: e.target.value })}
-                className="w-full bg-slate-800 border border-slate-700 text-white font-mono px-3 py-2 rounded-md"
-              >
-                <option value="JavaScript">JavaScript</option>
-                <option value="Python">Python</option>
-                <option value="Java">Java</option>
-                <option value="C++">C++</option>
-                <option value="Go">Go</option>
-                <option value="Rust">Rust</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="space-y-2">
-            <label className="text-sm font-mono text-slate-300">Tags</label>
-            <div className="flex gap-2">
-              <Input
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                placeholder="Agregar tag..."
-                className="bg-slate-800 border-slate-700 text-white font-mono flex-1"
-                onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTag())}
-              />
-              <Button type="button" onClick={addTag} className="bg-cyan-500 hover:bg-cyan-600 text-black">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            {courseData.tags.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
-                {courseData.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="bg-slate-700 text-cyan-400 px-2 py-1 rounded-md text-sm font-mono flex items-center gap-1"
-                  >
-                    {tag}
-                    <button type="button" onClick={() => removeTag(tag)} className="text-red-400 hover:text-red-300">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-
           {/* Submit Button */}
-          <div className="flex justify-end pt-4">
-            <Button type="submit" className="bg-green-500 hover:bg-green-600 text-black font-mono px-6 py-2">
-              crear
+          <div className="flex gap-3 pt-4">
+            <Button
+              type="submit"
+              disabled={isLoading || !courseData.miniature}
+              className="flex-1 bg-green-500 hover:bg-green-600 text-black font-mono"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
+                  Creando...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Crear Curso
+                </>
+              )}
+            </Button>
+            <Button
+              type="button"
+              onClick={onClose}
+              variant="outline"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+            >
+              Cancelar
             </Button>
           </div>
         </form>

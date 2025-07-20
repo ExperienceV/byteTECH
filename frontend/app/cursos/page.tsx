@@ -1,90 +1,57 @@
+"use client"
+
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
 import { TerminalCourseCard } from "@//components/terminal-course-card"
 import { Terminal, BookOpen } from "lucide-react"
+import { useEffect, useState } from "react"
+import { coursesApi } from "@/lib/api"
 
-/* ─────────────────────────────────────────
-   courses data - catálogo reducido
-   ───────────────────────────────────────── */
-const courses = [
-  {
-    title: "React Fundamentals",
-    description: "Master React from the ground up with hooks, state-management and best practices.",
-    price: 299,
-    duration: "12 weeks",
-    students: 1_250,
-    rating: 4.8,
-    tags: ["React", "JavaScript", "Frontend"],
-    instructor: "Carlos Mendoza",
-    language: "JavaScript",
-    difficulty: "Intermediate" as const,
-  },
-  {
-    title: "Python Essentials",
-    description: "Learn Python for web-dev, data-science and automation, starting from scratch.",
-    price: 249,
-    duration: "10 weeks",
-    students: 890,
-    rating: 4.9,
-    tags: ["Python", "Backend", "Data"],
-    instructor: "Ana García",
-    language: "Python",
-    difficulty: "Beginner" as const,
-  },
-  {
-    title: "Desarrollo Full Stack",
-    description: "Construye aplicaciones web completas con Node.js, Express, MongoDB y React",
-    price: 399,
-    duration: "16 semanas",
-    students: 650,
-    rating: 4.7,
-    tags: ["Node.js", "MongoDB", "Full Stack"],
-    instructor: "María López",
-    language: "JavaScript",
-    difficulty: "Avanzado" as const,
-  },
-  {
-    title: "Dominio de Vue.js",
-    description: "Vue.js 3 avanzado con Composition API, Pinia y prácticas modernas de desarrollo",
-    price: 279,
-    duration: "11 semanas",
-    students: 420,
-    rating: 4.6,
-    tags: ["Vue.js", "Frontend", "SPA"],
-    instructor: "Roberto Silva",
-    language: "JavaScript",
-    difficulty: "Intermedio" as const,
-  },
-  {
-    title: "Framework Django",
-    description: "Crea aplicaciones web robustas con Django, APIs REST e integración de bases de datos",
-    price: 329,
-    duration: "13 semanas",
-    students: 780,
-    rating: 4.8,
-    tags: ["Django", "Python", "Backend"],
-    instructor: "Laura Martín",
-    language: "Python",
-    difficulty: "Intermedio" as const,
-  },
-  {
-    title: "Desarrollo con Flutter",
-    description: "Crea aplicaciones móviles nativas para iOS y Android usando Flutter y Dart",
-    price: 349,
-    duration: "14 semanas",
-    students: 560,
-    rating: 4.5,
-    tags: ["Flutter", "Dart", "Móvil"],
-    instructor: "Diego Ruiz",
-    language: "Dart",
-    difficulty: "Avanzado" as const,
-  },
-]
-
-/* ─────────────────────────────────────────
-   page component
-   ───────────────────────────────────────── */
 export default function CursosPage() {
+  const [cursos, setCursos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  useEffect(() => {
+    coursesApi
+      .getMtdCourses()
+      .then((data) => {
+        setCursos(data.mtd_courses)
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError("No se pudieron cargar los cursos")
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
+        <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-cyan-400 font-mono">Cargando cursos...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
+        <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center">
+          <p className="text-red-400 font-mono">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-dynamic-gradient">
       <UniqueHeader />
@@ -109,7 +76,7 @@ export default function CursosPage() {
               <p className="text-green-400">
                 <span className="text-slate-500">$</span> find ./courses -type course -status available
               </p>
-              <p className="text-slate-400 ml-2">✓ Encontrados {courses.length} cursos activos</p>
+              <p className="text-slate-400 ml-2">✓ Encontrados {cursos.length} cursos activos</p>
               <p className="text-slate-400 ml-2">✓ Todos los niveles disponibles</p>
               <p className="text-cyan-400 ml-2">¡Elige tu próximo desafío! 🚀</p>
             </div>
@@ -136,36 +103,62 @@ export default function CursosPage() {
               </p>
             </div>
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2">
-              <span className="text-cyan-400 font-mono text-sm">{courses.length} cursos</span>
+              <span className="text-cyan-400 font-mono text-sm">{cursos.length} cursos</span>
             </div>
           </div>
 
           {/* Stats Overview */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 sm:mb-12">
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-cyan-400 font-mono">{courses.length}</div>
+              <div className="text-2xl font-bold text-cyan-400 font-mono">{cursos.length}</div>
               <div className="text-slate-400 text-sm font-mono">Cursos</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 font-mono">4K+</div>
+              <div className="text-2xl font-bold text-green-400 font-mono">
+                {cursos.reduce((total, curso) => total + (curso.students || 0), 0)}
+              </div>
               <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400 font-mono">8</div>
+              <div className="text-2xl font-bold text-purple-400 font-mono">
+                {new Set(cursos.map((curso) => curso.language || curso.tags?.[0])).size}
+              </div>
               <div className="text-slate-400 text-sm font-mono">Tecnologías</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-orange-400 font-mono">4.7</div>
+              <div className="text-2xl font-bold text-orange-400 font-mono">
+                {cursos.length > 0
+                  ? (cursos.reduce((sum, curso) => sum + (curso.rating || 0), 0) / cursos.length).toFixed(1)
+                  : "0.0"}
+              </div>
               <div className="text-slate-400 text-sm font-mono">Rating</div>
             </div>
           </div>
 
           {/* Courses Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {courses.map((course, index) => (
-              <TerminalCourseCard key={index} {...course} />
-            ))}
-          </div>
+          {cursos.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-slate-400 font-mono text-lg">No hay cursos disponibles.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {cursos.map((curso, index) => (
+                <TerminalCourseCard
+                  key={index}
+                  title={curso.name || curso.title}
+                  description={curso.description || `Curso impartido por ${curso.sensei_name}`}
+                  instructor={curso.sensei_name || curso.instructor}
+                  price={curso.price || 0}
+                  duration={curso.duration || "Por definir"}
+                  students={curso.students || 0}
+                  rating={curso.rating || 0}
+                  tags={curso.tags || []}
+                  language={curso.language || ""}
+                  difficulty={curso.difficulty || "Intermedio"}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

@@ -5,89 +5,24 @@ import { UniqueFooter } from "@//components/unique-footer"
 import { StudentCourseCard } from "@//components/student-course-card"
 import { TeacherCourseCard } from "@//components/teacher-course-card"
 import { AddCourseModal } from "@//components/add-course-modal"
-import { Terminal, BookOpen, CheckCircle, Clock, TrendingUp, Users, BarChart3, Award, Eye, Plus } from "lucide-react"
+import { Terminal, BookOpen, CheckCircle, Clock, TrendingUp, Users, BarChart3, Award, Eye, Plus, Edit, Trash2, Settings } from "lucide-react"
 import { Button } from "@//components/ui/button"
 import { useAuth } from "@//lib/auth-context"
+import { coursesApi, workbrenchApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { use } from "react"
 
-// Course data - same as in other files
-const courses = [
-  {
-    title: "React Fundamentals",
-    description: "Master React from the ground up with hooks, state-management and best practices.",
-    price: 299,
-    duration: "12 weeks",
-    students: 1_250,
-    rating: 4.8,
-    tags: ["React", "JavaScript", "Frontend"],
-    instructor: "Carlos Mendoza",
-    language: "JavaScript",
-    difficulty: "Intermediate" as const,
-    lessons: 45,
-    hours: 38.5,
-    progress: 75, // Student's progress
-    lastAccessed: "2024-01-22",
-    slug: "react-fundamentals",
-  },
-  {
-    title: "Python Essentials",
-    description: "Learn Python for web-dev, data-science and automation, starting from scratch.",
-    price: 249,
-    duration: "10 weeks",
-    students: 890,
-    rating: 4.9,
-    tags: ["Python", "Backend", "Data"],
-    instructor: "Ana García",
-    language: "Python",
-    difficulty: "Beginner" as const,
-    lessons: 40,
-    hours: 30.2,
-    progress: 100, // Completed
-    lastAccessed: "2024-01-20",
-    slug: "python-essentials",
-  },
-  {
-    title: "Desarrollo Full Stack",
-    description: "Construye aplicaciones web completas con Node.js, Express, MongoDB y React",
-    price: 399,
-    duration: "16 semanas",
-    students: 650,
-    rating: 4.7,
-    tags: ["Node.js", "MongoDB", "Full Stack"],
-    instructor: "María López",
-    language: "JavaScript",
-    difficulty: "Avanzado" as const,
-    lessons: 65,
-    hours: 52.8,
-    progress: 45, // In progress
-    lastAccessed: "2024-01-21",
-    slug: "desarrollo-full-stack",
-  },
-  {
-    title: "Framework Django",
-    description: "Crea aplicaciones web robustas con Django, APIs REST e integración de bases de datos",
-    price: 329,
-    duration: "13 semanas",
-    students: 780,
-    rating: 4.8,
-    tags: ["Django", "Python", "Backend"],
-    instructor: "Laura Martín",
-    language: "Python",
-    difficulty: "Intermedio" as const,
-    lessons: 48,
-    hours: 41.2,
-    progress: 0, // Teacher course
-    lastAccessed: "2024-01-23",
-    slug: "framework-django",
-  },
-]
-
-export default function HomePage() {
-  const { user, isLoggedIn, getUserPurchases, getTeacherCourses } = useAuth()
+export default function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = use(params)
+  const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [showAddCourseModal, setShowAddCourseModal] = useState(false)
+  const [courses, setCourses] = useState<any[]>([])
+  const [isLoadingCourses, setIsLoadingCourses] = useState(true)
+  const [error, setError] = useState("")
+  const [isCreatingCourse, setIsCreatingCourse] = useState(false)
 
   useEffect(() => {
     // Give some time for the auth context to load
@@ -103,6 +38,101 @@ export default function HomePage() {
 
     return () => clearTimeout(timer)
   }, [isLoggedIn, router, user])
+
+  useEffect(() => {
+    if (!isLoggedIn || !user) return
+
+    const fetchCourses = async () => {
+      setIsLoadingCourses(true)
+      try {
+        if (user.role === "teacher") {
+          // Opción 1: Si tienes endpoint específico para sensei, úsalo aquí
+          // const teacherCourses = await coursesApi.getTeacherCourses()
+          // setCourses(teacherCourses)
+
+          // Opción 2: Si NO tienes endpoint, filtra los cursos donde el sensei sea el usuario actual
+          const allCourses = await coursesApi.getMtdCourses()
+          const myCourses = allCourses.mtd_courses.filter(
+            (course: any) =>
+              course.sensei_name?.toLowerCase() === user.name.toLowerCase()
+          )
+          setCourses(myCourses)
+        } else {
+          // Estudiante: cursos comprados
+          const myCourses = await coursesApi.getMyCourses()
+          setCourses(myCourses)
+        }
+      } catch (err: any) {
+        setError("Error al cargar cursos")
+      } finally {
+        setIsLoadingCourses(false)
+      }
+    }
+
+    fetchCourses()
+  }, [isLoggedIn, user])
+
+  const handleAddCourse = async (courseData: any) => {
+    if (user?.role !== "teacher") return
+
+    setIsCreatingCourse(true)
+    setError("")
+
+    try {
+      const formData = new FormData()
+      formData.append('name', courseData.name)
+      formData.append('description', courseData.description)
+      formData.append('price', courseData.price.toString())
+      formData.append('hours', courseData.hours.toString())
+      formData.append('file', courseData.miniature)
+
+      const response = await workbrenchApi.createCourse(formData)
+      
+      console.log("✅ Curso creado exitosamente:", response)
+      
+      // Recargar cursos
+      const allCourses = await coursesApi.getMtdCourses()
+      const myCourses = allCourses.mtd_courses.filter(
+        (course: any) =>
+          course.sensei_name?.toLowerCase() === user.name.toLowerCase()
+      )
+      setCourses(myCourses)
+      
+      setShowAddCourseModal(false)
+    } catch (err: any) {
+      console.error("❌ Error creando curso:", err)
+      setError(err.message || "Error al crear el curso")
+    } finally {
+      setIsCreatingCourse(false)
+    }
+  }
+
+  const handleDeleteCourse = async (courseId: number) => {
+    if (user?.role !== "teacher") return
+
+    if (!confirm("¿Estás seguro de que quieres eliminar este curso? Esta acción no se puede deshacer.")) {
+      return
+    }
+
+    try {
+      await workbrenchApi.deleteCourse(courseId)
+      
+      // Recargar cursos
+      const allCourses = await coursesApi.getMtdCourses()
+      const myCourses = allCourses.mtd_courses.filter(
+        (course: any) =>
+          course.sensei_name?.toLowerCase() === user.name.toLowerCase()
+      )
+      setCourses(myCourses)
+    } catch (err: any) {
+      console.error("❌ Error eliminando curso:", err)
+      setError(err.message || "Error al eliminar el curso")
+    }
+  }
+
+  const handleEditCourse = (courseId: number) => {
+    router.push(`/editor/${courseId}`)
+  }
 
   // Show loading while checking auth
   if (isLoading) {
@@ -121,21 +151,14 @@ export default function HomePage() {
     return null
   }
 
-  const handleAddCourse = (courseData: any) => {
-    console.log("Nuevo curso creado:", courseData)
-    // Here you would typically send the data to your backend
-    // For now, we'll just log it
-  }
-
   // TEACHER VIEW
   if (user.role === "teacher") {
-    const teacherCourseSlugs = getTeacherCourses()
-    const teacherCourses = courses.filter((course) => teacherCourseSlugs.includes(course.slug))
+    const teacherCourses = courses
 
     // Calculate teacher stats
-    const totalStudents = teacherCourses.reduce((acc, course) => acc + course.students, 0)
-    const averageRating = teacherCourses.reduce((acc, course) => acc + course.rating, 0) / teacherCourses.length || 0
-    const totalRevenue = teacherCourses.reduce((acc, course) => acc + course.price * course.students, 0)
+    const totalStudents = teacherCourses.reduce((acc, course) => acc + (course.students || 0), 0)
+    const averageRating = teacherCourses.reduce((acc, course) => acc + (course.rating || 0), 0) / teacherCourses.length || 0
+    const totalRevenue = teacherCourses.reduce((acc, course) => acc + (course.price || 0) * (course.students || 0), 0)
 
     return (
       <div className="min-h-screen bg-dynamic-gradient">
@@ -157,6 +180,13 @@ export default function HomePage() {
 
               <p className="text-slate-400 font-mono text-sm sm:text-base">// Panel de control del instructor</p>
             </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-4 mb-8 text-center">
+                <p className="text-red-400 font-mono text-sm">{error}</p>
+              </div>
+            )}
 
             {/* Stats Overview */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -203,17 +233,55 @@ export default function HomePage() {
                 {/* Add Course Button */}
                 <Button
                   onClick={() => setShowAddCourseModal(true)}
-                  className="bg-green-500 hover:bg-green-600 text-black font-mono px-4 py-2 rounded-lg flex items-center gap-2"
+                  disabled={isCreatingCourse}
+                  className="bg-green-500 hover:bg-green-600 text-black font-mono px-4 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
                 >
-                  <Plus className="w-4 h-4" />
-                  Añadir Curso
+                  {isCreatingCourse ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      Creando...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="w-4 h-4" />
+                      Añadir Curso
+                    </>
+                  )}
                 </Button>
               </div>
 
-              {teacherCourses.length > 0 ? (
+              {isLoadingCourses ? (
+                <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+                  <p className="text-cyan-400 font-mono">Cargando cursos...</p>
+                </div>
+              ) : teacherCourses.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {teacherCourses.map((course, index) => (
-                    <TeacherCourseCard key={index} {...course} />
+                    <div key={index} className="relative group">
+                      <TeacherCourseCard {...course} />
+                      
+                      {/* Action Buttons */}
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex gap-2">
+                          <Button
+                            onClick={() => handleEditCourse(course.id)}
+                            size="sm"
+                            className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono"
+                          >
+                            <Edit className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            onClick={() => handleDeleteCourse(course.id)}
+                            size="sm"
+                            variant="destructive"
+                            className="bg-red-500 hover:bg-red-600 text-white font-mono"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
@@ -286,7 +354,7 @@ export default function HomePage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-400 font-mono">Promedio/curso:</span>
                         <span className="text-cyan-400 font-mono">
-                          ${Math.floor(totalRevenue / teacherCourses.length).toLocaleString()}
+                          ${teacherCourses.length > 0 ? Math.floor(totalRevenue / teacherCourses.length).toLocaleString() : 0}
                         </span>
                       </div>
                     </div>
@@ -310,7 +378,7 @@ export default function HomePage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-400 font-mono">Curso más popular:</span>
                         <span className="text-cyan-400 font-mono text-xs">
-                          {teacherCourses[0]?.title.split(" ")[0] || "N/A"}
+                          {teacherCourses[0]?.name?.split(" ")[0] || "N/A"}
                         </span>
                       </div>
                     </div>
@@ -326,6 +394,7 @@ export default function HomePage() {
           isOpen={showAddCourseModal}
           onClose={() => setShowAddCourseModal(false)}
           onSubmit={handleAddCourse}
+          isLoading={isCreatingCourse}
         />
 
         <UniqueFooter />
@@ -333,10 +402,8 @@ export default function HomePage() {
     )
   }
 
-  // STUDENT VIEW (existing code)
-  const userPurchases = getUserPurchases()
-  const purchasedCourseSlugs = userPurchases.map((p) => p.courseSlug)
-  const userCourses = courses.filter((course) => purchasedCourseSlugs.includes(course.slug))
+  // STUDENT VIEW - No changes needed
+  const userCourses = courses
   const ongoingCourses = userCourses.filter((course) => course.progress < 100)
   const completedCourses = userCourses.filter((course) => course.progress === 100)
 
@@ -373,13 +440,13 @@ export default function HomePage() {
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-orange-400 font-mono">
-                {Math.round(userCourses.reduce((acc, course) => acc + course.progress, 0) / userCourses.length) || 0}%
+                {Math.round(userCourses.reduce((acc, course) => acc + (course.progress || 0), 0) / userCourses.length) || 0}%
               </div>
               <div className="text-slate-400 text-sm font-mono">Progreso</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-purple-400 font-mono">
-                {userCourses.reduce((acc, course) => acc + course.hours, 0).toFixed(1)}h
+                {userCourses.reduce((acc, course) => acc + (course.hours || 0), 0).toFixed(1)}h
               </div>
               <div className="text-slate-400 text-sm font-mono">Horas</div>
             </div>

@@ -9,9 +9,10 @@ import { Terminal, User, Edit, Save, X, Camera, Shield } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
+import { usersApi } from "@/lib/api"
 
 export default function PerfilPage() {
-  const { user, isLoggedIn, getUserStats } = useAuth()
+  const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ export default function PerfilPage() {
     email: "",
   })
   const [isLoading, setIsLoading] = useState(true)
+  const [userStats, setUserStats] = useState<any>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -40,6 +42,14 @@ export default function PerfilPage() {
     return () => clearTimeout(timer)
   }, [isLoggedIn, router, user])
 
+  useEffect(() => {
+    if (!user) return
+    usersApi.getAllUsers().then(users => {
+      const current = users.find((u: any) => u.email === user.email)
+      setUserStats(current)
+    })
+  }, [user])
+
   // Show loading while checking auth
   if (isLoading) {
     return (
@@ -57,13 +67,14 @@ export default function PerfilPage() {
     return null
   }
 
-  const userStats = getUserStats()
+  // Elimina el ejemplo simple de userStats
+  // const userStats = { ... }
 
   const handleSave = () => {
-    // Here you would typically save to backend
+    // Aquí normalmente guardarías en el backend
     console.log("Guardando cambios:", formData)
     setIsEditing(false)
-    // Show success message
+    // Mostrar mensaje de éxito
   }
 
   const handleCancel = () => {
@@ -98,7 +109,6 @@ export default function PerfilPage() {
   return (
     <div className="min-h-screen bg-dynamic-gradient">
       <UniqueHeader />
-
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
@@ -109,14 +119,11 @@ export default function PerfilPage() {
                 <Terminal className="w-4 h-4 text-cyan-400" />
                 <span className="text-cyan-400 text-sm font-mono">./user --profile</span>
               </div>
-
               <h1 className="font-mono font-bold leading-tight text-cyan-400 text-2xl sm:text-3xl md:text-4xl mb-4">
                 {">"} PERFIL
               </h1>
-
               <p className="text-slate-400 font-mono text-sm">// Gestiona tu información personal</p>
             </div>
-
             {/* Profile Card */}
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
               {/* Profile Picture Section */}
@@ -133,17 +140,14 @@ export default function PerfilPage() {
                       <User className="w-12 h-12 sm:w-16 sm:h-16 text-white" />
                     )}
                   </div>
-
                   {/* Camera button for editing */}
                   <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-cyan-500 hover:bg-cyan-600 text-black rounded-full flex items-center justify-center transition-colors">
                     <Camera className="w-4 h-4" />
                   </button>
                 </div>
-
                 {/* Role Badge */}
                 <div className="flex justify-center mb-4">{getRoleBadge(user.role)}</div>
               </div>
-
               {/* Form Section */}
               <div className="p-6 space-y-6">
                 {/* Username Field */}
@@ -164,7 +168,6 @@ export default function PerfilPage() {
                     />
                   </div>
                 </div>
-
                 {/* Email Field */}
                 <div>
                   <label className="block text-cyan-400 font-mono text-sm font-semibold mb-3 uppercase tracking-wide">
@@ -183,7 +186,6 @@ export default function PerfilPage() {
                     />
                   </div>
                 </div>
-
                 {/* Action Buttons */}
                 <div className="pt-4">
                   {isEditing ? (
@@ -216,36 +218,9 @@ export default function PerfilPage() {
                 </div>
               </div>
             </div>
-
-            {/* Stats Card */}
-            {userStats && (
-              <div className="mt-6 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
-                <h3 className="text-lg font-bold text-cyan-400 font-mono mb-4 text-center">ESTADÍSTICAS</h3>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-green-400 font-mono">{userStats.totalCourses}</div>
-                    <div className="text-slate-400 text-sm font-mono">Cursos</div>
-                  </div>
-
-                  <div className="text-center">
-                    <div className="text-2xl font-bold text-orange-400 font-mono">${userStats.totalSpent}</div>
-                    <div className="text-slate-400 text-sm font-mono">Invertido</div>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-slate-700 text-center">
-                  <div className="text-slate-400 font-mono text-sm">
-                    Miembro desde:{" "}
-                    <span className="text-white">{new Date(userStats.memberSince).toLocaleDateString("es-ES")}</span>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </section>
-
       <UniqueFooter />
     </div>
   )
