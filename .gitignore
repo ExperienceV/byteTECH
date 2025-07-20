@@ -7,3 +7,6 @@ backend/.env
 backend/token.json
 backend/credentials.json
 docker-compose.yml
+backend/src/app/token.json
+backend/src/app/credentials.json
+backend/src/app/.env
