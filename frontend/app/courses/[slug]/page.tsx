@@ -1,15 +1,15 @@
 "use client"
 
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
-import { CourseContentViewer } from "@//components/course-content-viewer"
-import { Button } from "@//components/ui/button"
-import { Badge } from "@//components/ui/badge"
+import { UniqueHeader } from "@/components/unique-header"
+import { UniqueFooter } from "@/components/unique-footer"
+import { CourseContentViewer } from "@/components/course-content-viewer"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Terminal, Play, Users, Star, BookOpen, CheckCircle, Lock, ShoppingCart, Code, AlertCircle } from "lucide-react"
 import { coursesApi } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
 import Link from "next/link"
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 
 interface CourseData {
   id: number
@@ -34,8 +34,9 @@ interface CourseContentResponse {
   course_content: CourseData
 }
 
-export default function CoursePage({ params }: { params: { slug: string } }) {
-  const { slug } = params
+export default function CoursePage({ params }: { params: Promise<{ slug: string }> }) {
+  // Unwrap params using React.use()
+  const { slug } = use(params)
   const { user, isLoggedIn } = useAuth()
   const [courseData, setCourseData] = useState<CourseData | null>(null)
   const [isPaid, setIsPaid] = useState(false)
@@ -43,18 +44,11 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
   const [error, setError] = useState("")
   const [isPurchasing, setIsPurchasing] = useState(false)
 
-  // Extract course ID from slug (assuming slug format includes ID)
-  const getCourseIdFromSlug = (slug: string): number => {
-    // If your slug contains the ID, extract it
-    // For now, we'll need to fetch all courses first to find the matching one
-    // This is a temporary solution - ideally the slug should contain the ID
-    return Number.parseInt(slug.split("-").pop() || "1")
-  }
-
   useEffect(() => {
     const fetchCourseData = async () => {
       try {
         setLoading(true)
+        setError("")
 
         // First, get all courses to find the one matching the slug
         const allCoursesResponse = await coursesApi.getMtdCourses()
@@ -108,14 +102,19 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
       }
     } catch (err: any) {
       console.error("Error purchasing course:", err)
-      
+
       // Manejar diferentes tipos de errores
-      if (err.message?.includes("409")) {
+      if (err.message?.includes("422")) {
+        // Error 422 - Unprocessable Entity
+        setError("Error en los datos de la compra. Verifica que todos los campos estén correctos.")
+      } else if (err.message?.includes("409")) {
         setError("Ya posees este curso")
       } else if (err.message?.includes("404")) {
         setError("Curso no encontrado")
       } else if (err.message?.includes("401")) {
         setError("Debes iniciar sesión para comprar este curso")
+      } else if (err.message?.includes("400")) {
+        setError("Datos de compra inválidos. Inténtalo de nuevo.")
       } else {
         setError(err.message || "Error al procesar la compra. Inténtalo de nuevo.")
       }
@@ -144,13 +143,23 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
   if (error || !courseData) {
     return (
       <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
-        <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center">
-          <p className="text-red-400 font-mono">{error || "Curso no encontrado"}</p>
-          <Link href="/courses">
-            <Button className="mt-4 px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
-              Volver a Cursos
+        <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center max-w-md mx-auto">
+          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          <p className="text-red-400 font-mono mb-4">{error || "Curso no encontrado"}</p>
+          <div className="space-y-2">
+            <Link href="/cursos">
+              <Button className="w-full px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
+                Volver a Cursos
+              </Button>
+            </Link>
+            <Button
+              onClick={() => window.location.reload()}
+              variant="outline"
+              className="w-full border-slate-600 text-slate-400 hover:bg-slate-800"
+            >
+              Reintentar
             </Button>
-          </Link>
+          </div>
         </div>
       </div>
     )
@@ -174,7 +183,7 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
                 type: lesson.type || "video",
                 duration: lesson.duration,
                 completed: lesson.completed || false,
-                locked: lesson.locked || false,
+                locked: false, // Desbloquear todas las lecciones para usuarios que compraron el curso
               })) || [],
           }))}
         />
@@ -216,7 +225,9 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg px-4 py-2">
                       <AlertCircle className="w-4 h-4 text-yellow-400" />
-                      <span className="text-yellow-400 font-mono text-sm">Debes iniciar sesión para comprar este curso</span>
+                      <span className="text-yellow-400 font-mono text-sm">
+                        Debes iniciar sesión para comprar este curso
+                      </span>
                     </div>
                     <Link href="/login">
                       <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold px-6 py-3 rounded-lg font-mono">
@@ -227,8 +238,8 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
                 ) : !isPaid ? (
                   <div className="space-y-4">
                     {error && (
-                      <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2">
-                        <AlertCircle className="w-4 h-4 text-red-400" />
+                      <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2 max-w-md">
+                        <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
                         <span className="text-red-400 font-mono text-sm">{error}</span>
                       </div>
                     )}
@@ -239,7 +250,7 @@ export default function CoursePage({ params }: { params: { slug: string } }) {
                     <Button
                       onClick={handlePurchase}
                       disabled={isPurchasing}
-                      className="bg-green-500 hover:bg-green-600 text-black font-semibold px-6 py-3 rounded-lg font-mono disabled:opacity-50"
+                      className="bg-green-500 hover:bg-green-600 text-black font-semibold px-6 py-3 rounded-lg font-mono disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {isPurchasing ? (
                         <>

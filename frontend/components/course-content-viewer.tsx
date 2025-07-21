@@ -1,17 +1,15 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
-import { Badge } from "@//components/ui/badge"
-import { Button } from "@//components/ui/button"
-import { Input } from "@//components/ui/input"
-import { Textarea } from "@//components/ui/textarea"
+import { useState, useEffect } from "react"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Play,
   FileText,
   CheckCircle,
-  Lock,
   MessageCircle,
   Plus,
   Send,
@@ -20,7 +18,12 @@ import {
   Code,
   ArrowLeft,
   Hash,
+  Trash2,
+  AlertCircle,
+  Loader2,
 } from "lucide-react"
+import { forumsApi, type Thread, type Message } from "@/lib/api"
+import { useAuth } from "@/lib/auth-context"
 
 interface Lesson {
   id: string
@@ -37,23 +40,6 @@ interface Section {
   lessons: Lesson[]
 }
 
-interface ForumThread {
-  id: string
-  title: string
-  author: string
-  timestamp: string
-  replies: number
-  lastActivity: string
-}
-
-interface ThreadMessage {
-  id: string
-  author: string
-  message: string
-  timestamp: string
-  avatar?: string
-}
-
 interface CourseContentViewerProps {
   courseTitle: string
   courseSlug: string
@@ -61,143 +47,256 @@ interface CourseContentViewerProps {
 }
 
 export function CourseContentViewer({ courseTitle, courseSlug, sections }: CourseContentViewerProps) {
+  const { user } = useAuth()
   const [activeSection, setActiveSection] = useState(0)
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [forumView, setForumView] = useState<"threads" | "create" | "thread">("threads")
-  const [selectedThread, setSelectedThread] = useState<ForumThread | null>(null)
+  const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
   const [newThreadData, setNewThreadData] = useState({ title: "", description: "" })
   const [newMessage, setNewMessage] = useState("")
+  const [threads, setThreads] = useState<Thread[]>([])
+  const [threadMessages, setThreadMessages] = useState<Message[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
-  // Mock forum threads
-  const [threads, setThreads] = useState<ForumThread[]>([
-    {
-      id: "1",
-      title: "Me manda error :'v",
-      author: "Juanito",
-      timestamp: "2024-01-20 10:30",
-      replies: 3,
-      lastActivity: "hace 2 horas",
-    },
-    {
-      id: "2",
-      title: "No compilo tu vaina",
-      author: "Pepe",
-      timestamp: "2024-01-20 11:15",
-      replies: 1,
-      lastActivity: "hace 1 hora",
-    },
-    {
-      id: "3",
-      title: "¿Cómo instalar las dependencias?",
-      author: "María",
-      timestamp: "2024-01-21 09:00",
-      replies: 5,
-      lastActivity: "hace 30 min",
-    },
-  ])
+  // Auto-select first lesson on mount
+  useEffect(() => {
+    if (sections.length > 0 && sections[0].lessons.length > 0 && !selectedLesson) {
+      const firstLesson = sections[0].lessons[0]
+      if (!firstLesson.locked) {
+        setSelectedLesson(firstLesson)
+      }
+    }
+  }, [sections, selectedLesson])
 
-  // Mock thread messages
-  const [threadMessages, setThreadMessages] = useState<ThreadMessage[]>([
-    {
-      id: "1",
-      author: "Juanito",
-      message:
-        "Hola, tengo un error cuando ejecuto el código del video 3. Me sale 'Cannot read property of undefined'. ¿Alguien sabe qué puede ser?",
-      timestamp: "2024-01-20 10:30",
-    },
-    {
-      id: "2",
-      author: "Ana",
-      message:
-        "Hola @Juanito, ese error suele pasar cuando intentas acceder a una propiedad de un objeto que no existe. ¿Podrías compartir tu código?",
-      timestamp: "2024-01-20 11:45",
-    },
-    {
-      id: "3",
-      author: "Carlos",
-      message:
-        "Revisa que hayas inicializado bien las variables antes de usarlas. También verifica la consola del navegador para más detalles.",
-      timestamp: "2024-01-20 12:15",
-    },
-  ])
+  // Cargar threads cuando se selecciona una lección
+  useEffect(() => {
+    if (selectedLesson) {
+      loadThreadsForLesson(Number(selectedLesson.id))
+    }
+  }, [selectedLesson])
+
+  const loadThreadsForLesson = async (lessonId: number) => {
+    try {
+      setLoading(true)
+      setError("")
+      const response = await forumsApi.getThreadsByLesson(lessonId)
+      setThreads(response.threads || [])
+    } catch (err: any) {
+      console.error("Error loading threads:", err)
+      if (err.message?.includes("404")) {
+        // No threads found is not really an error, just empty state
+        setThreads([])
+      } else {
+        setError("Error al cargar los hilos del foro")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadMessagesForThread = async (threadId: number) => {
+    try {
+      setLoading(true)
+      setError("")
+      const response = await forumsApi.getMessagesByThread(threadId)
+      setThreadMessages(response.messages || [])
+    } catch (err: any) {
+      console.error("Error loading messages:", err)
+      if (err.message?.includes("404")) {
+        // No messages found is not really an error, just empty state
+        setThreadMessages([])
+      } else {
+        setError("Error al cargar los mensajes")
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLessonClick = (lesson: Lesson) => {
-    if (lesson.locked) return
+    // Remover la verificación de locked para permitir acceso a todas las lecciones
     setSelectedLesson(lesson)
+    setForumView("threads")
+    setSelectedThread(null)
+    setThreadMessages([])
   }
 
-  const handleThreadClick = (thread: ForumThread) => {
+  const handleThreadClick = async (thread: Thread) => {
     setSelectedThread(thread)
     setForumView("thread")
+    await loadMessagesForThread(thread.id)
   }
 
-  const handleCreateThread = (e: React.FormEvent) => {
+  const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newThreadData.title.trim() || !newThreadData.description.trim()) return
+    if (!newThreadData.title.trim() || !newThreadData.description.trim() || !selectedLesson) return
 
-    const newThread: ForumThread = {
-      id: Date.now().toString(),
-      title: newThreadData.title,
-      author: "Tú",
-      timestamp: new Date().toLocaleString(),
-      replies: 0,
-      lastActivity: "ahora",
+    try {
+      setLoading(true)
+      setError("")
+
+      // Crear el topic combinando título y descripción
+      const topic = `${newThreadData.title}: ${newThreadData.description}`
+
+      await forumsApi.createThread({
+        lesson_id: Number(selectedLesson.id),
+        topic: topic,
+      })
+
+      // Recargar threads
+      await loadThreadsForLesson(Number(selectedLesson.id))
+
+      setNewThreadData({ title: "", description: "" })
+      setForumView("threads")
+    } catch (err: any) {
+      console.error("Error creating thread:", err)
+      setError("Error al crear el hilo: " + (err.message || "Error desconocido"))
+    } finally {
+      setLoading(false)
     }
-
-    setThreads([newThread, ...threads])
-    setNewThreadData({ title: "", description: "" })
-    setForumView("threads")
   }
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newMessage.trim()) return
+    if (!newMessage.trim() || !selectedThread) return
 
-    const message: ThreadMessage = {
-      id: Date.now().toString(),
-      author: "Tú",
-      message: newMessage,
-      timestamp: new Date().toLocaleString(),
+    try {
+      setLoading(true)
+      setError("")
+
+      await forumsApi.sendMessage({
+        thread_id: selectedThread.id,
+        message: newMessage,
+      })
+
+      // Recargar mensajes
+      await loadMessagesForThread(selectedThread.id)
+
+      setNewMessage("")
+    } catch (err: any) {
+      console.error("Error sending message:", err)
+      setError("Error al enviar el mensaje: " + (err.message || "Error desconocido"))
+    } finally {
+      setLoading(false)
     }
+  }
 
-    setThreadMessages([...threadMessages, message])
-    setNewMessage("")
+  const handleDeleteThread = async (threadId: number) => {
+    if (!confirm("¿Estás seguro de que quieres eliminar este hilo?")) return
+
+    try {
+      setLoading(true)
+      setError("")
+
+      await forumsApi.deleteThread(threadId)
+
+      // Recargar threads
+      if (selectedLesson) {
+        await loadThreadsForLesson(Number(selectedLesson.id))
+      }
+
+      // Si estamos viendo el hilo eliminado, volver a la lista
+      if (selectedThread?.id === threadId) {
+        setForumView("threads")
+        setSelectedThread(null)
+      }
+    } catch (err: any) {
+      console.error("Error deleting thread:", err)
+      setError("Error al eliminar el hilo: " + (err.message || "Error desconocido"))
+    } finally {
+      setLoading(false)
+    }
   }
 
   const renderForumThreads = () => (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-green-400 font-mono">HILOS</h2>
+        <h2 className="text-xl font-bold text-green-400 font-mono">
+          HILOS {selectedLesson ? `- ${selectedLesson.title}` : ""}
+        </h2>
         <Button
           onClick={() => setForumView("create")}
           className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-3 py-1 h-auto"
+          disabled={!selectedLesson || loading}
         >
           <Plus className="w-3 h-3 mr-1" />
           ABRIR HILO
         </Button>
       </div>
 
-      <div className="space-y-3">
-        {threads.map((thread) => (
-          <div
-            key={thread.id}
-            onClick={() => handleThreadClick(thread)}
-            className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 cursor-pointer hover:bg-slate-800/70 hover:border-green-400/30 transition-all"
+      {error && (
+        <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2 mb-4">
+          <AlertCircle className="w-4 h-4 text-red-400" />
+          <span className="text-red-400 font-mono text-sm">{error}</span>
+          <Button
+            onClick={() => setError("")}
+            variant="ghost"
+            size="sm"
+            className="ml-auto text-red-400 hover:text-red-300 p-1 h-auto"
           >
-            <div className="flex items-start justify-between mb-2">
-              <h3 className="text-slate-300 font-mono text-sm font-semibold">{thread.title}</h3>
-              <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                <MessageCircle className="w-3 h-3" />
-                <span>{thread.replies}</span>
+            ×
+          </Button>
+        </div>
+      )}
+
+      {!selectedLesson ? (
+        <div className="text-center py-8">
+          <MessageCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+          <p className="text-slate-400 font-mono">Selecciona una lección para ver los hilos del foro</p>
+        </div>
+      ) : loading ? (
+        <div className="text-center py-8">
+          <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
+          <p className="text-green-400 font-mono">Cargando hilos...</p>
+        </div>
+      ) : threads.length === 0 ? (
+        <div className="text-center py-8">
+          <MessageCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+          <p className="text-slate-400 font-mono mb-4">No hay hilos para esta lección</p>
+          <Button
+            onClick={() => setForumView("create")}
+            className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-4 py-2"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            CREAR PRIMER HILO
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {threads.map((thread) => (
+            <div
+              key={thread.id}
+              className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:bg-slate-800/70 hover:border-green-400/30 transition-all"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1 cursor-pointer" onClick={() => handleThreadClick(thread)}>
+                  <h3 className="text-slate-300 font-mono text-sm font-semibold mb-2">
+                    {thread.title || thread.topic || `Hilo #${thread.id}`}
+                  </h3>
+                  <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+                    <MessageCircle className="w-3 h-3" />
+                    <span>Hilo #{thread.id}</span>
+                    {thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}
+                  </div>
+                </div>
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleDeleteThread(thread.id)
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-auto"
+                  disabled={loading}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </Button>
               </div>
             </div>
-            <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
-              <span>por {thread.author}</span>
-              <span>{thread.lastActivity}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 
@@ -209,11 +308,27 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
           onClick={() => setForumView("threads")}
           variant="outline"
           className="border-slate-700 text-slate-400 hover:bg-slate-800/50 font-mono text-xs px-3 py-1 h-auto"
+          disabled={loading}
         >
           <ArrowLeft className="w-3 h-3 mr-1" />
           VOLVER
         </Button>
       </div>
+
+      {error && (
+        <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2 mb-4">
+          <AlertCircle className="w-4 h-4 text-red-400" />
+          <span className="text-red-400 font-mono text-sm">{error}</span>
+          <Button
+            onClick={() => setError("")}
+            variant="ghost"
+            size="sm"
+            className="ml-auto text-red-400 hover:text-red-300 p-1 h-auto"
+          >
+            ×
+          </Button>
+        </div>
+      )}
 
       <form onSubmit={handleCreateThread} className="space-y-4">
         <div>
@@ -227,6 +342,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             value={newThreadData.title}
             onChange={(e) => setNewThreadData((prev) => ({ ...prev, title: e.target.value }))}
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm"
+            disabled={loading}
+            required
           />
         </div>
 
@@ -242,11 +359,24 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             onChange={(e) => setNewThreadData((prev) => ({ ...prev, description: e.target.value }))}
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm resize-none"
             rows={4}
+            disabled={loading}
+            required
           />
         </div>
 
-        <Button type="submit" className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-6 py-2">
-          CREAR
+        <Button
+          type="submit"
+          className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-6 py-2"
+          disabled={loading || !newThreadData.title.trim() || !newThreadData.description.trim()}
+        >
+          {loading ? (
+            <>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              CREANDO...
+            </>
+          ) : (
+            "CREAR"
+          )}
         </Button>
       </form>
     </div>
@@ -260,44 +390,78 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             onClick={() => setForumView("threads")}
             variant="outline"
             className="border-slate-700 text-slate-400 hover:bg-slate-800/50 font-mono text-xs px-3 py-1 h-auto"
+            disabled={loading}
           >
             <ArrowLeft className="w-3 h-3 mr-1" />
             VOLVER
           </Button>
           <div>
-            <h2 className="text-lg font-bold text-green-400 font-mono">{selectedThread?.title}</h2>
+            <h2 className="text-lg font-bold text-green-400 font-mono">
+              {selectedThread?.title || selectedThread?.topic || `Hilo #${selectedThread?.id}`}
+            </h2>
             <p className="text-xs text-slate-500 font-mono">
-              por {selectedThread?.author} • {selectedThread?.timestamp}
+              Hilo #{selectedThread?.id}
+              {selectedThread?.lesson_id && ` • Lección ${selectedThread.lesson_id}`}
             </p>
           </div>
         </div>
       </div>
 
+      {error && (
+        <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2 mb-4">
+          <AlertCircle className="w-4 h-4 text-red-400" />
+          <span className="text-red-400 font-mono text-sm">{error}</span>
+          <Button
+            onClick={() => setError("")}
+            variant="ghost"
+            size="sm"
+            className="ml-auto text-red-400 hover:text-red-300 p-1 h-auto"
+          >
+            ×
+          </Button>
+        </div>
+      )}
+
       {/* Thread Messages */}
       <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-        {threadMessages.map((message) => (
-          <div key={message.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-mono text-sm font-semibold text-cyan-400">{message.author}</span>
-                  <span className="font-mono text-xs text-slate-500">{message.timestamp}</span>
+        {loading ? (
+          <div className="text-center py-8">
+            <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
+            <p className="text-green-400 font-mono">Cargando mensajes...</p>
+          </div>
+        ) : threadMessages.length === 0 ? (
+          <div className="text-center py-8">
+            <MessageCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
+            <p className="text-slate-400 font-mono">No hay mensajes en este hilo</p>
+            <p className="text-slate-500 font-mono text-sm mt-2">¡Sé el primero en participar!</p>
+          </div>
+        ) : (
+          threadMessages.map((message) => (
+            <div key={message.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-white" />
                 </div>
-                <p className="font-mono text-sm text-slate-300 leading-relaxed">{message.message}</p>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="font-mono text-sm font-semibold text-cyan-400">
+                      {message.name || `Usuario #${message.user_id}`}
+                    </span>
+                    <span className="font-mono text-xs text-slate-500">#{message.id}</span>
+                  </div>
+                  <p className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    {message.message}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Reply Form */}
       <div className="border-t border-slate-700 pt-4">
-        <p className="text-slate-400 font-mono text-sm mb-3">
-          Este es un chat en el cual cualquier usuario puede ingresar o responder sobre el tema del hilo
-        </p>
+        <p className="text-slate-400 font-mono text-sm mb-3">Participa en la discusión sobre este tema</p>
         <form onSubmit={handleSendMessage} className="space-y-3">
           <Textarea
             value={newMessage}
@@ -305,10 +469,25 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             placeholder="Escribe tu respuesta..."
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm resize-none"
             rows={3}
+            disabled={loading}
+            required
           />
-          <Button type="submit" className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-4 py-2">
-            <Send className="w-3 h-3 mr-1" />
-            ENVIAR
+          <Button
+            type="submit"
+            className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-4 py-2"
+            disabled={loading || !newMessage.trim()}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                ENVIANDO...
+              </>
+            ) : (
+              <>
+                <Send className="w-3 h-3 mr-1" />
+                ENVIAR
+              </>
+            )}
           </Button>
         </form>
       </div>
@@ -371,16 +550,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
                     <div
                       key={lesson.id}
                       onClick={() => handleLessonClick(lesson)}
-                      className={`flex items-center gap-3 p-3 rounded-lg border border-slate-700 transition-colors ${
-                        lesson.locked
-                          ? "cursor-not-allowed opacity-50"
-                          : "cursor-pointer hover:bg-slate-800/50 hover:border-green-400/30"
-                      } ${selectedLesson?.id === lesson.id ? "bg-green-400/10 border-green-400/50" : ""}`}
+                      className={`flex items-center gap-3 p-3 rounded-lg border border-slate-700 transition-colors cursor-pointer hover:bg-slate-800/50 hover:border-green-400/30 ${
+                        selectedLesson?.id === lesson.id ? "bg-green-400/10 border-green-400/50" : ""
+                      }`}
                     >
                       <div className="flex-shrink-0">
-                        {lesson.locked ? (
-                          <Lock className="w-4 h-4 text-slate-500" />
-                        ) : lesson.completed ? (
+                        {lesson.completed ? (
                           <CheckCircle className="w-4 h-4 text-green-400" />
                         ) : lesson.type === "video" ? (
                           <Play className="w-4 h-4 text-cyan-400" />
