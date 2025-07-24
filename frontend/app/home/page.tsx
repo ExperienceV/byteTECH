@@ -87,7 +87,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       formData.append('description', courseData.description)
       formData.append('price', courseData.price.toString())
       formData.append('hours', courseData.hours.toString())
-      formData.append('file', courseData.miniature)
+      formData.append('file', courseData.miniature_id)
 
       const response = await workbrenchApi.createCourse(formData)
       
