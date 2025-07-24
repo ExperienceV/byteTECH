@@ -50,27 +50,15 @@ export default function CoursePage({ params }: { params: Promise<{ slug: string 
         setLoading(true)
         setError("")
 
-        // First, get all courses to find the one matching the slug
-        const allCoursesResponse = await coursesApi.getMtdCourses()
-        const allCourses = allCoursesResponse.mtd_courses
+        // Petición directa al endpoint
+        const res = await fetch(`/api/courses/course_content?course_id=${slug}`)
+        if (!res.ok) throw new Error("No se pudo obtener el curso")
+        const data = await res.json()
 
-        // Find course by creating slug from name and matching
-        const course = allCourses.find((c: any) => createSlug(c.name) === slug)
-
-        if (!course) {
-          setError("Curso no encontrado")
-          setLoading(false)
-          return
-        }
-
-        // Now get detailed course content
-        const courseContentResponse: CourseContentResponse = await coursesApi.getCourseContent(course.id)
-
-        setCourseData(courseContentResponse.course_content)
-        setIsPaid(courseContentResponse.is_paid)
+        setCourseData(data.course_content)
+        setIsPaid(data.is_paid)
         setLoading(false)
       } catch (err: any) {
-        console.error("Error fetching course:", err)
         setError(err.message || "Error al cargar el curso")
         setLoading(false)
       }
@@ -129,6 +117,38 @@ export default function CoursePage({ params }: { params: Promise<{ slug: string 
       .replace(/[^\w-]/g, "")
   }
 
+  // Obtener el primer archivo de la primera lección de la primera sección
+  const firstSection = courseData && courseData.content && Object.values(courseData.content)[0]
+  const firstLesson = firstSection?.lessons?.[0]
+  const firstFileId = firstLesson?.file_id
+  const firstFileName = firstLesson?.file_name || "" // Si tienes el nombre del archivo
+  const API_BASE = "http://localhost:8000"
+  const fileUrl = firstFileId ? `${API_BASE}/api/media/get_file?file_id=${firstFileId}` : null
+
+  // Detección simple por extensión
+  function getFileType(fileName: string) {
+    if (fileName.endsWith('.mp4') || fileName.endsWith('.webm')) return 'video'
+    if (fileName.endsWith('.pdf')) return 'pdf'
+    if (fileName.match(/\.(jpg|jpeg|png|gif)$/)) return 'image'
+    return 'other'
+  }
+
+  const fileType = getFileType(firstFileName)
+
+  // LOGS PARA DEPURACIÓN
+  console.log('fileId:', firstFileId, 'fileUrl:', fileUrl, 'fileName:', firstFileName, 'fileType:', fileType)
+
+  // Obtener todos los hilos de foros de todas las lecciones
+  const allThreads = courseData && courseData.content ? Object.values(courseData.content)
+    .flatMap((section: any) =>
+      (section.lessons || []).flatMap((lesson: any) =>
+        lesson.threads ? lesson.threads.map((thread: any) => ({
+          ...thread,
+          lessonTitle: lesson.title
+        })) : []
+      )
+    ) : []
+
   if (loading) {
     return (
       <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
@@ -173,7 +193,7 @@ export default function CoursePage({ params }: { params: Promise<{ slug: string 
         <CourseContentViewer
           courseTitle={courseData.name}
           courseSlug={slug}
-          sections={courseData.content.map((section: any, index: number) => ({
+          sections={Object.values(courseData.content).map((section: any, index: number) => ({
             id: section.id?.toString() || (index + 1).toString(),
             title: section.title || `SECCION ${index + 1}`,
             lessons:
@@ -218,6 +238,26 @@ export default function CoursePage({ params }: { params: Promise<{ slug: string 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-5xl mb-4">
                 {">"} <span className="text-green-400">{courseData.name.toUpperCase()}</span>
               </h1>
+
+              {/* Mostrar el primer archivo de la primera lección de la primera sección */}
+              {fileUrl && (
+                <div className="mb-8 flex justify-center">
+                  {fileType === 'video' ? (
+                    <video controls className="w-full max-w-2xl rounded-lg">
+                      <source src={fileUrl} />
+                      Tu navegador no soporta la reproducción de video.
+                    </video>
+                  ) : fileType === 'pdf' ? (
+                    <iframe src={fileUrl} className="w-full max-w-2xl h-[600px] rounded-lg" />
+                  ) : fileType === 'image' ? (
+                    <img src={fileUrl} alt="Archivo de la lección" className="w-full max-w-2xl rounded-lg" />
+                  ) : (
+                    <a href={fileUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-400 underline">
+                      Descargar archivo
+                    </a>
+                  )}
+                </div>
+              )}
 
               {/* Purchase Status */}
               <div className="flex justify-center mb-6">
@@ -463,6 +503,27 @@ export default function CoursePage({ params }: { params: Promise<{ slug: string 
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Mostrar todos los hilos de foros */}
+      {allThreads.length > 0 && (
+        <section className="bg-slate-900 relative overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+            <h3 className="text-lg font-bold text-white font-mono mb-4">Hilos del Foro</h3>
+            <div className="space-y-4">
+              {allThreads.map((thread, idx) => (
+                <div key={thread.id || idx} className="bg-slate-800/60 rounded-lg p-4">
+                  <div className="font-mono text-cyan-400 text-sm mb-1">
+                    Lección: {thread.lessonTitle}
+                  </div>
+                  <div className="font-mono text-white text-base">
+                    <b>{thread.topic}</b> — <span className="text-slate-400">@{thread.username}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>

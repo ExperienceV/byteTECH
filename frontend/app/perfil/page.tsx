@@ -9,7 +9,7 @@ import { Terminal, User, Edit, Save, X, Camera, Shield } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
-import { usersApi } from "@/lib/api"
+import { usersApi, modifyCredentials } from "@/lib/api"
 
 export default function PerfilPage() {
   const { user, isLoggedIn } = useAuth()
@@ -70,11 +70,23 @@ export default function PerfilPage() {
   // Elimina el ejemplo simple de userStats
   // const userStats = { ... }
 
-  const handleSave = () => {
-    // Aquí normalmente guardarías en el backend
-    console.log("Guardando cambios:", formData)
-    setIsEditing(false)
-    // Mostrar mensaje de éxito
+  const handleSave = async () => {
+    try {
+      const res = await modifyCredentials(formData.name, formData.email)
+      // Actualizar localStorage en la clave correcta 'bytetech_user'
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("bytetech_user")
+        if (stored) {
+          const userObj = JSON.parse(stored)
+          userObj.name = res.name
+          userObj.email = res.email
+          localStorage.setItem("bytetech_user", JSON.stringify(userObj))
+        }
+      }
+      setIsEditing(false)
+    } catch (err: any) {
+      alert(err.message || "Error al guardar cambios")
+    }
   }
 
   const handleCancel = () => {

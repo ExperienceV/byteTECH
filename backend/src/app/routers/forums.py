@@ -111,7 +111,7 @@ async def mtd_threads(
     )
 
     if not threads:
-        return JSONResponse(status_code=404, content={"message": "No threads found for this lesson"})
+        return JSONResponse(status_code=404, content={})
     
     return JSONResponse(
         status_code=200,
@@ -203,7 +203,7 @@ async def messages_thread(
     )
 
     if not messages:
-        return JSONResponse(status_code=404, content={"message": "No messages"})
+        return JSONResponse(status_code=404, content={"message": []})
 
     return JSONResponse(
         status_code=200, 

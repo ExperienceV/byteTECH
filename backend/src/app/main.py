@@ -47,7 +47,7 @@ router_list = [
 ]
 
 for router in router_list:
-    app.include_router(router)
+    app.include_router(router, prefix="/api")
 
 
 # -------- Setup Database --------

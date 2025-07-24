@@ -47,7 +47,7 @@ async def create_course(
     file: UploadFile = File(...),
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
-):
+):  
     """
     Creates a new course with metadata and miniature image
     
@@ -81,6 +81,7 @@ async def create_course(
         400: Missing required fields or invalid file
         500: Google Drive upload or database error
     """
+    print("user_info", user_info)
     file_id = upload_file(file=file)
     
     sensei_id = user_info["user_id"]

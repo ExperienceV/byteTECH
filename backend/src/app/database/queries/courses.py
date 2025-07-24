@@ -94,7 +94,7 @@ def get_purchased_courses_by_user(db: Session, user_id: int) -> list[int]:
         .filter(Purchase.user_id == user_id)
         .all()
     )
-    return [course.id for course in courses]
+    return [course_to_dict(c) for c in courses]
 
 
 def delete_course_and_relations(db: Session, course_id: int) -> bool:

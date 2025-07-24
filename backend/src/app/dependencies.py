@@ -43,7 +43,7 @@ def get_cookies(
                                   algorithms=[settings.ALGORITHM])
                 new_access_token = create_access_token(data=payload)
                 request.state.new_token = new_access_token
-                return {"user_name": payload["user_name"]}
+                return payload
             
             clean_token = access_token.replace("Bearer ", "")
             payload = verify_token(clean_token)

@@ -90,6 +90,7 @@ async def get_course_content(
         return JSONResponse(status_code=404, content={"message": "Course not found"})
     
     is_paid = False
+    print(user_info)
     if user_info:
         exist_response = purchase_exists(user_id=user_info["user_id"], course_id=course_id, db=db)
         if exist_response:
@@ -101,13 +102,21 @@ async def get_course_content(
     course_data["sensei_name"] = sensei_name.username if sensei_name else "Unknown Sensei"
 
     sections_id = get_sections_by_course_id(course_id=course_id, db=db)
-    if not sections_id:
-        return JSONResponse(status_code=404, content={"message": "No sections found for this course"})
-    
-    lessons = get_lessons_by_section_id(sections_id=sections_id, db=db)
-    lessons_with_threads = include_threads(lessons=lessons)
 
-    course_data["content"] = lessons_with_threads
+    sections = {}
+    count = 0
+    for id in sections_id:
+        lessons = get_lessons_by_section_id(sections_id=[id], db=db)
+        lessons_with_threads = include_threads(lessons=lessons)
+        section_info = {
+            "id": id,
+            "lessons": lessons_with_threads
+        }
+        sections[count + 1] = section_info
+        count += 1
+
+
+    course_data["content"] = sections
 
     return JSONResponse(
         content={"is_paid": is_paid, "course_content": course_data},
@@ -140,13 +149,14 @@ async def my_courses(
         courses = get_courses_by_user(user_id=user_info["user_id"], db=db)
     else:
         courses = get_purchased_courses_by_user(user_id=user_info["user_id"], db=db)
+        print("Cusros del estudiante:", courses)
     
     return JSONResponse(content=courses, status_code=200)
 
 
 @courses_router.post("/buy_course")
 async def buy_course(
-    course_id: int,
+    course_id: int, 
     user_info: dict = Depends(get_cookies),
     db: Session = Depends(get_db)
 ):

@@ -7,6 +7,7 @@ import { Users, Star, DollarSign, Eye, Edit, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
 interface TeacherCourseCardProps {
+  id: number | string
   title: string
   description: string
   price: number
@@ -18,9 +19,12 @@ interface TeacherCourseCardProps {
   language: string
   difficulty: "Beginner" | "Intermediate" | "Advanced" | "Avanzado" | "Intermedio"
   slug: string
+  miniature_id?: string
+  imageUrl?: string // NUEVO
 }
 
 export function TeacherCourseCard({
+  id,
   title,
   description,
   price,
@@ -31,8 +35,11 @@ export function TeacherCourseCard({
   language,
   difficulty,
   slug,
+  miniature_id,
+  imageUrl, // NUEVO
 }: TeacherCourseCardProps) {
-  const getDifficultyColor = (diff: string) => {
+  const getDifficultyColor = (diff: string | undefined | null) => {
+    if (!diff) return "bg-slate-500/20 text-slate-400 border-slate-500/30";
     switch (diff.toLowerCase()) {
       case "beginner":
       case "principiante":
@@ -48,7 +55,8 @@ export function TeacherCourseCard({
     }
   }
 
-  const getLanguageColor = (lang: string) => {
+  const getLanguageColor = (lang: string | undefined | null) => {
+    if (!lang) return "bg-purple-500/20 text-purple-400 border-purple-500/30";
     switch (lang.toLowerCase()) {
       case "javascript":
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
@@ -86,6 +94,11 @@ export function TeacherCourseCard({
             {language}
           </Badge>
         </div>
+        {imageUrl && (
+          <div className="flex justify-center my-4">
+            <img src={imageUrl} alt={title} className="w-32 h-32 object-cover rounded-lg border-2 border-slate-800" />
+          </div>
+        )}
       </CardHeader>
 
       <CardContent className="py-3">
@@ -96,7 +109,7 @@ export function TeacherCourseCard({
               <Users className="w-4 h-4 text-cyan-400" />
               <span className="text-cyan-400 font-mono text-sm">Estudiantes</span>
             </div>
-            <div className="text-white font-mono font-bold">{students.toLocaleString()}</div>
+            <div className="text-white font-mono font-bold">{(typeof students === "number" ? students : 0).toLocaleString()}</div>
           </div>
 
           <div className="bg-slate-800/50 rounded-lg p-3 text-center">
@@ -104,7 +117,7 @@ export function TeacherCourseCard({
               <Star className="w-4 h-4 text-yellow-400" />
               <span className="text-yellow-400 font-mono text-sm">Rating</span>
             </div>
-            <div className="text-white font-mono font-bold">{rating.toFixed(1)}</div>
+            <div className="text-white font-mono font-bold">{(typeof rating === "number" ? rating : 0).toFixed(1)}</div>
           </div>
         </div>
 
@@ -119,7 +132,7 @@ export function TeacherCourseCard({
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1">
-          {tags.slice(0, 3).map((tag, index) => (
+          {(Array.isArray(tags) ? tags : []).slice(0, 3).map((tag, index) => (
             <Badge
               key={index}
               className="bg-slate-700/50 text-slate-300 border-slate-600 text-xs font-mono"
@@ -128,7 +141,7 @@ export function TeacherCourseCard({
               {tag}
             </Badge>
           ))}
-          {tags.length > 3 && (
+          {Array.isArray(tags) && tags.length > 3 && (
             <Badge className="bg-slate-700/50 text-slate-400 border-slate-600 text-xs font-mono" variant="outline">
               +{tags.length - 3}
             </Badge>
@@ -152,10 +165,10 @@ export function TeacherCourseCard({
           <Button
             asChild
             size="sm"
-            className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border border-purple-500/30 font-mono"
+            className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border-purple-500/30 font-mono"
             variant="outline"
           >
-            <Link href={`/editor/${slug}`}>
+            <Link href={`/editor/${id}`}>
               <Edit className="w-4 h-4 mr-1" />
               Editar
             </Link>

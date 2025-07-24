@@ -35,5 +35,8 @@ async def get_files_gd(file_id: str):
     return StreamingResponse(
         io.BytesIO(content),
         media_type=mime_type,
-        headers={"Content-Disposition": f"attachment; filename={filename}"}
+        headers={
+            "Content-Disposition": f"attachment; filename={filename}",
+            "Cache-Control": "public, max-age=604800, immutable"
+            }
     )

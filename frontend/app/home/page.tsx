@@ -3,6 +3,7 @@
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
 import { StudentCourseCard } from "@//components/student-course-card"
+import { StudentCourseCardWithImage } from "@/components/student-course-card-with-image"
 import { TeacherCourseCard } from "@//components/teacher-course-card"
 import { AddCourseModal } from "@//components/add-course-modal"
 import { Terminal, BookOpen, CheckCircle, Clock, TrendingUp, Users, BarChart3, Award, Eye, Plus, Edit, Trash2, Settings } from "lucide-react"
@@ -52,6 +53,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
           // Opción 2: Si NO tienes endpoint, filtra los cursos donde el sensei sea el usuario actual
           const allCourses = await coursesApi.getMtdCourses()
+          
           const myCourses = allCourses.mtd_courses.filter(
             (course: any) =>
               course.sensei_name?.toLowerCase() === user.name.toLowerCase()
@@ -60,6 +62,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         } else {
           // Estudiante: cursos comprados
           const myCourses = await coursesApi.getMyCourses()
+          console.log("Cursos del estudiante:", myCourses)
           setCourses(myCourses)
         }
       } catch (err: any) {
@@ -404,7 +407,8 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
   // STUDENT VIEW - No changes needed
   const userCourses = courses
-  const ongoingCourses = userCourses.filter((course) => course.progress < 100)
+  // Si no hay propiedad progress, muestra todos como ongoing
+  const ongoingCourses = userCourses.filter((course) => typeof course.progress === "number" ? course.progress < 100 : true)
   const completedCourses = userCourses.filter((course) => course.progress === 100)
 
   return (
@@ -476,7 +480,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             {ongoingCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {ongoingCourses.map((course, index) => (
-                  <StudentCourseCard key={index} {...course} status="ongoing" />
+                  <StudentCourseCardWithImage key={index} course={course} />
                 ))}
               </div>
             ) : (

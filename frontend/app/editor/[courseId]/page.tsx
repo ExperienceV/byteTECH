@@ -1,5 +1,55 @@
 "use client"
 
+// IndexedDB cache for file blobs
+import { set, get, del, keys } from "idb-keyval"
+
+const FILE_CACHE_DAYS = 7
+
+// Función para limpiar el caché de archivos descargados
+async function clearFileCache() {
+  const allKeys = await keys()
+  for (const key of allKeys) {
+    // Opcional: solo borra los que parecen file_id (puedes ajustar el filtro)
+    if (typeof key === "string" && key.length > 10) {
+      await del(key)
+    }
+  }
+  alert("¡Cache de archivos limpiado!")
+}
+
+async function getFileById(file_id: string): Promise<Blob> {
+  // Check cache
+  const cached = await get(file_id)
+  if (cached) {
+    if (cached.blob && cached.expiry > Date.now()) {
+      console.log(`[CACHE] Archivo ${file_id} encontrado en cache y válido.`)
+      return cached.blob
+    } else if (cached.blob) {
+      console.warn(`[CACHE] Archivo ${file_id} encontrado pero expirado.`)
+    } else {
+      console.warn(`[CACHE] Archivo ${file_id} corrupto o mal guardado.`)
+    }
+  } else {
+    console.log(`[CACHE] Archivo ${file_id} no está en cache.`)
+  }
+  // Fetch from API
+  const res = await fetch(`/api/media/get_file?file_id=${file_id}`, {
+    credentials: "include"
+  })
+  if (!res.ok) {
+    throw new Error("API_ERROR")
+  }
+  const blob = await res.blob()
+  // Cache for FILE_CACHE_DAYS
+  await set(file_id, {
+    blob,
+    expiry: Date.now() + FILE_CACHE_DAYS * 24 * 60 * 60 * 1000
+  })
+  return blob
+}
+
+// ...existing code...
+
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
 import { Button } from "@//components/ui/button"
@@ -54,8 +104,12 @@ interface CourseData {
   content?: Section[]
 }
 
-export default function EditorPage({ params }: { params: { courseId: string } }) {
-  const { courseId } = params
+import { useParams } from "next/navigation"
+
+export default function EditorPage() {
+  // Use useParams hook for Next.js 14+ compatibility
+  const params = useParams<{ courseId: string }>()
+  const courseId = params.courseId
   const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   const [course, setCourse] = useState<CourseData | null>(null)
@@ -72,6 +126,29 @@ export default function EditorPage({ params }: { params: { courseId: string } })
     price: "",
     hours: ""
   })
+  const [fileModal, setFileModal] = useState<{ url: string; type: string } | null>(null)
+
+  // Mover handleViewFile aquí para que tenga acceso a setFileModal
+  async function handleViewFile(file_id: string, type?: string) {
+    try {
+      const blob = await getFileById(file_id)
+      const url = URL.createObjectURL(blob)
+      setFileModal({ url, type: type || "document" })
+    } catch (err: any) {
+      // Detecta si el error fue por API o por corrupción de cache
+      if (err?.message === "API_ERROR") {
+        // ¿Estaba en cache?
+        const cached = await get(file_id)
+        if (cached && cached.blob) {
+          alert("El archivo estaba en cache pero expiró y no se pudo obtener del servidor. Intenta subirlo de nuevo o contacta soporte.")
+        } else {
+          alert("No se pudo obtener el archivo del servidor ni está en cache.")
+        }
+      } else {
+        alert("El archivo está en cache pero está corrupto o mal guardado. Intenta limpiar el cache y vuelve a intentarlo.")
+      }
+    }
+  }
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,9 +174,20 @@ export default function EditorPage({ params }: { params: { courseId: string } })
     const fetchCourse = async () => {
       try {
         const courseContent = await coursesApi.getCourseContent(parseInt(courseId))
-        setCourse(courseContent.course_content)
-        
-        // Set edit form with current values
+        // Transformar content de objeto a array y asignar títulos
+        const contentObj = courseContent.course_content.content
+        const contentArr = Object.values(contentObj || {}).map((section: any, idx) => ({
+          id: section.id,
+          title: `Sección ${idx + 1}`,
+          lessons: section.lessons || []
+        }))
+        setCourse({
+          ...courseContent.course_content,
+          content: contentArr,
+          hours: courseContent.course_content.hours ?? 0
+        })
+
+        // Set edit form con los valores actuales
         setEditForm({
           name: courseContent.course_content.name,
           description: courseContent.course_content.description,
@@ -531,7 +619,7 @@ export default function EditorPage({ params }: { params: { courseId: string } })
             {course.content && course.content.length > 0 ? (
               <div className="space-y-6">
                 {course.content.map((section, sectionIndex) => (
-                  <div key={section.id} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
+                  <div key={section.id + '-' + sectionIndex} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
                       <div className="flex items-center gap-3">
                         <div className="flex space-x-1">
@@ -564,7 +652,7 @@ export default function EditorPage({ params }: { params: { courseId: string } })
                       {/* Lessons */}
                       <div className="space-y-3">
                         {section.lessons.map((lesson, lessonIndex) => (
-                          <div key={lesson.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                          <div key={lesson.id + '-' + lessonIndex} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
                             <div className="flex items-center gap-3">
                               {lesson.type === 'video' ? (
                                 <Play className="w-4 h-4 text-red-400" />
@@ -575,6 +663,16 @@ export default function EditorPage({ params }: { params: { courseId: string } })
                               <Badge className="bg-slate-700 text-slate-300 font-mono text-xs">
                                 {lesson.type}
                               </Badge>
+                              {lesson.file_id && (
+                                <Button
+                                  onClick={() => handleViewFile(lesson.file_id!, lesson.type)}
+                                  size="sm"
+                                  variant="outline"
+                                  className="ml-2 border-cyan-500 text-cyan-400 hover:bg-cyan-900"
+                                >
+                                  Ver archivo
+                                </Button>
+                              )}
                             </div>
                             <Button
                               onClick={() => lesson.file_id && handleDeleteLesson(lesson.file_id, lesson.id, section.id)}
@@ -619,6 +717,30 @@ export default function EditorPage({ params }: { params: { courseId: string } })
           onSubmit={(lessonData) => handleAddLesson(selectedSection, lessonData)}
           isLoading={isAddingLesson}
         />
+      )}
+
+      {/* Modal para visualizar archivo */}
+      {fileModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-slate-900/95 border border-slate-800 rounded-xl p-6 w-full max-w-2xl relative">
+            <button
+              onClick={() => setFileModal(null)}
+              className="absolute top-4 right-4 text-cyan-400 hover:text-white text-2xl font-bold"
+              title="Cerrar"
+            >
+              ×
+            </button>
+            <h3 className="font-mono text-lg font-bold text-white mb-4">Vista de archivo</h3>
+            {/* Render según tipo */}
+            {fileModal.type === "video" ? (
+              <video src={fileModal.url} controls className="w-full h-96 bg-black rounded-lg" />
+            ) : fileModal.type === "document" || fileModal.url.endsWith(".pdf") ? (
+              <iframe src={fileModal.url} className="w-full h-96 bg-white rounded-lg" />
+            ) : (
+              <div className="text-center text-slate-400">No se puede mostrar este tipo de archivo</div>
+            )}
+          </div>
+        </div>
       )}
 
       <UniqueFooter />
