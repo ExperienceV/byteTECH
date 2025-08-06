@@ -10,13 +10,13 @@ load_dotenv(env_path)  # ¡Funcionará siempre!
 class Settings(BaseSettings):
 
     # API STATUS
-    VERSION: str = "v1.0.0"
+    VERSION: str = "v1.1.14"
     DEBUG: bool = True
 
     # COOKIE SETTINGS
     SAMESITE: str = "none"  
     HTTPONLY: bool = True  
-    SECURE: bool = False    
+    SECURE: bool = True    
 
     # URL SETTINGS
     FRONTEND_PROD_URL: str = "https://bytetechedu.com"
@@ -28,17 +28,13 @@ class Settings(BaseSettings):
     # CORS SETTINGS
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_ORIGINS: list = [
-        "https://bytetechedu.com",
-        "http://localhost:3000"
+        FRONTEND_DB_URL,
+        FRONTEND_PROD_URL,
+        BACKEND_DB_URL,
+        BACKEND_PROD_URL
     ]
-    CORS_ALLOW_METHODS: list = ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
-    CORS_ALLOW_HEADERS: list = [
-        "Content-Type", 
-        "Authorization", 
-        "Accept", 
-        "Origin", 
-        "X-Requested-With"
-    ]
+    CORS_ALLOW_METHODS: list = ["*"]
+    CORS_ALLOW_HEADERS: list = ["*"]
 
     # SIGNATURE SETTINGS
     DEFAULT_PASSWORD: str = "如果我能说人和天使的语言，却没有爱，我就像一个响亮的锣或一个响亮的钹一样。 2我若有预言的恩赐，也明白一切神圣的秘密和一切知识，并且有全备的信，能够移山，却没有爱，我就算不得什么。"

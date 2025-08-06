@@ -3,6 +3,9 @@ from app.database.config import SessionLocal
 from app.database.base import Course
 from app.services.services_google import delete_file
 from app.parameters import settings
+import resend
+from app.database.queries.codes import create_verification_code, delete_expired_codes
+from fastapi.responses import JSONResponse
 
 
 def include_threads(lessons: list) -> list:
@@ -44,9 +47,6 @@ def delete_drive_files(file_ids: list[str]):
             print(f"Error deleting {fid}: {e}")
 
 
-import resend
-import os
-
 def resend_mail(message, issue, client_mail, username):
     """
     Function that sends an email using the Resend API.
@@ -72,12 +72,12 @@ def resend_mail(message, issue, client_mail, username):
 
         # Format the message with the user's details
         ident_message = dot_separator(message)
-        build_message = f"User: @{username}\nEmail: {client_mail}\nMessage: {ident_message}"
+        build_message = f"Hello @{username}!\n{ident_message}"
 
         # Prepare the email parameters
         params: resend.Emails.SendParams = {
             "from": settings.SENDER_MAIL,
-            "to": settings.RECEIVER_MAIL,
+            "to": client_mail if client_mail else settings.RECEIVER_MAIL ,
             "subject": issue,
             "text": build_message
         }
@@ -111,4 +111,55 @@ def dot_separator(text):
         modify_text += '\n'
     
     return modify_text
+
+
+def process_code_verification(
+        db: str,
+        user_id: int,
+        email: str,
+        username: str
+):
+    # Create verification code
+    verification_code = create_verification_code(
+        db=db,
+        user_id=user_id
+    )
+
+    if not verification_code:
+        response={
+            "status": 500,
+            "message": "Failed to create verification code"
+            }
+        return response
+    
+    # Delete expired codes
+    delete_expired_codes(db=db)
+
+    # Send verification code to the email
+    send_mail_response = resend_mail(
+        message=f"""
+        Welcome to ByteTech!
+        Thank you for registering with us. 
+        To verify your email address and activate your account, please enter the following verification code:
+        {verification_code.code}
+        """,
+        issue=f"Your verification code - {verification_code.code}",
+        client_mail=email,
+        username=username
+    )
+
+    if not send_mail_response:
+        response={
+            "status": 500,
+            "message": "Failed to send verification email"
+            }
+
+    response={
+        "status": 200,
+        "code": verification_code.code
+        }
+    return response
+
+
+
 

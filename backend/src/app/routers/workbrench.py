@@ -6,7 +6,7 @@ from fastapi import (
     HTTPException, 
     Form
 )
-from app.models import Course
+from app.models import Course, GiveCourseRequest
 from app.dependencies import get_cookies, get_db
 from app.services.services_google import upload_file, delete_file
 from fastapi.responses import JSONResponse
@@ -82,7 +82,7 @@ async def create_course(
         500: Google Drive upload or database error
     """
     print("user_info", user_info)
-    file_id = upload_file(file=file)
+    file_id, content_type, size = upload_file(file=file)
     
     sensei_id = user_info["user_id"]
     course_data = {
@@ -270,9 +270,16 @@ async def new_lesson(
         404: Parent section/course not found
         500: File upload or database error
     """
-    file_id = upload_file(file=file)
+    file_id, mime_type, file_size = upload_file(file=file)
 
-    create_response = create_lesson(db, section_id, title, file_id, course_id)
+    create_response = create_lesson(
+        db=db, 
+        section_id=section_id, 
+        title=title, 
+        file_id=file_id, 
+        course_id=course_id,
+        mime_type=mime_type
+    )
 
     lesson = {
         "id" : create_response.id,
@@ -365,41 +372,19 @@ async def edit_metadata(
 
 @workbrench_router.post("/give_course")
 async def give_course(
-    course_id: int = Form(...),
-    user_email_to_give: str = Form(...),
+    payload: GiveCourseRequest,
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
 ):
-    """
-    Grants course access to another user
-    
-    Entry:
-        course_id: int (Form data - course ID to transfer)
-        user_email_to_give: str (Form data - recipient email)
-        user_info: dict (User info from JWT cookies)
-    
-    Return:
-        status_code: 200
-        content: str (Success message with course ID)
-    
-    Process:
-        1. Looks up recipient user by email
-        2. Creates course purchase record for recipient
-    
-    Errors:
-        400: Missing required fields
-        404: User not found or invalid email
-        500: Database error
-    """
-    user_to_give = get_user_by_email(db, user_email_to_give)
+    user_to_give = get_user_by_email(db, payload.user_email_to_give)
     if not user_to_give:
         raise HTTPException(status_code=404, detail="User not found")
 
     user_id = user_to_give["id"]
 
-    save_response = save_purchase(db, user_id, course_id)
+    save_response = save_purchase(db, user_id, payload.course_id)
 
     return JSONResponse(
-        content=f"El curso con el ID {course_id} fue transferido correctamente",
+        content=f"El curso con el ID {payload.course_id} fue transferido correctamente",
         status_code=200
     )

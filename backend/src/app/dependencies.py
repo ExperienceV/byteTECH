@@ -24,6 +24,9 @@ def get_cookies(
     refresh_token: str = Cookie(None)
 ):
     try:
+        #ic("headers", request.headers)
+        #ic("cookies", request.cookies)
+        
         ic("Token check started")
 
         # 1. first check if tokens are provided

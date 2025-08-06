@@ -9,7 +9,7 @@ from app.models import Message, Thread
 forums_router = APIRouter(tags=["forums"], prefix="/forums")
 
 
-@forums_router.post("/create_thread/")
+@forums_router.post("/create_thread")
 async def create_new_thread(
     thread: Thread,
     user_info: dict = Depends(get_cookies),
@@ -51,7 +51,7 @@ async def create_new_thread(
     return JSONResponse(status_code=201, content={"message": "Thread created successfully", "thread": new_thread})
 
 
-@forums_router.delete("/delete_thread/")
+@forums_router.delete("/delete_thread")
 async def delete_thread(
     thread_id: int, 
     user_info: dict = Depends(get_cookies),
@@ -82,7 +82,7 @@ async def delete_thread(
     return JSONResponse(status_code=200, content={"message": "Thread deleted successfully"})
     
 
-@forums_router.get("/mtd_threads/")
+@forums_router.get("/mtd_threads")
 async def mtd_threads(
     lesson_id: int, 
     user_info: dict = Depends(get_cookies),
@@ -110,12 +110,9 @@ async def mtd_threads(
         db=db
     )
 
-    if not threads:
-        return JSONResponse(status_code=404, content={})
-    
     return JSONResponse(
         status_code=200,
-        content={
+        content={   
             "threads": threads,
             "lesson_id": lesson_id,
             "user_id": user_info["user_id"]
@@ -123,7 +120,7 @@ async def mtd_threads(
     )
 
 
-@forums_router.post("/send_message/")
+@forums_router.post("/send_message")
 async def send_message(
     msg: Message,
     user_info: dict = Depends(get_cookies),
@@ -174,7 +171,7 @@ async def send_message(
     )
 
 
-@forums_router.get("/messages_thread/")
+@forums_router.get("/messages_thread")
 async def messages_thread(
     thread_id: int, 
     user_info: dict = Depends(get_cookies),
@@ -201,9 +198,6 @@ async def messages_thread(
         thread_id=thread_id,
         db=db
     )
-
-    if not messages:
-        return JSONResponse(status_code=404, content={"message": []})
 
     return JSONResponse(
         status_code=200, 

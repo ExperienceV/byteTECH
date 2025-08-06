@@ -37,6 +37,8 @@ def authenticate():
 def upload_file(file: UploadFile):
     creds = authenticate()
     service = build('drive', 'v3', credentials=creds)
+    content_type = file.content_type
+    size = file.size
 
     # Obtener extensión del archivo
     _, ext = os.path.splitext(file.filename)
@@ -57,7 +59,8 @@ def upload_file(file: UploadFile):
     ).execute()
 
     print(f"Archivo renombrado a: {updated['name']}")
-    return file_id
+
+    return file_id, content_type, size
 
 
 def delete_file(file_id: str):

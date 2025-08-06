@@ -2,8 +2,14 @@ from sqlalchemy.orm import Session
 from app.database.base import Lesson
 
 
-def create_lesson(db: Session, section_id: int, title: str, file_id: str, course_id: int) -> Lesson:
-    lesson = Lesson(section_id=section_id, title=title, file_id=file_id, course_id=course_id)
+def create_lesson(db: Session, section_id: int, title: str, file_id: str, course_id: int, mime_type: str) -> Lesson:
+    lesson = Lesson(
+        section_id=section_id, 
+        title=title, 
+        file_id=file_id, 
+        course_id=course_id,
+        mime_type=mime_type
+    )
     db.add(lesson)
     db.commit()
     db.refresh(lesson)
@@ -28,7 +34,8 @@ def get_lessons_by_section_id(db: Session, sections_id: list) -> list:
                     "id": lesson.id,
                     "section_id": lesson.section_id,
                     "title": lesson.title,
-                    "file_id": lesson.file_id
+                    "file_id": lesson.file_id,
+                    "mime_type": lesson.mime_type
                 }
                 lessons_data.append(lesson_info)
     return lessons_data

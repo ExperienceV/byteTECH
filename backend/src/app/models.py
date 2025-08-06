@@ -28,10 +28,15 @@ class Lesson(BaseModel):
     course_id: int
     title: str
     is_video: bool
-
+    
 
 class form_model(BaseModel):
     name: str
     mail: str
     issue: str
     message: str
+
+
+class GiveCourseRequest(BaseModel):
+    course_id: int
+    user_email_to_give: str

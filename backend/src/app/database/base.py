@@ -1,8 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float
 from sqlalchemy.orm import relationship
-from datetime import datetime
-from sqlalchemy import UniqueConstraint
+from datetime import datetime, timezone, timedelta
+from sqlalchemy import UniqueConstraint, DateTime
 
 Base = declarative_base()
 
@@ -15,9 +15,19 @@ class User(Base):
     email = Column(String, unique=True)
     password = Column(String)
     is_sensei = Column(Boolean, default=False)
+    is_verify = Column(Boolean, default=False)
 
     purchases = relationship("Purchase", back_populates="user", cascade="all, delete")
     uploads = relationship("UploadedCourse", back_populates="user", cascade="all, delete")
+
+
+class VerifyUser(Base):
+    __tablename__ = "verify_users"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
+    code = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc) + timedelta(minutes=15))
 
 
 class Course(Base):
@@ -53,6 +63,7 @@ class Lesson(Base):
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
     title = Column(String)
     file_id = Column(String)
+    mime_type = Column(String)
 
     section = relationship("Section", back_populates="lessons")
     course = relationship("Course", back_populates="lessons")

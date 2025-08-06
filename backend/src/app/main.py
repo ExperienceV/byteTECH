@@ -5,8 +5,8 @@ from app.parameters import settings
 
 app = FastAPI(
     title="ByteTech API",
-    version=settings.VERSION,
-    docs_url="/docs" if settings.DEBUG else None  # Desactiva docs en producción
+    version=settings.VERSION
+    #docs_url="/docs" if settings.DEBUG else None  # Desactiva docs en producción
 )
 
 # -------- MiddlWeware Configuration --------
@@ -14,9 +14,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.CORS_ALLOW_ORIGINS,  # Orígenes permitidos
-    allow_credentials=True,
-    allow_methods=["*"],  # Métodos permitidos: GET, POST, etc.
-    allow_headers=["*"],  # Headers permitidos
+    allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
+    allow_methods=settings.CORS_ALLOW_METHODS,  # Métodos permitidos: GET, POST, etc.
+    allow_headers=settings.CORS_ALLOW_HEADERS,  # Headers permitidos
 )
 
 app.add_middleware(TokenRefreshMiddleware)
@@ -34,6 +34,7 @@ from app.routers.media import media_router
 from app.routers.workbrench import workbrench_router
 from app.routers.support import support_router
 from app.routers.user import user_router
+from app.routers.stats import stats_router
 
 
 router_list = [
@@ -43,7 +44,8 @@ router_list = [
     media_router,
     workbrench_router, 
     support_router,
-    user_router
+    user_router,
+    stats_router
 ]
 
 for router in router_list:

@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Response, Request
 from fastapi.responses import StreamingResponse
 import io
 from app.services.services_google import download_file_from_drive
@@ -7,36 +7,41 @@ from app.services.services_google import download_file_from_drive
 media_router = APIRouter(tags=["media"], prefix="/media")
 
 
+@media_router.options("/get_file")
+async def options_get_file(request: Request):
+    origin = request.headers.get("origin")
+    allowed_origins = [
+        "https://bytetechedu.com",
+        "http://localhost:3000"
+    ]
+    response = Response()
+    if origin in allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "GET, OPTIONS"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
+    return response
+
+
 @media_router.get("/get_file")
-async def get_files_gd(file_id: str):
-    """
-    Descarga un archivo desde Google Drive mediante su ID
-    
-    Entry:
-        file_id: str (ID del archivo en Google Drive)
-    
-    Return:
-        StreamingResponse con:
-            - status_code: 200
-            - content: bytes del archivo
-            - headers:
-                - Content-Type: según el tipo MIME del archivo
-                - Content-Disposition: nombre original del archivo
-    
-    Errors:
-        (Nota: Los errores se manejan internamente en download_file_from_drive)
-        404: Archivo no encontrado en Google Drive
-        500: Error al descargar el archivo
-    
-    Ejemplo de uso:
-        GET /media/get_file?file_id=1a2b3c4d5e6f7g
-    """
+@media_router.head("/get_file", include_in_schema=False)
+async def get_files_gd(file_id: str, request: Request):
     content, filename, mime_type = download_file_from_drive(file_id)
-    return StreamingResponse(
+    response = StreamingResponse(
         io.BytesIO(content),
         media_type=mime_type,
         headers={
-            "Content-Disposition": f"attachment; filename={filename}",
+            "Content-Disposition": f"inline; filename={filename}",
             "Cache-Control": "public, max-age=604800, immutable"
-            }
+        }
     )
+    # Soporte para varios orígenes permitidos
+    allowed_origins = [
+        "https://bytetechedu.com",
+        "http://localhost:3000"
+    ]
+    origin = request.headers.get("origin")
+    if origin in allowed_origins:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response

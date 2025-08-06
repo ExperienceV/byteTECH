@@ -91,7 +91,10 @@ async def get_course_content(
     
     is_paid = False
     print(user_info)
-    if user_info:
+
+    if user_info["is_sensei"]:
+        is_paid = True
+    elif user_info:
         exist_response = purchase_exists(user_id=user_info["user_id"], course_id=course_id, db=db)
         if exist_response:
             is_paid = True
@@ -146,12 +149,19 @@ async def my_courses(
     """
     is_sensei = bool(user_info["is_sensei"])
     if is_sensei:
+        print("Buscando cursos subidos por el sensei:", user_info)
         courses = get_courses_by_user(user_id=user_info["user_id"], db=db)
+        print("Cusros del sensei:", courses)
     else:
+        print(f"Buscando cursos comprados para: {user_info}")
         courses = get_purchased_courses_by_user(user_id=user_info["user_id"], db=db)
         print("Cusros del estudiante:", courses)
     
-    return JSONResponse(content=courses, status_code=200)
+    response = {
+        "is_sensei": is_sensei,
+        "courses": courses
+        }
+    return JSONResponse(content=response, status_code=200)
 
 
 @courses_router.post("/buy_course")
