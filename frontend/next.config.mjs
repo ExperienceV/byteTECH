@@ -1,5 +1,6 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',  // <--- agregar esta línea
+
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -13,7 +14,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*', // Proxy to backend (mantiene el prefijo /api)
+        destination: 'https://api.bytetechedu.com/api/:path*', // Proxy to backend (mantiene el prefijo /api)
       },
     ]
   },

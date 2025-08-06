@@ -1,92 +1,87 @@
-import { UniqueHeader } from "@//components/unique-header"
-import { HomeFooter } from "@//components/home-footer"
-import { TerminalCourseCard } from "@//components/terminal-course-card"
-import { Button } from "@//components/ui/button"
+"use client"
+
+import { UniqueHeader } from "@/components/unique-header"
+import { HomeFooter } from "@/components/home-footer"
+import { TerminalCourseCard } from "@/components/terminal-course-card"
+import { Button } from "@/components/ui/button"
 import { Terminal, Code, Zap } from "lucide-react"
 import Link from "next/link"
+import { useEffect, useState } from "react"
 
-/* ─────────────────────────────────────────
-   demo data
-   ───────────────────────────────────────── */
-const courses = [
-  {
-    title: "React Fundamentals",
-    description: "Master React from the ground up with hooks, state-management and best practices.",
-    price: 299,
-    duration: "12 weeks",
-    students: 1_250,
-    rating: 4.8,
-    tags: ["React", "JavaScript", "Frontend"],
-    instructor: "Carlos Mendoza",
-    language: "JavaScript",
-    difficulty: "Intermediate" as const,
-  },
-  {
-    title: "Python Essentials",
-    description: "Learn Python for web-dev, data-science and automation, starting from scratch.",
-    price: 249,
-    duration: "10 weeks",
-    students: 890,
-    rating: 4.9,
-    tags: ["Python", "Backend", "Data"],
-    instructor: "Ana García",
-    language: "Python",
-    difficulty: "Beginner" as const,
-  },
-  {
-    title: "Desarrollo Full Stack",
-    description: "Construye aplicaciones web completas con Node.js, Express, MongoDB y React",
-    price: 399,
-    duration: "16 semanas",
-    students: 650,
-    rating: 4.7,
-    tags: ["Node.js", "MongoDB", "Full Stack"],
-    instructor: "María López",
-    language: "JavaScript",
-    difficulty: "Avanzado" as const,
-  },
-  {
-    title: "Dominio de Vue.js",
-    description: "Vue.js 3 avanzado con Composition API, Pinia y prácticas modernas de desarrollo",
-    price: 279,
-    duration: "11 semanas",
-    students: 420,
-    rating: 4.6,
-    tags: ["Vue.js", "Frontend", "SPA"],
-    instructor: "Roberto Silva",
-    language: "JavaScript",
-    difficulty: "Intermedio" as const,
-  },
-  {
-    title: "Framework Django",
-    description: "Crea aplicaciones web robustas con Django, APIs REST e integración de bases de datos",
-    price: 329,
-    duration: "13 semanas",
-    students: 780,
-    rating: 4.8,
-    tags: ["Django", "Python", "Backend"],
-    instructor: "Laura Martín",
-    language: "Python",
-    difficulty: "Intermedio" as const,
-  },
-  {
-    title: "Desarrollo con Flutter",
-    description: "Crea aplicaciones móviles nativas para iOS y Android usando Flutter y Dart",
-    price: 349,
-    duration: "14 semanas",
-    students: 560,
-    rating: 4.5,
-    tags: ["Flutter", "Dart", "Móvil"],
-    instructor: "Diego Ruiz",
-    language: "Dart",
-    difficulty: "Avanzado" as const,
-  },
-]
+const API_BASE = "https://api.bytetechedu.com"
 
-/* ─────────────────────────────────────────
-   page component
-   ───────────────────────────────────────── */
+// Interfaz para los datos del curso
+interface Course {
+  id: number
+  sensei_id: number
+  name: string  
+  description: string
+  hours: number
+  miniature_id: string
+  price: number
+  sensei_name: string
+}
+
+// Interfaz para los datos transformados para el componente TerminalCourseCard
+interface CourseCardData {
+  id: number
+  title: string
+  description: string
+  price: number
+  duration: string
+  //students?: number
+  //rating?: number
+  //tags?: string[]
+  instructor: string
+  language?: string
+  //difficulty?: "Beginner" | "Intermediate" | "Advanced"
+  imageUrl?: string
+}
+
 export default function CoursesPage() {
+  const [courses, setCourses] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+
+  // Función para obtener la URL de la imagen
+  const getImageUrl = (miniatureId: string) => {
+    return `${API_BASE}/api/media/get_file?file_id=${miniatureId}`
+  }
+
+  // Función para transformar los datos del API al formato esperado por el componente
+  const transformCourseData = (apiCourse: Course): CourseCardData => {
+    return {
+      id: apiCourse.id,
+      title: apiCourse.name,
+      description: apiCourse.description,
+      price: apiCourse.price,
+      duration: `${apiCourse.hours} horas`,
+      //students: Math.floor(Math.random() * 1000) + 100, // Datos simulados por ahora
+      //rating: Number((4.5 + Math.random() * 0.5).toFixed(1)), // Rating simulado entre 4.5-5.0
+      //tags: ["Programación", "Backend"], // Tags por defecto, podrías expandir esto
+      instructor: apiCourse.sensei_name,
+      //language: "Python", // Por defecto, podrías inferir del nombre del curso
+      //difficulty: "Intermediate" as const, // Por defecto
+      imageUrl: getImageUrl(apiCourse.miniature_id),
+    }
+  }
+
+  // Cargar cursos del API
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("https://api.bytetechedu.com/api/courses/mtd_courses")
+        const data = await response.json()
+        setCourses(data.mtd_courses || [])
+      } catch (err) {
+        setError("Error al cargar cursos")
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchCourses()
+  }, [])
+
   return (
     <div className="min-h-screen bg-dynamic-gradient">
       <UniqueHeader />
@@ -119,16 +114,16 @@ export default function CoursesPage() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/cursos">
               <Button className="bg-cyan-500 hover:bg-cyan-600 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-black w-full sm:w-auto">
-              <Code className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="text-sm sm:text-base">Empieza a programar</span>
+                <Code className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                <span className="text-sm sm:text-base">Empieza a programar</span>
               </Button>
             </Link>
             <Link href="/soporte">
               <Button
-              variant="outline"
-              className="border-slate-700 text-slate-300 font-mono hover:bg-slate-800 px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-transparent w-full sm:w-auto"
+                variant="outline"
+                className="border-slate-700 text-slate-300 font-mono hover:bg-slate-800 px-6 sm:px-8 py-3 sm:py-4 rounded-lg bg-transparent w-full sm:w-auto"
               >
-              <span className="text-sm sm:text-base">./dudas --support</span>
+                <span className="text-sm sm:text-base">./dudas --support</span>
               </Button>
             </Link>
           </div>
@@ -153,11 +148,37 @@ export default function CoursesPage() {
             // ¡Mira nuestros cursos más vistos!
           </p>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {courses.map((c, i) => (
-              <TerminalCourseCard key={i} {...c} />
-            ))}
-          </div>
+          {/* Estados de carga y error */}
+          {loading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-cyan-400 mx-auto mb-2"></div>
+              <p className="text-cyan-400 font-mono">Cargando cursos...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8">
+              <p className="text-red-400 font-mono">{error}</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              {courses.map((course) => (
+                <TerminalCourseCard
+                  key={course.id}
+                  id={course.id}
+                  title={course.name}
+                  description={course.description}
+                  price={course.price}
+                  duration={`${course.hours} horas`}
+                  instructor={course.sensei_name}
+                  imageUrl={`https://api.bytetechedu.com/api/media/get_file?file_id=${course.miniature_id}`}
+                  //language="Python"
+                  //difficulty="Intermediate"
+                  //tags={["Programación", "Backend"]}
+                  //students={Math.floor(Math.random() * 1000) + 100}
+                  //rating={Number((4.5 + Math.random() * 0.5).toFixed(1))}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -190,6 +211,7 @@ export default function CoursesPage() {
           </div>
         </div>
       </section>
+
       <HomeFooter />
     </div>
   )

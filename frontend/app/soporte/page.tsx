@@ -11,7 +11,7 @@ import {
   Terminal,
   Mail,
   MessageCircle,
-  Github,
+  //Github,
   HelpCircle,
   Book,
   Video,
@@ -282,7 +282,7 @@ export default function SoportePage() {
                       </div>
                       <div>
                         <div className="text-white font-mono text-sm">Email</div>
-                        <div className="text-slate-400 text-sm">soporte@bytetech.dev</div>
+                        <div className="text-slate-400 text-sm">soporte@bytetechedu.com</div>
                       </div>
                     </div>
 
@@ -295,8 +295,12 @@ export default function SoportePage() {
                         <div className="text-slate-400 text-sm">@byteTECH_support</div>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3">
+                    <a 
+                      href="https://discord.gg/DCva2DSauG" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-green-500/10 transition-colors"
+                    >
                       <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-green-400" />
                       </div>
@@ -304,16 +308,15 @@ export default function SoportePage() {
                         <div className="text-white font-mono text-sm">Comunidad</div>
                         <div className="text-slate-400 text-sm">Discord byteTECH</div>
                       </div>
-                    </div>
-
+                    </a>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-500/20 rounded-lg flex items-center justify-center">
+                      {/*<div className="w-10 h-10 bg-gray-500/20 rounded-lg flex items-center justify-center">
                         <Github className="w-5 h-5 text-gray-400" />
                       </div>
                       <div>
                         <div className="text-white font-mono text-sm">GitHub Issues</div>
                         <div className="text-slate-400 text-sm">github.com/byteTECH</div>
-                      </div>
+                      </div>*/}
                     </div>
                   </div>
                 </div>

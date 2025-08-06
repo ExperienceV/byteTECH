@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 // IndexedDB cache for file blobs
 import { set, get, del, keys } from "idb-keyval"
 
@@ -34,7 +36,7 @@ async function getFileById(file_id: string): Promise<Blob> {
   }
   // Fetch from API
   const res = await fetch(`/api/media/get_file?file_id=${file_id}`, {
-    credentials: "include"
+    credentials: "include",
   })
   if (!res.ok) {
     throw new Error("API_ERROR")
@@ -43,12 +45,10 @@ async function getFileById(file_id: string): Promise<Blob> {
   // Cache for FILE_CACHE_DAYS
   await set(file_id, {
     blob,
-    expiry: Date.now() + FILE_CACHE_DAYS * 24 * 60 * 60 * 1000
+    expiry: Date.now() + FILE_CACHE_DAYS * 24 * 60 * 60 * 1000,
   })
   return blob
 }
-
-// ...existing code...
 
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
@@ -56,28 +56,26 @@ import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
 import { Textarea } from "@//components/ui/textarea"
 import { Badge } from "@//components/ui/badge"
-import { 
-  Terminal, 
-  BookOpen, 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Save, 
-  Upload, 
-  Play, 
-  FileText, 
-  Settings,
+import {
+  Terminal,
+  BookOpen,
+  Plus,
+  Edit,
+  Trash2,
+  Save,
+  Upload,
+  Play,
+  FileText,
   ArrowLeft,
-  Eye,
   Users,
   DollarSign,
-  Clock
+  Clock,
 } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
 import { coursesApi, workbrenchApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 
 interface Section {
   id: number
@@ -86,7 +84,7 @@ interface Section {
 }
 
 interface Lesson {
-  id: number
+  id: number | string // Modificado para aceptar string (UUID) o number
   title: string
   type: "video" | "document"
   file_id?: string
@@ -124,9 +122,14 @@ export default function EditorPage() {
     name: "",
     description: "",
     price: "",
-    hours: ""
+    hours: "",
   })
   const [fileModal, setFileModal] = useState<{ url: string; type: string } | null>(null)
+  const [showGiftModal, setShowGiftModal] = useState(false)
+  const [giftEmail, setGiftEmail] = useState("")
+  const [giftLoading, setGiftLoading] = useState(false)
+  const [giftMessage, setGiftMessage] = useState<string | null>(null)
+  const emailInputRef = useRef<HTMLInputElement>(null)
 
   // Mover handleViewFile aquí para que tenga acceso a setFileModal
   async function handleViewFile(file_id: string, type?: string) {
@@ -140,12 +143,16 @@ export default function EditorPage() {
         // ¿Estaba en cache?
         const cached = await get(file_id)
         if (cached && cached.blob) {
-          alert("El archivo estaba en cache pero expiró y no se pudo obtener del servidor. Intenta subirlo de nuevo o contacta soporte.")
+          alert(
+            "El archivo estaba en cache pero expiró y no se pudo obtener del servidor. Intenta subirlo de nuevo o contacta soporte.",
+          )
         } else {
           alert("No se pudo obtener el archivo del servidor ni está en cache.")
         }
       } else {
-        alert("El archivo está en cache pero está corrupto o mal guardado. Intenta limpiar el cache y vuelve a intentarlo.")
+        alert(
+          "El archivo está en cache pero está corrupto o mal guardado. Intenta limpiar el cache y vuelve a intentarlo.",
+        )
       }
     }
   }
@@ -155,12 +162,12 @@ export default function EditorPage() {
       setIsLoading(false)
       if (!isLoggedIn) {
         console.log("❌ Usuario no logueado, redirigiendo al login")
-        router.push("/login")
+        router.push("/ingesar")
         return
       }
       if (user?.role !== "teacher") {
         console.log("❌ Usuario no es profesor, redirigiendo al home")
-        router.push("/home")
+        router.push("/inicio")
         return
       }
     }, 100)
@@ -173,18 +180,18 @@ export default function EditorPage() {
 
     const fetchCourse = async () => {
       try {
-        const courseContent = await coursesApi.getCourseContent(parseInt(courseId))
+        const courseContent = await coursesApi.getCourseContent(Number.parseInt(courseId))
         // Transformar content de objeto a array y asignar títulos
         const contentObj = courseContent.course_content.content
         const contentArr = Object.values(contentObj || {}).map((section: any, idx) => ({
           id: section.id,
           title: `Sección ${idx + 1}`,
-          lessons: section.lessons || []
+          lessons: section.lessons || [],
         }))
         setCourse({
           ...courseContent.course_content,
           content: contentArr,
-          hours: courseContent.course_content.hours ?? 0
+          hours: courseContent.course_content.hours ?? 0,
         })
 
         // Set edit form con los valores actuales
@@ -192,7 +199,7 @@ export default function EditorPage() {
           name: courseContent.course_content.name,
           description: courseContent.course_content.description,
           price: courseContent.course_content.price.toString(),
-          hours: courseContent.course_content.hours?.toString() || "0"
+          hours: courseContent.course_content.hours?.toString() || "0",
         })
       } catch (err: any) {
         console.error("Error fetching course:", err)
@@ -217,17 +224,21 @@ export default function EditorPage() {
         name: editForm.name,
         description: editForm.description,
         price: editForm.price,
-        hours: editForm.hours
+        hours: editForm.hours,
       })
 
       // Update local state
-      setCourse(prev => prev ? {
-        ...prev,
-        name: editForm.name,
-        description: editForm.description,
-        price: parseFloat(editForm.price),
-        hours: parseFloat(editForm.hours)
-      } : null)
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              name: editForm.name,
+              description: editForm.description,
+              price: Number.parseFloat(editForm.price),
+              hours: Number.parseFloat(editForm.hours),
+            }
+          : null,
+      )
 
       setIsEditing(false)
     } catch (err: any) {
@@ -246,18 +257,22 @@ export default function EditorPage() {
 
     try {
       const response = await workbrenchApi.createSection(course.id)
-      
+
       // Add new section to local state
       const newSection: Section = {
         id: response.section_id,
         title: `Sección ${(course.content?.length || 0) + 1}`,
-        lessons: []
+        lessons: [],
       }
 
-      setCourse(prev => prev ? {
-        ...prev,
-        content: [...(prev.content || []), newSection]
-      } : null)
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              content: [...(prev.content || []), newSection],
+            }
+          : null,
+      )
 
       setSelectedSection(newSection.id)
     } catch (err: any) {
@@ -276,29 +291,34 @@ export default function EditorPage() {
 
     try {
       const formData = new FormData()
-      formData.append('section_id', sectionId.toString())
-      formData.append('course_id', course.id.toString())
-      formData.append('title', lessonData.title)
-      formData.append('file', lessonData.file)
+      formData.append("section_id", sectionId.toString())
+      formData.append("course_id", course.id.toString())
+      formData.append("title", lessonData.title)
+      formData.append("file", lessonData.file)
 
       const response = await workbrenchApi.createLesson(formData)
-      
+
       // Add new lesson to local state
       const newLesson: Lesson = {
-        id: response.lesson_id || Date.now(), // Fallback ID
+        id: response.lesson_id || crypto.randomUUID(), // Fallback ID
         title: lessonData.title,
-        type: lessonData.file.type.includes('video') ? 'video' : 'document',
-        file_id: response.file_id
+        type: lessonData.file.type.includes("video") ? "video" : "document",
+        file_id: response.file_id,
       }
 
-      setCourse(prev => prev ? {
-        ...prev,
-        content: prev.content?.map(section => 
-          section.id === sectionId 
-            ? { ...section, lessons: [...section.lessons, newLesson] }
-            : section
-        ) || []
-      } : null)
+      console.log(`Creando nueva lección con ID: ${newLesson.id}`) // Agregado este console.log
+
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              content:
+                prev.content?.map((section) =>
+                  section.id === sectionId ? { ...section, lessons: [...section.lessons, newLesson] } : section,
+                ) || [],
+            }
+          : null,
+      )
 
       setSelectedSection(null)
     } catch (err: any) {
@@ -318,19 +338,23 @@ export default function EditorPage() {
 
     try {
       await workbrenchApi.deleteSection(sectionId)
-      
+
       // Remove section from local state
-      setCourse(prev => prev ? {
-        ...prev,
-        content: prev.content?.filter(section => section.id !== sectionId) || []
-      } : null)
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              content: prev.content?.filter((section) => section.id !== sectionId) || [],
+            }
+          : null,
+      )
     } catch (err: any) {
       console.error("Error deleting section:", err)
       setError(err.message || "Error al eliminar la sección")
     }
   }
 
-  const handleDeleteLesson = async (fileId: string, lessonId: number, sectionId: number) => {
+  const handleDeleteLesson = async (fileId: string, lessonId: number | string, sectionId: number) => {
     if (!course) return
 
     if (!confirm("¿Estás seguro de que quieres eliminar esta lección? Esta acción no se puede deshacer.")) {
@@ -338,20 +362,42 @@ export default function EditorPage() {
     }
 
     try {
-      await workbrenchApi.deleteLesson(fileId, lessonId)
-      
+      // Asegúrate de que lessonId sea un número si la API lo espera así
+      const idToDelete = typeof lessonId === "string" ? Number.parseInt(lessonId) : lessonId
+      await workbrenchApi.deleteLesson(fileId, idToDelete)
+
       // Remove lesson from local state
-      setCourse(prev => prev ? {
-        ...prev,
-        content: prev.content?.map(section => 
-          section.id === sectionId 
-            ? { ...section, lessons: section.lessons.filter(lesson => lesson.id !== lessonId) }
-            : section
-        ) || []
-      } : null)
+      setCourse((prev) =>
+        prev
+          ? {
+              ...prev,
+              content:
+                prev.content?.map((section) =>
+                  section.id === sectionId
+                    ? { ...section, lessons: section.lessons.filter((lesson) => lesson.id !== lessonId) }
+                    : section,
+                ) || [],
+            }
+          : null,
+      )
     } catch (err: any) {
       console.error("Error deleting lesson:", err)
       setError(err.message || "Error al eliminar la lección")
+    }
+  }
+
+  const handleGiftCourse = async () => {
+    if (!course || !giftEmail) return
+    setGiftLoading(true)
+    setGiftMessage(null)
+    try {
+      await workbrenchApi.giveCourse(course.id, giftEmail)
+      setGiftMessage("✅ Curso regalado correctamente a " + giftEmail)
+      setGiftEmail("")
+    } catch (err: any) {
+      setGiftMessage("❌ Error: " + (err.message || "No se pudo regalar el curso"))
+    } finally {
+      setGiftLoading(false)
     }
   }
 
@@ -375,8 +421,8 @@ export default function EditorPage() {
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center">
           <p className="text-red-400 font-mono">{error}</p>
-          <Link href="/home">
-            <Button className="mt-4 px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
+          <Link href="/inicio">
+            <Button className="ml-2 border border-cyan-500 text-cyan-400 bg-slate-900 hover:bg-cyan-900 hover:text-white">
               Volver al Dashboard
             </Button>
           </Link>
@@ -411,12 +457,12 @@ export default function EditorPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
               <Link href="/home">
-                <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                <Button className="ml-2 border border-cyan-500 text-cyan-400 bg-slate-900 hover:bg-cyan-900 hover:text-white">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Volver
                 </Button>
               </Link>
-              
+
               <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2">
                 <Terminal className="w-4 h-4 text-purple-400" />
                 <span className="text-purple-400 text-sm font-mono">./editor --course {courseId}</span>
@@ -478,14 +524,14 @@ export default function EditorPage() {
                 <h1 className="font-mono font-bold text-white text-2xl sm:text-3xl mb-4">
                   {">"} {course.name}
                 </h1>
-                
+
                 {isEditing ? (
                   <div className="space-y-4">
                     <div>
                       <label className="block text-cyan-400 font-mono text-sm mb-2">NOMBRE DEL CURSO</label>
                       <Input
                         value={editForm.name}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
                         className="bg-slate-800/50 border-slate-700 text-white font-mono"
                       />
                     </div>
@@ -493,7 +539,7 @@ export default function EditorPage() {
                       <label className="block text-cyan-400 font-mono text-sm mb-2">DESCRIPCIÓN</label>
                       <Textarea
                         value={editForm.description}
-                        onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                        onChange={(e) => setEditForm((prev) => ({ ...prev, description: e.target.value }))}
                         rows={3}
                         className="bg-slate-800/50 border-slate-700 text-white font-mono"
                       />
@@ -504,7 +550,7 @@ export default function EditorPage() {
                         <Input
                           type="number"
                           value={editForm.price}
-                          onChange={(e) => setEditForm(prev => ({ ...prev, price: e.target.value }))}
+                          onChange={(e) => setEditForm((prev) => ({ ...prev, price: e.target.value }))}
                           className="bg-slate-800/50 border-slate-700 text-white font-mono"
                         />
                       </div>
@@ -513,7 +559,7 @@ export default function EditorPage() {
                         <Input
                           type="number"
                           value={editForm.hours}
-                          onChange={(e) => setEditForm(prev => ({ ...prev, hours: e.target.value }))}
+                          onChange={(e) => setEditForm((prev) => ({ ...prev, hours: e.target.value }))}
                           className="bg-slate-800/50 border-slate-700 text-white font-mono"
                         />
                       </div>
@@ -559,17 +605,33 @@ export default function EditorPage() {
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-mono text-sm">Videos:</span>
                     <span className="text-white font-mono">
-                      {course.content?.reduce((acc, section) => 
-                        acc + section.lessons.filter(lesson => lesson.type === 'video').length, 0) || 0}
+                      {course.content?.reduce(
+                        (acc, section) => acc + section.lessons.filter((lesson) => lesson.type === "video").length,
+                        0,
+                      ) || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-mono text-sm">Documentos:</span>
                     <span className="text-white font-mono">
-                      {course.content?.reduce((acc, section) => 
-                        acc + section.lessons.filter(lesson => lesson.type === 'document').length, 0) || 0}
+                      {course.content?.reduce(
+                        (acc, section) => acc + section.lessons.filter((lesson) => lesson.type === "document").length,
+                        0,
+                      ) || 0}
                     </span>
                   </div>
+                </div>
+                <div className="mt-6 flex flex-col gap-2">
+                  <Button
+                    onClick={() => {
+                      setShowGiftModal(true)
+                      setGiftMessage(null)
+                      setTimeout(() => emailInputRef.current?.focus(), 100)
+                    }}
+                    className="bg-purple-500 hover:bg-purple-600 text-black font-mono w-full"
+                  >
+                    🎁 Regalar curso
+                  </Button>
                 </div>
               </div>
             </div>
@@ -618,8 +680,11 @@ export default function EditorPage() {
 
             {course.content && course.content.length > 0 ? (
               <div className="space-y-6">
-                {course.content.map((section, sectionIndex) => (
-                  <div key={section.id + '-' + sectionIndex} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
+                {course.content.map((section) => (
+                  <div
+                    key={section.id} // Simplificado a solo section.id
+                    className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden"
+                  >
                     <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
                       <div className="flex items-center gap-3">
                         <div className="flex space-x-1">
@@ -645,37 +710,37 @@ export default function EditorPage() {
                     </div>
 
                     <div className="p-6">
-                      <h3 className="font-mono text-lg font-bold text-white mb-4">
-                        {section.title}
-                      </h3>
+                      <h3 className="font-mono text-lg font-bold text-white mb-4">{section.title}</h3>
 
                       {/* Lessons */}
                       <div className="space-y-3">
-                        {section.lessons.map((lesson, lessonIndex) => (
-                          <div key={lesson.id + '-' + lessonIndex} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                        {section.lessons.map((lesson) => (
+                          <div
+                            key={lesson.id} // Simplificado a solo lesson.id
+                            className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"
+                          >
                             <div className="flex items-center gap-3">
-                              {lesson.type === 'video' ? (
+                              {lesson.type === "video" ? (
                                 <Play className="w-4 h-4 text-red-400" />
                               ) : (
                                 <FileText className="w-4 h-4 text-blue-400" />
                               )}
                               <span className="text-white font-mono text-sm">{lesson.title}</span>
-                              <Badge className="bg-slate-700 text-slate-300 font-mono text-xs">
-                                {lesson.type}
-                              </Badge>
+                              <Badge className="bg-slate-700 text-slate-300 font-mono text-xs">{lesson.type}</Badge>
                               {lesson.file_id && (
                                 <Button
                                   onClick={() => handleViewFile(lesson.file_id!, lesson.type)}
                                   size="sm"
-                                  variant="outline"
-                                  className="ml-2 border-cyan-500 text-cyan-400 hover:bg-cyan-900"
+                                  className="ml-2 border border-cyan-500 text-cyan-400 bg-slate-900 hover:bg-cyan-900 hover:text-white"
                                 >
                                   Ver archivo
                                 </Button>
                               )}
                             </div>
                             <Button
-                              onClick={() => lesson.file_id && handleDeleteLesson(lesson.file_id, lesson.id, section.id)}
+                              onClick={() =>
+                                lesson.file_id && handleDeleteLesson(lesson.file_id, lesson.id, section.id)
+                              }
                               size="sm"
                               variant="destructive"
                               className="bg-red-500 hover:bg-red-600 text-white"
@@ -743,18 +808,86 @@ export default function EditorPage() {
         </div>
       )}
 
+      {/* Modal para regalar curso */}
+      {showGiftModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-slate-900/95 border border-slate-800 rounded-xl p-6 w-full max-w-md relative">
+            <button
+              onClick={() => {
+                setShowGiftModal(false)
+                setGiftEmail("")
+                setGiftMessage(null)
+              }}
+              className="absolute top-4 right-4 text-cyan-400 hover:text-white text-2xl font-bold"
+              title="Cerrar"
+            >
+              ×
+            </button>
+            <h3 className="font-mono text-lg font-bold text-white mb-4">Regalar curso</h3>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                handleGiftCourse()
+              }}
+              className="space-y-4"
+            >
+              <div>
+                <label className="block text-cyan-400 font-mono text-sm mb-2">Email del usuario</label>
+                <Input
+                  ref={emailInputRef}
+                  type="email"
+                  value={giftEmail}
+                  onChange={(e) => setGiftEmail(e.target.value)}
+                  placeholder="usuario@email.com"
+                  className="bg-slate-800/50 border-slate-700 text-white font-mono"
+                  required
+                />
+              </div>
+              {giftMessage && (
+                <div
+                  className={`text-center font-mono text-sm mb-2 ${giftMessage.startsWith("✅") ? "text-green-400" : "text-red-400"}`}
+                >
+                  {giftMessage}
+                </div>
+              )}
+              <div className="flex gap-2">
+                <Button
+                  type="submit"
+                  disabled={giftLoading || !giftEmail}
+                  className="flex-1 bg-purple-500 hover:bg-purple-600 text-black font-mono"
+                >
+                  {giftLoading ? "Enviando..." : "Regalar"}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setShowGiftModal(false)
+                    setGiftEmail("")
+                    setGiftMessage(null)
+                  }}
+                  variant="outline"
+                  className="border-slate-700 text-slate-300 hover:bg-slate-800 bg-transparent"
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <UniqueFooter />
     </div>
   )
 }
 
 // Add Lesson Modal Component
-function AddLessonModal({ 
-  isOpen, 
-  onClose, 
-  onSubmit, 
-  isLoading 
-}: { 
+function AddLessonModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading,
+}: {
   isOpen: boolean
   onClose: () => void
   onSubmit: (data: { title: string; file: File }) => void
@@ -766,7 +899,7 @@ function AddLessonModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title || !file) return
-    
+
     onSubmit({ title, file })
     setTitle("")
     setFile(null)
@@ -780,8 +913,7 @@ function AddLessonModal({
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-mono text-lg font-bold text-white">Agregar Lección</h3>
           <Button onClick={onClose} variant="ghost" size="sm">
-            <span className="sr-only">Cerrar</span>
-            ×
+            <span className="sr-only">Cerrar</span>×
           </Button>
         </div>
 
@@ -811,15 +943,9 @@ function AddLessonModal({
               />
               <label htmlFor="lesson-file" className="cursor-pointer">
                 <span className="text-cyan-400 font-mono text-sm">Haz clic para seleccionar archivo</span>
-                <p className="text-slate-500 font-mono text-xs mt-1">
-                  Videos, PDFs, documentos soportados
-                </p>
+                <p className="text-slate-500 font-mono text-xs mt-1">Videos, PDFs, documentos soportados</p>
               </label>
-              {file && (
-                <p className="text-green-400 font-mono text-sm mt-2">
-                  ✓ {file.name}
-                </p>
-              )}
+              {file && <p className="text-green-400 font-mono text-sm mt-2">✓ {file.name}</p>}
             </div>
           </div>
 
@@ -845,7 +971,7 @@ function AddLessonModal({
               type="button"
               onClick={onClose}
               variant="outline"
-              className="border-slate-700 text-slate-300 hover:bg-slate-800"
+              className="border-slate-700 text-slate-300 hover:bg-slate-800 bg-transparent"
             >
               Cancelar
             </Button>

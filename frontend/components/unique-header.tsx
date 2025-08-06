@@ -93,7 +93,7 @@ export function UniqueHeader() {
             <div className="bg-slate-900/80 backdrop-blur-sm rounded-lg p-1 flex items-center space-x-1 border border-slate-800">
               {isLoggedIn && (
                 <Link
-                  href="/home"
+                  href="/inicio"
                   className="px-3 xl:px-4 py-2 text-sm font-mono text-slate-400 hover:text-green-400 rounded-md hover:bg-green-400/10 transition-all"
                 >
                   ./home
@@ -106,10 +106,10 @@ export function UniqueHeader() {
                 ./cursos
               </Link>
               <Link
-                href="/nosotros"
+                href="/empresarial"
                 className="px-3 xl:px-4 py-2 text-sm font-mono text-slate-400 hover:text-orange-400 rounded-md hover:bg-orange-400/10 transition-all"
               >
-                ./nosotros
+                ./empresarial
               </Link>
               <Link
                 href="/soporte"
@@ -169,7 +169,7 @@ export function UniqueHeader() {
                   {/* Debug info */}
                   Estado: {isLoggedIn ? "Logueado" : "No logueado"}
                 </p>
-                <Link href="/login">
+                <Link href="/ingresar">
                   <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold px-3 sm:px-4 py-2 rounded-lg text-sm">
                     <User className="h-4 w-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Acceder</span>
@@ -194,12 +194,12 @@ export function UniqueHeader() {
             <div className="flex flex-col space-y-2 mt-4">
               {isLoggedIn && (
                 <Link
-                  href="/home"
+                  href="/inicio"
                   className="px-4 py-3 text-sm font-mono text-slate-400 hover:text-green-400 hover:bg-green-400/10 rounded-md transition-all flex items-center gap-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Home className="w-4 h-4" />
-                  ./home
+                  ./inicio
                 </Link>
               )}
               <Link
@@ -210,11 +210,11 @@ export function UniqueHeader() {
                 ./cursos
               </Link>
               <Link
-                href="/nosotros"
+                href="/empresarial"
                 className="px-4 py-3 text-sm font-mono text-slate-400 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all"
                 onClick={() => setIsMenuOpen(false)}
               >
-                ./nosotros
+                ./empresarial
               </Link>
               <Link
                 href="/soporte"

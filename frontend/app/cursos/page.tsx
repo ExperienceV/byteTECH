@@ -7,8 +7,21 @@ import { Terminal, BookOpen } from "lucide-react"
 import { useEffect, useState } from "react"
 import { coursesApi } from "@/lib/api"
 
+interface CourseData {
+  id: number
+  name: string
+  title?: string
+  description: string
+  sensei_name?: string
+  instructor?: string
+  price: number
+  duration?: string
+  hours?: number
+  miniature_id?: string
+}
+
 export default function CursosPage() {
-  const [cursos, setCursos] = useState([])
+  const [cursos, setCursos] = useState<CourseData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
@@ -107,34 +120,6 @@ export default function CursosPage() {
             </div>
           </div>
 
-          {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 sm:mb-12">
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-cyan-400 font-mono">{cursos.length}</div>
-              <div className="text-slate-400 text-sm font-mono">Cursos</div>
-            </div>
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-green-400 font-mono">
-                {cursos.reduce((total, curso) => total + (curso.students || 0), 0)}
-              </div>
-              <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
-            </div>
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400 font-mono">
-                {new Set(cursos.map((curso) => curso.language || curso.tags?.[0])).size}
-              </div>
-              <div className="text-slate-400 text-sm font-mono">Tecnologías</div>
-            </div>
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-orange-400 font-mono">
-                {cursos.length > 0
-                  ? (cursos.reduce((sum, curso) => sum + (curso.rating || 0), 0) / cursos.length).toFixed(1)
-                  : "0.0"}
-              </div>
-              <div className="text-slate-400 text-sm font-mono">Rating</div>
-            </div>
-          </div>
-
           {/* Courses Grid */}
           {cursos.length === 0 ? (
             <div className="text-center py-12">
@@ -145,16 +130,13 @@ export default function CursosPage() {
               {cursos.map((curso, index) => (
                 <TerminalCourseCard
                   key={index}
-                  title={curso.name || curso.title}
-                  description={curso.description || `Curso impartido por ${curso.sensei_name}`}
-                  instructor={curso.sensei_name || curso.instructor}
-                  price={curso.price || 0}
-                  duration={curso.duration || "Por definir"}
-                  students={curso.students || 0}
-                  rating={curso.rating || 0}
-                  tags={curso.tags || []}
-                  language={curso.language || ""}
-                  difficulty={curso.difficulty || "Intermedio"}
+                  id={curso.id}
+                  title={String(curso.name || curso.title || "")}
+                  description={String(curso.description || "")}
+                  instructor={String(curso.sensei_name || curso.instructor || "")}
+                  price={typeof curso.price === "number" ? curso.price : 0}
+                  duration={String(curso.duration || (curso.hours ? `${curso.hours} horas` : "") || "")}
+                  imageUrl={typeof curso.miniature_id === "string" && curso.miniature_id ? `https://api.bytetechedu.com/api/media/get_file?file_id=${curso.miniature_id}` : ""}
                 />
               ))}
             </div>

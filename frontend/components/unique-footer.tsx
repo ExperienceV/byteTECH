@@ -33,7 +33,7 @@ export function UniqueFooter() {
                 → cursos/
               </a>
               <a href="#" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
-                → nosotros/
+                → empresarial/
               </a>
               <a href="#" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
                 → soporte/
@@ -46,11 +46,11 @@ export function UniqueFooter() {
           <div className="text-slate-500 text-xs sm:text-sm font-mono text-center sm:text-left">
             © 2025 byteTECH --version 1.0.0
           </div>
-          <div className="flex items-center space-x-4">
+          {/*<div className="flex items-center space-x-4">
             <Github className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 hover:text-white cursor-pointer transition-colors" />
             <Twitter className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 hover:text-cyan-400 cursor-pointer transition-colors" />
             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 hover:text-green-400 cursor-pointer transition-colors" />
-          </div>
+          </div>*/}
         </div>
       </div>
     </footer>

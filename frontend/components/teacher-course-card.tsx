@@ -13,7 +13,7 @@ interface TeacherCourseCardProps {
   price: number
   duration: string
   students: number
-  rating: number
+  //rating: number
   tags: string[]
   instructor: string
   language: string
@@ -30,7 +30,7 @@ export function TeacherCourseCard({
   price,
   duration,
   students,
-  rating,
+  //rating,
   tags,
   language,
   difficulty,
@@ -112,13 +112,13 @@ export function TeacherCourseCard({
             <div className="text-white font-mono font-bold">{(typeof students === "number" ? students : 0).toLocaleString()}</div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
+          {/*<div className="bg-slate-800/50 rounded-lg p-3 text-center">
             <div className="flex items-center justify-center gap-1 mb-1">
               <Star className="w-4 h-4 text-yellow-400" />
               <span className="text-yellow-400 font-mono text-sm">Rating</span>
             </div>
             <div className="text-white font-mono font-bold">{(typeof rating === "number" ? rating : 0).toFixed(1)}</div>
-          </div>
+          </div>*/}
         </div>
 
         {/* Revenue */}
@@ -157,7 +157,7 @@ export function TeacherCourseCard({
             className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 font-mono"
             variant="outline"
           >
-            <Link href={`/courses/${slug}`}>
+            <Link href={`/curso/${id}`}>
               <Eye className="w-4 h-4 mr-1" />
               Ver
             </Link>

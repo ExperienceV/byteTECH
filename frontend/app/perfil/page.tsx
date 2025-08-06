@@ -27,7 +27,7 @@ export default function PerfilPage() {
       setIsLoading(false)
       if (!isLoggedIn) {
         console.log("❌ Usuario no logueado, redirigiendo al login")
-        router.push("/login")
+        router.push("/ingresar")
         return
       }
 
