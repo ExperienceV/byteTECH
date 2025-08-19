@@ -22,10 +22,20 @@ class User(Base):
 
 
 class VerifyUser(Base):
-    __tablename__ = "verify_users"
+    __tablename__ = "codes_verify"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
     code = Column(String, unique=True, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    expires_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc) + timedelta(minutes=15))
+
+
+
+class ResetPassword(Base):
+    __tablename__ = "tokens_reset"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE", onupdate="CASCADE"))
+    token = Column(String, unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     expires_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc) + timedelta(minutes=15))
 
@@ -51,6 +61,7 @@ class Section(Base):
     __tablename__ = "sections"
     id = Column(Integer, primary_key=True, autoincrement=True)
     course_id = Column(Integer, ForeignKey("courses.id", ondelete="CASCADE"))
+    title = Column(String)
 
     course = relationship("Course", back_populates="sections")
     lessons = relationship("Lesson", back_populates="section", cascade="all, delete")
@@ -64,6 +75,7 @@ class Lesson(Base):
     title = Column(String)
     file_id = Column(String)
     mime_type = Column(String)
+    time_validator = Column(Float)
 
     section = relationship("Section", back_populates="lessons")
     course = relationship("Course", back_populates="lessons")
@@ -112,3 +124,13 @@ class UploadedCourse(Base):
 
     __table_args__ = (UniqueConstraint('user_id', 'course_id'),)
 # ------------------------------
+
+class LessonComplete(Base):
+    __tablename__ = "lessons_complete"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
+    lesson_id = Column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"))
+    
+    # Relaciones opcionales
+    user = relationship("User")
+    lesson = relationship("Lesson")

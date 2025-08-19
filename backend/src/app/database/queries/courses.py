@@ -96,7 +96,8 @@ def get_courses_by_user(db: Session, user_id: int):
     return courses
 
 
-def get_purchased_courses_by_user(db: Session, user_id: int) -> list[int]:
+# Opción 3: Query más limpia usando relationship (si tienes la relación definida)
+def get_purchased_courses_by_user(db: Session, user_id: int) -> list[dict]:
     courses = (
         db.query(Course)
         .join(Purchase, Purchase.course_id == Course.id)
@@ -104,15 +105,28 @@ def get_purchased_courses_by_user(db: Session, user_id: int) -> list[int]:
         .all()
     )
 
-    courses = [course_to_dict(c) for c in courses]
+    result_courses = []
     for course in courses:
-        course.pop("video_id", None)
-        sensei_id = course["sensei_id"]
+        course_dict = course_to_dict(course)
+        course_dict.pop("video_id", None)
+        
+        sensei_id = course_dict["sensei_id"]
         user = get_user_by_id(db, sensei_id)
-        course["sensei_name"] = user.username
+        course_dict["sensei_name"] = user.username
+        
+        # Usar la relación para contar lecciones
+        lessons = course.lessons
+        course_dict["lessons_count"] = len(lessons)
 
+        # Obtener progreso del curso
+        from app.database.queries.progress import get_course_progress
+        progress = get_course_progress(db, user_id, course.id)
+        course_dict["progress"] = progress.get("progress_percentage", 0)
 
-    return courses
+        
+        result_courses.append(course_dict)
+
+    return result_courses
 
 
 def delete_course_and_relations(db: Session, course_id: int) -> bool:

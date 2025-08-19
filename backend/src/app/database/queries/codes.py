@@ -5,12 +5,14 @@ import secrets
 import string
 
 
+# Function to generate a random verification code
+
 def generate_code(length=6):
     chars = string.ascii_uppercase + string.digits  # letras y números
     return ''.join(secrets.choice(chars) for _ in range(length))
 
 
-def create_verification_code(db: Session, user_id: int, max_retries=5) -> VerifyUser:
+def create_code(db: Session, user_id: int, max_retries=5) -> VerifyUser:
     for _ in range(max_retries):
         code = generate_code(6)
 

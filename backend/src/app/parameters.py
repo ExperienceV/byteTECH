@@ -14,24 +14,24 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # COOKIE SETTINGS
-    SAMESITE: str = "none"  
+    SAMESITE: str = "strict"  
     HTTPONLY: bool = True  
-    SECURE: bool = True    
+    SECURE: bool = False    
 
     # URL SETTINGS
-    FRONTEND_PROD_URL: str = "https://bytetechedu.com"
-    BACKEND_PROD_URL: str = "https://api.bytetechedu.com"
-    FRONTEND_DB_URL: str = "http://localhost:3000"
-    BACKEND_DB_URL: str = "http://localhost:8000"
+    FRONTEND_URL: str = "https://bytetechedu.com" if not DEBUG else "http://localhost:3000"
+    BACKEND_URL: str = "https://api.bytetechedu.com" if not DEBUG else "http://localhost:8000"
     DOMAIN: str = ".bytetechedu.com"
     
     # CORS SETTINGS
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_ORIGINS: list = [
-        FRONTEND_DB_URL,
-        FRONTEND_PROD_URL,
-        BACKEND_DB_URL,
-        BACKEND_PROD_URL
+        "https://bytetechedu.com",
+        "http://localhost:3000",
+        "https://api.bytetechedu.com",
+        "http://localhost:8000",
+        "http://localhost:5500",
+        "http://127.0.0.1:5500"
     ]
     CORS_ALLOW_METHODS: list = ["*"]
     CORS_ALLOW_HEADERS: list = ["*"]
@@ -45,6 +45,10 @@ class Settings(BaseSettings):
 
     ACCESS_TOKEN_MAX_AGE: int = ACCESS_TOKEN_EXPIRE_DAYS * 24 * 60 * 60   # 1 DAY IN SECONDS
     REFRESH_TOKEN_MAX_AGE: int = REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60 # 15 DAYS IN SECONDS
+
+    RESET_TOKEN_EXPIRE_MINUTES: int = 15  # 15 minutos
+    RESET_TOKEN_MAX_AGE: int = RESET_TOKEN_EXPIRE_MINUTES * 60  # 900 segundos (15 min)
+
 
     # DATABASE
     SUPABASE_URL: str

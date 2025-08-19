@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends, Form, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from app.models import User
@@ -18,18 +18,19 @@ from app.utils.security import (
 )
 from app.utils.signature import (
     create_access_token,
-    create_refresh_token
+    create_refresh_token,
+    verify_token
 )
 from app.parameters import settings
-from app.utils.util_routers import process_code_verification
-
+from app.utils.util_routers import process_code
+from app.database.queries.tokens import delete_expired_tokens
 
 auth_router = APIRouter(tags=["auth"], prefix="/auth")
 
 # Detectar entorno usando settings.DEBUG
 IS_LOCAL = settings.DEBUG
 
-@auth_router.get("/init_register", 
+@auth_router.post("/init_register", 
     summary="Initialize user registration",
     response_description="Returns the created user with verification code",
     responses={
@@ -69,7 +70,9 @@ IS_LOCAL = settings.DEBUG
     }
 )
 async def init_register(
-    user: User,
+    name: str = Form(..., description="Full name of the user"),
+    email: str = Form(..., description="Email address of the user"),
+    password: str = Form(..., description="Password for the user"),
     db: Session = Depends(get_db)
 ):
     """
@@ -94,17 +97,17 @@ async def init_register(
             - Error (400/500): Appropriate error message
     """
     # Check if the user already exists
-    existing_user = get_user_by_email(email=user.email, db=db)
+    existing_user = get_user_by_email(email=email, db=db)
     if existing_user:
         return JSONResponse(status_code=400, content={"message": "User already exists"})
     
     # Hash the password before storing it
-    hashed_password = hash_password(user.password)
+    hashed_password = hash_password(password)
 
     # Create the user in the database
     response_create = create_user(
-        name=user.name,
-        email=user.email,
+        name=name,
+        email=email,
         password=hashed_password,
         is_sensei=False,
         db=db
@@ -114,7 +117,7 @@ async def init_register(
         return JSONResponse(status_code=500, content={"message": "Failed to create user"})
     
     # Process of create and send verification code
-    process_response = process_code_verification(
+    process_response = process_code(
         db=db,
         user_id=response_create.id,
         email=response_create.email,
@@ -129,7 +132,7 @@ async def init_register(
 
     # return the created user information
     return JSONResponse(
-        status_code=201,
+        status_code=200,
         content={
             "message": "User created successfully",
             "user": {
@@ -353,7 +356,8 @@ async def verify_register(
     }
 )
 async def login(
-    user: User,
+    email: str = Form(..., description="User's registered email"),
+    password: str = Form(..., description="User's password"), # Modifica el Front.
     db: Session = Depends(get_db)
 ):
     """
@@ -385,13 +389,13 @@ async def login(
         - refresh_token: JWT for refreshing access token (expires in 7d)
     """
     get_response = get_user_by_email(
-        email=user.email,
+        email=email,
         db=db
     )
     if not get_response:
         return JSONResponse(status_code=404, content={"message": "User not found"})
     
-    verify_pswd_result = verify_password(user.password, get_response["password"])
+    verify_pswd_result = verify_password(password, get_response["password"])
     if not verify_pswd_result:
         return JSONResponse(status_code=401, content={"message": "Invalid password"})
     
@@ -400,7 +404,7 @@ async def login(
     #  if the user is not verified, return a message
     if not get_response["is_verify"]:
         # Init process of verification
-        process_response = process_code_verification(
+        process_response = process_code(
             db=db,
             user_id=get_response["id"],
             email=get_response["email"],
@@ -425,7 +429,7 @@ async def login(
     user_mtd = {
         "user_id": user_id,
         "user_name": user_name,
-        "email": user.email,
+        "email": email,
         "is_sensei": get_response["is_sensei"],
         "is_verify": get_response["is_verify"]
     }
@@ -480,6 +484,79 @@ async def logout():
         domain=None if IS_LOCAL else settings.DOMAIN
     )
     return response
+
+
+@auth_router.post("/init_restore_password",)
+async def init_restore_password(
+    email: str = Form(..., description="User's registered email"), 
+    db: Session = Depends(get_db)
+):
+    """
+    Initiates password restoration process by sending a URL verification to the user's email.
+    
+    Args:
+        email (str): User's registered email address
+        db (Session): Database session dependency
+    
+    Returns:
+        JSONResponse: Contains:
+            - Success (200): Message indicating code sent
+            - Error (404): User not found
+            - Error (500): Failed to send code
+    """
+    user = get_user_by_email(email=email, db=db)
+    if not user:
+        return JSONResponse(status_code=404, content={"message": "User not found"})
+    
+    process_response = process_code(
+        db=db,
+        user_id=user["id"],
+        email=user["email"],
+        username=user["name"],
+        is_restore=True
+    )
+
+    if process_response["status"] == 500:
+        return JSONResponse(status_code=500, content=process_response["message"])
+
+    # Delete expired tokens
+    delete_expired_tokens(db=db)
+
+    return JSONResponse(status_code=200, content={
+        "message": "Verification URL sent to your email",
+        "token" : process_response["value"]
+        })
+
+
+@auth_router.post("/restore_password")
+async def restore_password(
+    db: Session = Depends(get_db),
+    token: str = Form(..., description="Token in the URL for password restoration"),
+    new_password: str = Form(..., description="New password for the user")
+):
+    try:
+        # Verify the token
+        payload = verify_token(token=token)
+        user_id = payload["user_id"]
+        
+        # Hash the new password
+        hashed_password = hash_password(new_password)
+
+        # Update the user's password in the database
+        update_response = update_user(
+            db=db,
+            user_id=user_id,
+            password=hashed_password
+        )
+
+        if not update_response:
+            return JSONResponse(status_code=500, content={"message": "Failed to update password"})
+        
+        return JSONResponse(status_code=200, content={"message": "Password successfully updated"})
+    
+    except HTTPException as e:
+        return JSONResponse(status_code=e.status_code, content={"message": e.detail})
+    
 
 
 @auth_router.get("/get_users")

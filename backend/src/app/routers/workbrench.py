@@ -166,6 +166,7 @@ async def del_course(
 @workbrench_router.post("/new_section/{course_id}")
 async def create_section(
     course_id: int,
+    section_name: str,
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
 ):
@@ -190,7 +191,13 @@ async def create_section(
         404: Parent course not found
         500: Database error
     """
-    new_section_response = add_section(db, {"course_id": course_id})
+    new_section_response = add_section(
+        db=db, 
+        section_data={
+            "course_id": course_id,
+            "title" : section_name
+            }
+        )
 
     mtd_section = {
         "course_id" : new_section_response.course_id,
@@ -240,6 +247,7 @@ async def new_lesson(
     course_id: int = Form(...),
     title: str = Form(...),
     file: UploadFile = File(...),
+    time_validator: float = Form(...),
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
 ):

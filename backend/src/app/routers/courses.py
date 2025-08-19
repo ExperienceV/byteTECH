@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, status, Request
+from fastapi import APIRouter, Depends, status, Request, Form
 from sqlalchemy.orm import Session
 from app.database.queries.courses import (
     get_all_courses, 
@@ -10,6 +10,7 @@ from app.database.queries.courses import (
 )
 from app.database.queries.sections import get_sections_by_course_id
 from app.utils.util_routers import include_threads
+from app.database.queries.progress import unmark_lesson_as_complete, get_course_progress, mark_lesson_as_complete
 from app.database.queries.lessons import get_lessons_by_section_id
 from app.database.queries.user import get_user_by_id
 from fastapi.responses import JSONResponse
@@ -103,23 +104,34 @@ async def get_course_content(
     course_data = course["course_data"]
     sensei_name = get_user_by_id(user_id=course_data["sensei_id"], db=db)
     course_data["sensei_name"] = sensei_name.username if sensei_name else "Unknown Sensei"
+    # Añadir progreso del curso
+    progress = get_course_progress(
+        db=db, 
+        user_id=user_info["user_id"], 
+        course_id=course_id
+        )
+    course_data["progress"] = progress
 
-    sections_id = get_sections_by_course_id(course_id=course_id, db=db)
+    sections = get_sections_by_course_id(course_id=course_id, db=db)
 
-    sections = {}
+    sections_data = {}
     count = 0
-    for id in sections_id:
-        lessons = get_lessons_by_section_id(sections_id=[id], db=db)
+    for section in sections:
+        id = section["id"]
+        lessons = get_lessons_by_section_id(
+            sections_id=[id], 
+            db=db,
+            user_id=user_info["user_id"])
         lessons_with_threads = include_threads(lessons=lessons)
         section_info = {
             "id": id,
+            "title": section["title"],
             "lessons": lessons_with_threads
         }
-        sections[count + 1] = section_info
+        sections_data[count + 1] = section_info
         count += 1
 
-
-    course_data["content"] = sections
+    course_data["content"] = sections_data
 
     return JSONResponse(
         content={"is_paid": is_paid, "course_content": course_data},
@@ -209,8 +221,8 @@ async def buy_course(
 
         succes = "/success?session_id={CHECKOUT_SESSION_ID}"
         cancel= "/cancel"
-        success_path = settings.FRONTEND_DB_URL + succes if settings.DEBUG else settings.FRONTEND_PROD_URL + succes,
-        cancel_path = settings.FRONTEND_DB_URL + cancel if settings.DEBUG else settings.FRONTEND_PROD_URL + cancel,
+        success_path = settings.FRONTEND_URL + succes if settings.DEBUG else settings.FRONTEND_URL + succes,
+        cancel_path = settings.FRONTEND_URL + cancel if settings.DEBUG else settings.FRONTEND_URL + cancel,
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
@@ -262,7 +274,6 @@ async def stripe_webhook(
         - Requiere firma válida de Stripe
         - Secreto del webhook en configuración
     """
-    print("Eta e la request ", request)
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature")
     webhook_secret = settings.STRIPE_WEBHOOK
@@ -285,3 +296,57 @@ async def stripe_webhook(
         return JSONResponse(content={"error": str(e)}, status_code=400)
 
     return JSONResponse(content={"received": True})
+
+
+@courses_router.post("/mark_progress")
+async def mark_progress(
+    lesson_id: int = Form(),
+    user_info: dict = Depends(get_cookies),
+    db: Session = Depends(get_db)
+):
+    response = mark_lesson_as_complete(
+        db=db,
+        user_id=user_info["user_id"],
+        lesson_id=lesson_id
+    )
+    
+    if not response:
+        return JSONResponse(status_code=404, content={"message": "Lesson not found"})
+    
+    # ✅ Esta línea debe estar al mismo nivel que el 'if', no indentada dentro
+    return JSONResponse(status_code=200, content={"message": "Lesson progress marked successfully"})
+
+
+@courses_router.delete("/unmark_progress")
+async def unmark_progress(
+    lesson_id: int,
+    user_info: dict = Depends(get_cookies),
+    db: Session = Depends(get_db)
+):
+    """
+    Elimina el progreso de una leccion para el usuario actual
+    
+    Entry:
+        lesson_id: int (ID del curso)
+        user_info: dict (obtenido de cookies JWT)
+    
+    Return:
+        status_code: 200 o 404
+        content: 
+            - 200: Progreso eliminado exitosamente
+            - 404: Curso no encontrado
+    
+    Notas:
+        - Elimina el progreso del curso para el usuario actual
+    """
+    response = unmark_lesson_as_complete(
+        db=db, 
+        user_id=user_info["user_id"], 
+        lesson_id=lesson_id
+    )
+    if not response:
+        return JSONResponse(status_code=404, content={"message": "Lesson not found"})
+    
+
+    return JSONResponse(status_code=200, content={"message": "Lesson progress unmarked successfully"})
+

@@ -1,3 +1,4 @@
+from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import Session
 from app.database.base import Section
 from app.database.queries.lessons import get_lessons_by_section_id
@@ -24,9 +25,16 @@ def get_sections_by_course_id(db: Session, course_id: int) -> list[int]:
     sections_data = db.query(Section).filter(Section.course_id == course_id).all()
     if not sections_data:
         return []
-    return [section.id for section in sections_data]
+    data = [sqlalchemy_to_dict(section) for section in sections_data]
+    print(f"Sections for course {course_id}: {data}")
+    return data
 
 
 def get_file_ids_by_section_id(db: Session, section_id: int) -> list[int]:
     lessons = get_lessons_by_section_id(db, [section_id])
     return [lesson['file_id'] for lesson in lessons if lesson.get('file_id')]
+
+
+
+def sqlalchemy_to_dict(obj):
+    return {c.key: getattr(obj, c.key) for c in inspect(obj).mapper.column_attrs}

@@ -4,8 +4,11 @@ from app.database.base import Course
 from app.services.services_google import delete_file
 from app.parameters import settings
 import resend
-from app.database.queries.codes import create_verification_code, delete_expired_codes
-from fastapi.responses import JSONResponse
+from app.database.queries.codes import create_code, delete_expired_codes
+from sqlalchemy.orm import Session
+from app.utils.signature import create_reset_token
+from app.database.queries.tokens import save_token
+
 
 
 def include_threads(lessons: list) -> list:
@@ -113,51 +116,88 @@ def dot_separator(text):
     return modify_text
 
 
-def process_code_verification(
-        db: str,
-        user_id: int,
-        email: str,
-        username: str
+def process_code(
+        db: Session,
+        user_id: int = None,
+        email: str = None,
+        username: str = None,
+        is_restore: bool = False
 ):
-    # Create verification code
-    verification_code = create_verification_code(
-        db=db,
-        user_id=user_id
-    )
-
-    if not verification_code:
-        response={
-            "status": 500,
-            "message": "Failed to create verification code"
+    # Create verification code/token
+    if is_restore:
+        token: str = create_reset_token(data={"user_id": user_id, "email": email})
+        if not token:
+            response={
+                "status": 500,
+                "message": "Failed to create token"
             }
-        return response
+            return response
+        
+        save_response = save_token(
+            db=db,
+            user_id=user_id,
+            token=token
+        )
+
+        if not save_response:
+            response={
+                "status": 500,
+                "message": "Failed to save token"
+            }
+            return response
+    else:
+        code = create_code(
+            db=db,
+            user_id=user_id
+        )
+
+        if not code:
+            response={
+                "status": 500,
+                "message": "Failed to create code"
+                }
+            return response
     
     # Delete expired codes
     delete_expired_codes(db=db)
 
-    # Send verification code to the email
-    send_mail_response = resend_mail(
-        message=f"""
-        Welcome to ByteTech!
-        Thank you for registering with us. 
-        To verify your email address and activate your account, please enter the following verification code:
-        {verification_code.code}
-        """,
-        issue=f"Your verification code - {verification_code.code}",
-        client_mail=email,
-        username=username
-    )
+    # Send code or Url to the email
+    if is_restore:
+        send_mail_response = resend_mail(
+            message=f"""
+            We received a request to reset your password.
+            To proceed with resetting your password, please use the following URL:
+            {settings.FRONTEND_URL}/restore_password?token={token}
+            If you did not request a password reset, please ignore this email.
+            """,
+            issue=f"Reset your password - ByteTech",
+            client_mail=email,
+            username=username
+        )
+    else:
+        send_mail_response = resend_mail(
+            message=f"""
+            Welcome to ByteTech!
+            Thank you for registering with us. 
+            To verify your email address and activate your account, please enter the following verification code:
+            {code.code}
+            """,
+            issue=f"Your verification code - {code.code}",
+            client_mail=email,
+            username=username
+        )
 
     if not send_mail_response:
         response={
             "status": 500,
-            "message": "Failed to send verification email"
+            "message": "Failed to send email"
             }
 
     response={
         "status": 200,
-        "code": verification_code.code
+        "value": code.code if not is_restore else token,
         }
+    
     return response
 
 

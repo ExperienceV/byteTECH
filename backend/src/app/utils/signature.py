@@ -7,6 +7,7 @@ from app.parameters import settings
 # Authentication security scheme
 security = HTTPBearer()
 
+
 def create_access_token(data: dict):
     """
     Create an access token JWT.
@@ -18,6 +19,7 @@ def create_access_token(data: dict):
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
+
 def create_refresh_token(data: dict):
     """
     Create a refresh token JWT.
@@ -28,6 +30,19 @@ def create_refresh_token(data: dict):
     expire = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_MAX_AGE)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
+
+def create_reset_token(data: dict):
+    """
+    Create a reset password token JWT.
+    - data: Data to include in the token (e.g., user name).
+    - exp: Expiration time of the token (15 minutes by default).
+    """
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.RESET_TOKEN_MAX_AGE)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
+
 
 def verify_token(token: str):
     """
@@ -43,6 +58,6 @@ def verify_token(token: str):
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token, please login again.",
+            detail="Invalid token, please try with other again.",
         )
 
