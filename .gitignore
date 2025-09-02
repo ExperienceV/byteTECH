@@ -10,3 +10,5 @@ docker-compose.yml
 backend/src/app/token.json
 backend/src/app/credentials.json
 backend/src/app/.env
+localhost.crt
+localhost.key

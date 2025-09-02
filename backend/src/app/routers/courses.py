@@ -132,6 +132,7 @@ async def get_course_content(
         count += 1
 
     course_data["content"] = sections_data
+    print("Contenido del curso:", course_data)
 
     return JSONResponse(
         content={"is_paid": is_paid, "course_content": course_data},

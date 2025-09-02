@@ -14,27 +14,43 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # COOKIE SETTINGS
-    SAMESITE: str = "strict"  
-    HTTPONLY: bool = True  
-    SECURE: bool = False    
-
-    # URL SETTINGS
+    SAMESITE: str = "none" if DEBUG else "lax"
+    HTTPONLY: bool = True
+    SECURE: bool = True  # Required when SameSite is None    # URL SETTINGS
     FRONTEND_URL: str = "https://bytetechedu.com" if not DEBUG else "http://localhost:3000"
     BACKEND_URL: str = "https://api.bytetechedu.com" if not DEBUG else "http://localhost:8000"
-    DOMAIN: str = ".bytetechedu.com"
+    DOMAIN: str = "localhost" if DEBUG else ".bytetechedu.com"
     
     # CORS SETTINGS
     CORS_ALLOW_CREDENTIALS: bool = True
     CORS_ALLOW_ORIGINS: list = [
-        "https://bytetechedu.com",
         "http://localhost:3000",
-        "https://api.bytetechedu.com",
+        "http://127.0.0.1:3000",
         "http://localhost:8000",
+        "http://127.0.0.1:8000",
         "http://localhost:5500",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "https://shm52rk5-3000.brs.devtunnels.ms"
+    ] if DEBUG else [
+        "https://bytetechedu.com",
+        "https://api.bytetechedu.com"
     ]
     CORS_ALLOW_METHODS: list = ["*"]
-    CORS_ALLOW_HEADERS: list = ["*"]
+    CORS_ALLOW_HEADERS: list = [
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "Accept-Version",
+        "Content-Length",
+        "Content-MD5",
+        "Date",
+        "X-Api-Version",
+        "X-CSRF-Token",
+        "X-Requested-With",
+        "Origin",
+        "Access-Control-Allow-Credentials",
+        "Access-Control-Allow-Origin"
+    ]
 
     # SIGNATURE SETTINGS
     DEFAULT_PASSWORD: str = "如果我能说人和天使的语言，却没有爱，我就像一个响亮的锣或一个响亮的钹一样。 2我若有预言的恩赐，也明白一切神圣的秘密和一切知识，并且有全备的信，能够移山，却没有爱，我就算不得什么。"

@@ -13,10 +13,12 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ALLOW_ORIGINS,  # Orígenes permitidos
+    allow_origins=settings.CORS_ALLOW_ORIGINS,
     allow_credentials=settings.CORS_ALLOW_CREDENTIALS,
-    allow_methods=settings.CORS_ALLOW_METHODS,  # Métodos permitidos: GET, POST, etc.
-    allow_headers=settings.CORS_ALLOW_HEADERS,  # Headers permitidos
+    allow_methods=settings.CORS_ALLOW_METHODS,
+    allow_headers=settings.CORS_ALLOW_HEADERS,
+    expose_headers=["*"],
+    max_age=3600,
 )
 
 app.add_middleware(TokenRefreshMiddleware)

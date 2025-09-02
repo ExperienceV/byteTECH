@@ -1,20 +1,15 @@
 const nextConfig = {
-  output: 'standalone',  // <--- agregar esta línea
+  output: 'standalone',
 
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  images: {
-    unoptimized: true,
-  },
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+  images: { unoptimized: true },
+
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://api.bytetechedu.com/api/:path*', // Proxy to backend (mantiene el prefijo /api)
+        destination: 'https://localhost:8000/api/:path*', // <-- backend local
       },
     ]
   },

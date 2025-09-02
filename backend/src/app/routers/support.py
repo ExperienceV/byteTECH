@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Form
 from fastapi.responses import HTMLResponse
 from app.utils.util_routers import resend_mail
 from app.models import form_model
@@ -7,17 +7,22 @@ from app.models import form_model
 support_router = APIRouter(prefix="/support", tags=["support"])
 
 @support_router.post("/send_email", response_class=HTMLResponse)
-async def send_email(form: form_model):
+async def send_email(
+    name: str = Form(...),
+    mail: str = Form(...),
+    issue: str = Form(...),
+    message: str = Form(...)
+):
     """
 ira flaco, este no esta complicao solo dropeame esos parametros de ahi saludos a la family
     """
     
     # Attempt to send the email using the form data
     response = resend_mail(
-        username=form.name,
-        client_mail=form.mail,
-        issue=form.issue,
-        message=form.message
+        username=name,
+        client_mail=mail,
+        issue=issue,
+        message=message
     )
 
     # If email sending fails, raise an HTTPException with status 405

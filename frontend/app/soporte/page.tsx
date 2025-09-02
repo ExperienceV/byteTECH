@@ -2,16 +2,11 @@
 
 import { UniqueHeader } from "@//components/unique-header"
 import { UniqueFooter } from "@//components/unique-footer"
-import { Button } from "@//components/ui/button"
-import { Input } from "@//components/ui/input"
-import { Textarea } from "@//components/ui/textarea"
-import { supportApi } from "@/lib/api"
-import { useState } from "react"
+import { SupportForm } from "@/components/support-form"
 import {
   Terminal,
   Mail,
   MessageCircle,
-  //Github,
   HelpCircle,
   Book,
   Video,
@@ -20,42 +15,9 @@ import {
   CheckCircle,
   AlertCircle,
   Zap,
-  Send,
-  Check,
 } from "lucide-react"
 
 export default function SoportePage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    mail: "",
-    issue: "",
-    message: "",
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
-  const [errorMessage, setErrorMessage] = useState("")
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitStatus("idle")
-    setErrorMessage("")
-
-    try {
-      await supportApi.sendEmail(formData)
-      setSubmitStatus("success")
-      setFormData({ name: "", mail: "", issue: "", message: "" })
-    } catch (error: any) {
-      setSubmitStatus("error")
-      setErrorMessage(error.message || "Error al enviar el mensaje")
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
-  }
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
@@ -173,102 +135,9 @@ export default function SoportePage() {
                   </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> nombre =
-                    </label>
-                    <Input
-                      placeholder="Tu nombre completo"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange("name", e.target.value)}
-                      required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> email =
-                    </label>
-                    <Input
-                      type="email"
-                      placeholder="ejemplo@email.com"
-                      value={formData.mail}
-                      onChange={(e) => handleInputChange("mail", e.target.value)}
-                      required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> asunto =
-                    </label>
-                    <Input
-                      placeholder="Asunto del problema"
-                      value={formData.issue}
-                      onChange={(e) => handleInputChange("issue", e.target.value)}
-                      required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-mono text-slate-300 mb-2">
-                      <span className="text-cyan-400">const</span> mensaje =
-                    </label>
-                    <Textarea
-                      placeholder="Describe tu problema o pregunta en detalle..."
-                      rows={4}
-                      value={formData.message}
-                      onChange={(e) => handleInputChange("message", e.target.value)}
-                      required
-                      className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono resize-none"
-                    />
-                  </div>
-
-                  {/* Status Messages */}
-                  {submitStatus === "success" && (
-                    <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
-                      <div className="flex items-center gap-2 text-green-400 font-mono text-sm">
-                        <Check className="w-4 h-4" />
-                        ¡Mensaje enviado exitosamente! Te responderemos pronto.
-                      </div>
-                    </div>
-                  )}
-
-                  {submitStatus === "error" && (
-                    <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-                      <div className="flex items-center gap-2 text-red-400 font-mono text-sm">
-                        <AlertCircle className="w-4 h-4" />
-                        {errorMessage}
-                      </div>
-                    </div>
-                  )}
-
-                  <Button 
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3 rounded-lg disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
-                        Enviando...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="mr-2 h-4 w-4" />
-                        Enviar Mensaje de Soporte
-                      </>
-                    )}
-                  </Button>
-
-                  <div className="text-xs font-mono text-slate-500 text-center">
-                    // Tiempo de respuesta promedio: 2-4 horas
-                  </div>
-                </form>
+                <div className="p-6">
+                  <SupportForm />
+                </div>
               </div>
 
               {/* Info de contacto y horarios */}

@@ -7,8 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Terminal, Code, Zap } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-
-const API_BASE = "https://api.bytetechedu.com"
+import { API_BASE } from "@/lib/config"
 
 // Interfaz para los datos del curso
 interface Course {
@@ -70,7 +69,7 @@ export default function CoursesPage() {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch("https://api.bytetechedu.com/api/courses/mtd_courses")
+        const response = await fetch(`${API_BASE}/courses/mtd_courses`)
         const data = await response.json()
         setCourses(data.mtd_courses || [])
       } catch (err) {
@@ -169,7 +168,7 @@ export default function CoursesPage() {
                   price={course.price}
                   duration={`${course.hours} horas`}
                   instructor={course.sensei_name}
-                  imageUrl={`https://api.bytetechedu.com/api/media/get_file?file_id=${course.miniature_id}`}
+                  imageUrl={`${API_BASE}/media/get_file?file_id=${course.miniature_id}`}
                   //language="Python"
                   //difficulty="Intermediate"
                   //tags={["Programación", "Backend"]}
@@ -194,7 +193,7 @@ export default function CoursesPage() {
               {">"} Listo para subir de nivel tus habilidades?
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <Link href="/login">
+              <Link href="/auth/ingresar  ">
                 <Button className="bg-cyan-500 hover:bg-cyan-600 font-semibold px-6 sm:px-8 py-3 sm:py-4 rounded-lg text-black w-full sm:w-auto">
                   <span className="text-sm sm:text-base">Únete al Campus</span>
                 </Button>

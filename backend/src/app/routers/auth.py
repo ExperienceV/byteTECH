@@ -271,9 +271,9 @@ async def verify_register(
         value=access_token,
         httponly=settings.HTTPONLY,
         max_age=settings.ACCESS_TOKEN_MAX_AGE,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     ) 
     
     response.set_cookie(
@@ -281,9 +281,9 @@ async def verify_register(
         value=refresh_token, 
         httponly=settings.HTTPONLY, 
         max_age=settings.REFRESH_TOKEN_MAX_AGE,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     )  
 
     return response
@@ -441,9 +441,9 @@ async def login(
         value=access_token,
         httponly=settings.HTTPONLY,
         max_age=settings.ACCESS_TOKEN_MAX_AGE,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     ) 
     
     response.set_cookie(
@@ -451,11 +451,12 @@ async def login(
         value=refresh_token, 
         httponly=settings.HTTPONLY, 
         max_age=settings.REFRESH_TOKEN_MAX_AGE,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     )  
 
+    print(response.headers)
     return response
 
 
@@ -472,17 +473,18 @@ async def logout():
     response.delete_cookie(
         key="access_token",
         httponly=settings.HTTPONLY,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     )
     response.delete_cookie(
         key="refresh_token",
         httponly=settings.HTTPONLY,
-        secure=False if IS_LOCAL else settings.SECURE,
+        secure=settings.SECURE,
         samesite=settings.SAMESITE,
-        domain=None if IS_LOCAL else settings.DOMAIN
+        domain=settings.DOMAIN
     )
+
     return response
 
 
@@ -558,7 +560,6 @@ async def restore_password(
         return JSONResponse(status_code=e.status_code, content={"message": e.detail})
     
 
-
 @auth_router.get("/get_users")
 async def get_users(db: Session = Depends(get_db)):
     """
@@ -576,3 +577,4 @@ async def get_users(db: Session = Depends(get_db)):
         return JSONResponse(status_code=404, content={"message": "No users found"})
     
     return JSONResponse(status_code=200, content=users)
+    

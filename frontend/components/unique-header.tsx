@@ -169,7 +169,7 @@ export function UniqueHeader() {
                   {/* Debug info */}
                   Estado: {isLoggedIn ? "Logueado" : "No logueado"}
                 </p>
-                <Link href="/ingresar">
+                <Link href="/auth/ingresar">
                   <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold px-3 sm:px-4 py-2 rounded-lg text-sm">
                     <User className="h-4 w-4 mr-1 sm:mr-2" />
                     <span className="hidden sm:inline">Acceder</span>

@@ -2,15 +2,15 @@
 
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
-import { authApi } from "@/lib/api"
+import { API_BASE } from "./config"
 
 export interface User {
-  id: string
+  id: number
   name: string
   email: string
+  is_sensei: boolean
+  is_verify: boolean
   avatar?: string
-  role: "student" | "teacher"
-  createdAt: string
 }
 
 interface AuthContextType {
@@ -44,22 +44,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // LOGIN
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      const response = await authApi.login({ email, password })
-      const backendUser = response.user
-      const userObj: User = {
-        id: String(backendUser.id),
-        name: backendUser.name,
-        email: backendUser.email,
-        avatar: "",
-        role: backendUser.is_sensei ? "teacher" : "student",
-        createdAt: backendUser.created_at,
+      const formData = new URLSearchParams()
+      formData.append("email", email)
+      formData.append("password", password)
+
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+        mode: "cors",
+      })
+
+      if (!response.ok) {
+        throw new Error("Login failed")
       }
+
+      const data = await response.json()
+      const userObj: User = {
+        id: data.user.id,
+        name: data.user.name,
+        email: data.user.email,
+        is_sensei: data.user.is_sensei,
+        is_verify: data.user.is_verify,
+        avatar: data.user.avatar || ""
+      }
+
       setUser(userObj)
       localStorage.setItem("bytetech_user", JSON.stringify(userObj))
       return true
     } catch (error) {
-      setUser(null)
-      localStorage.removeItem("bytetech_user")
+      console.error("Login error:", error)
       return false
     }
   }
@@ -67,35 +85,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // REGISTER
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
     try {
-      const response = await authApi.register({ name, email, password })
-      const backendUser = response.user
-      const userObj: User = {
-        id: String(backendUser.id),
-        name: backendUser.name,
-        email: backendUser.email,
-        avatar: "",
-        role: backendUser.is_sensei ? "teacher" : "student",
-        createdAt: backendUser.created_at,
+      const formData = new URLSearchParams()
+      formData.append("name", name)
+      formData.append("email", email)
+      formData.append("password", password)
+
+      const response = await fetch(`${API_BASE}/auth/init_register`, {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error("Registration failed")
       }
-      setUser(userObj)
-      localStorage.setItem("bytetech_user", JSON.stringify(userObj))
+
+      const data = await response.json()
       return true
     } catch (error) {
-      setUser(null)
-      localStorage.removeItem("bytetech_user")
-    return false
-  }
+      console.error("Registration error:", error)
+      return false
+    }
   }
 
   // LOGOUT
   const logout = async (): Promise<void> => {
     try {
-      await authApi.logout()
+      const response = await fetch(`${API_BASE}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      })
+      
+      if (!response.ok) {
+        throw new Error("Logout failed")
+      }
     } catch (error) {
-      // Ignorar error de logout
+      console.error("Logout error:", error)
+    } finally {
+      setUser(null)
+      localStorage.removeItem("bytetech_user")
     }
-    setUser(null)
-    localStorage.removeItem("bytetech_user")
   }
 
   const contextValue: AuthContextType = {
