@@ -167,7 +167,7 @@ def process_code(
             message=f"""
             We received a request to reset your password.
             To proceed with resetting your password, please use the following URL:
-            {settings.FRONTEND_URL}/restore_password?token={token}
+            {settings.FRONTEND_URL}/auth/reset_password?token={token}
             If you did not request a password reset, please ignore this email.
             """,
             issue=f"Reset your password - ByteTech",

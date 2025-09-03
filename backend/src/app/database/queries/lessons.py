@@ -33,7 +33,7 @@ def get_total_lessons_by_course(db, course_id: int):
     return total
 
 
-def get_lessons_by_section_id(db: Session, sections_id: list, user_id: int) -> list:
+def get_lessons_by_section_id(db: Session, sections_id: list, user_id: int = None) -> list:
     lessons_data = []
     for id in sections_id:
         lessons = db.query(Lesson).filter(Lesson.section_id == id).all()

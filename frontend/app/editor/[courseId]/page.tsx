@@ -6,6 +6,16 @@ import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
 import { Textarea } from "@//components/ui/textarea"
 import { Badge } from "@//components/ui/badge"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { 
   Terminal, 
   BookOpen, 
@@ -27,7 +37,7 @@ import { useAuth } from "@//lib/auth-context"
 import { coursesApi, workbrenchApi } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 
 interface Lesson {
   id: number
@@ -66,8 +76,9 @@ interface CourseData extends CourseContent {
   rating?: number
 }         
 
-export default function EditorPage({ params }: { params: { courseId: string } }) {
-  const { courseId } = params
+export default function EditorPage({ params }: { params: Promise<{ courseId: string }> }) {
+  const resolvedParams = React.use(params)
+  const { courseId } = resolvedParams
   const { user, isLoggedIn } = useAuth()
   const router = useRouter()
   const [course, setCourse] = useState<CourseData | null>(null)
@@ -78,6 +89,8 @@ export default function EditorPage({ params }: { params: { courseId: string } })
   const [isAddingSection, setIsAddingSection] = useState(false)
   const [isAddingLesson, setIsAddingLesson] = useState(false)
   const [selectedSection, setSelectedSection] = useState<number | null>(null)
+  const [showSectionModal, setShowSectionModal] = useState(false)
+  const [newSectionName, setNewSectionName] = useState("")
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
@@ -177,26 +190,34 @@ export default function EditorPage({ params }: { params: { courseId: string } })
     }
   }
 
-  const handleAddSection = async () => {
+  const handleAddSection = () => {
     if (!course) return
+    const sectionNumber = Object.keys(course.content as Record<string, Section>).length + 1
+    setNewSectionName(`Sección ${sectionNumber}`)
+    setShowSectionModal(true)
+  }
+
+  const handleConfirmAddSection = async () => {
+    if (!course || !newSectionName.trim()) return
 
     setIsAddingSection(true)
     setError("")
+    setShowSectionModal(false)
 
     try {
-      const response = await workbrenchApi.createSection(course.id)
+      const response = await workbrenchApi.createSection(course.id, newSectionName)
       if (!response.ok) {
         throw new Error(response.message || "Error al crear la sección")
       }
 
-      // Get section ID from response
-      const newSectionId = response.data.section_id.toString()
+      // Get section data from response
+      const newSectionId = response.data.mtd_section.section_id.toString()
       const currentContent = course.content as Record<string, Section>
 
       // Add new section to local state
       const newSection: Section = {
         id: parseInt(newSectionId),
-        title: `Sección ${Object.keys(currentContent).length + 1}`,
+        title: response.data.mtd_section.title,
         lessons: []
       }
 
@@ -228,11 +249,14 @@ export default function EditorPage({ params }: { params: { courseId: string } })
     setError("")
 
     try {
+
+      const time = 3.4
       const formData = new FormData()
       formData.append('section_id', sectionId.toString())
       formData.append('course_id', course.id.toString())
       formData.append('title', lessonData.title)
       formData.append('file', lessonData.file)
+      formData.append('time_validator', time.toString())
 
       const response = await workbrenchApi.createLesson(formData)
       if (!response.ok) {
@@ -241,7 +265,7 @@ export default function EditorPage({ params }: { params: { courseId: string } })
       
       // Add new lesson to local state
       const newLesson: Lesson = {
-        id: response.data.lesson_id,
+        id: Number(response.data.lesson_id),
         title: lessonData.title,
         type: lessonData.file.type.includes('video') ? 'video' : 'document',
         file_id: response.data.file_id
@@ -250,18 +274,27 @@ export default function EditorPage({ params }: { params: { courseId: string } })
       setCourse(prev => {
         if (!prev) return null
         const currentContent = prev.content as Record<string, Section>
-        const sectionKey = sectionId.toString()
-        const currentSection = currentContent[sectionKey]
-
+        
+        // ✅ Crear nuevo contenido buscando la sección correcta
+        const updatedContent = Object.keys(currentContent).reduce((acc, key) => {
+          const section = currentContent[key]
+          
+          if (section.id === sectionId) {
+            // Esta es la sección que queremos actualizar
+            acc[key] = {
+              ...section,
+              lessons: [...section.lessons, newLesson]
+            }
+          } else {
+            acc[key] = section
+          }
+          
+          return acc
+        }, {} as Record<string, Section>)
+        
         return {
           ...prev,
-          content: {
-            ...currentContent,
-            [sectionKey]: {
-              ...currentSection,
-              lessons: [...currentSection.lessons, newLesson]
-            }
-          }
+          content: updatedContent
         }
       })
 
@@ -276,34 +309,43 @@ export default function EditorPage({ params }: { params: { courseId: string } })
   }
 
   const handleDeleteSection = async (sectionId: number) => {
-    if (!course) return
-
+    if (!course) return;
+  
     if (!confirm("¿Estás seguro de que quieres eliminar esta sección? Esta acción no se puede deshacer.")) {
-      return
+      return;
     }
-
+  
     try {
       const response = await workbrenchApi.deleteSection(sectionId)
       if (!response.ok) {
         throw new Error(response.message || "Error al eliminar la sección")
       }
-      
-      // Remove section from local state
+
+      // Actualizar el estado local para eliminar la sección sin reindexar las claves existentes
       setCourse(prev => {
         if (!prev) return null
-        const currentContent = { ...(prev.content as Record<string, Section>) }
-        delete currentContent[sectionId.toString()]
+        const currentContent = prev.content as Record<string, Section>
+
+        const updatedContent = Object.keys(currentContent).reduce((acc, key) => {
+          const sec = currentContent[key]
+          if (sec.id !== sectionId) {
+            acc[key] = sec
+          }
+          return acc
+        }, {} as Record<string, Section>)
+
         return {
           ...prev,
-          content: currentContent
+          content: updatedContent
         }
       })
+
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Error al eliminar la sección"
-      console.error("Error deleting section:", err)
-      setError(message)
+      const message = err instanceof Error ? err.message : "Error al eliminar la sección";
+      console.error("Error deleting section:", err);
+      setError(message);
     }
-  }
+  };
 
   const handleDeleteLesson = async (fileId: string, lessonId: number, sectionId: number) => {
     if (!course) return
@@ -322,18 +364,24 @@ export default function EditorPage({ params }: { params: { courseId: string } })
       setCourse(prev => {
         if (!prev) return null
         const currentContent = prev.content as Record<string, Section>
-        const sectionKey = sectionId.toString()
-        const currentSection = currentContent[sectionKey]
+
+        // Actualizar la sección correcta buscando por section.id (no por la clave del objeto)
+        const updatedContent = Object.keys(currentContent).reduce((acc, key) => {
+          const sec = currentContent[key]
+          if (sec.id === sectionId) {
+            acc[key] = {
+              ...sec,
+              lessons: sec.lessons.filter(lesson => lesson.id !== lessonId)
+            }
+          } else {
+            acc[key] = sec
+          }
+          return acc
+        }, {} as Record<string, Section>)
 
         return {
           ...prev,
-          content: {
-            ...currentContent,
-            [sectionKey]: {
-              ...currentSection,
-              lessons: currentSection.lessons.filter(lesson => lesson.id !== lessonId)
-            }
-          }
+          content: updatedContent
         }
       })
     } catch (err) {
@@ -632,13 +680,39 @@ export default function EditorPage({ params }: { params: { courseId: string } })
               </Button>
             </div>
 
+            <AlertDialog open={showSectionModal} onOpenChange={setShowSectionModal}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Nueva Sección</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Ingrese el nombre para la nueva sección del curso
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <Input
+                  value={newSectionName}
+                  onChange={(e) => setNewSectionName(e.target.value)}
+                  placeholder="Nombre de la sección"
+                  className="my-4"
+                />
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={handleConfirmAddSection}
+                    disabled={!newSectionName.trim()}
+                  >
+                    Crear Sección
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
             {/* Sections List */}
             {course.content && Object.keys(course.content).length > 0 ? (
               <div className="space-y-6">
                 {Object.entries(course.content as Record<string, Section>).sort((a, b) => 
                   parseInt(a[0]) - parseInt(b[0])
                 ).map(([id, section], sectionIndex) => (
-                  <div key={id} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
+                  <div key={section.id} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
                       <div className="flex items-center gap-3">
                         <div className="flex space-x-1">
@@ -653,7 +727,7 @@ export default function EditorPage({ params }: { params: { courseId: string } })
                           {section.lessons.length} lecciones
                         </Badge>
                         <Button
-                          onClick={() => handleDeleteSection(parseInt(id))}
+                          onClick={() => handleDeleteSection(section.id)}
                           size="sm"
                           variant="destructive"
                           className="bg-red-500 hover:bg-red-600 text-white"
@@ -684,7 +758,7 @@ export default function EditorPage({ params }: { params: { courseId: string } })
                               </Badge>
                             </div>
                             <Button
-                              onClick={() => lesson.file_id && handleDeleteLesson(lesson.file_id, lesson.id, parseInt(id))}
+                              onClick={() => lesson.file_id && handleDeleteLesson(lesson.file_id, lesson.id, section.id)}
                               size="sm"
                               variant="destructive"
                               className="bg-red-500 hover:bg-red-600 text-white"

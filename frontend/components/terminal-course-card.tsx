@@ -1,9 +1,8 @@
-"use client"
-
-import type React from "react"
-import { Clock, Play, Code, Edit } from "lucide-react"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Clock, User, DollarSign } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface TerminalCourseCardProps {
   id: number
@@ -13,7 +12,11 @@ interface TerminalCourseCardProps {
   duration: string
   instructor: string
   imageUrl?: string
-  isTeacher?: boolean
+  language?: string
+  difficulty?: "Beginner" | "Intermediate" | "Advanced"
+  tags?: string[]
+  students?: number
+  rating?: number
 }
 
 export function TerminalCourseCard({
@@ -24,105 +27,81 @@ export function TerminalCourseCard({
   duration,
   instructor,
   imageUrl,
-  isTeacher = false,
+  language = "Python",
+  difficulty = "Intermediate",
+  tags = ["Programación"],
+  students = 0,
+  rating = 0,
 }: TerminalCourseCardProps) {
-  const router = useRouter()
-
-  const handleEdit = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    router.push(`/editor/${id}`)
-  }
-
-  const CardContent = () => (
-    <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden hover:border-cyan-400/50 transition-all duration-300 group flex flex-col h-full">
-      {/* Botón editar solo para teacher */}
-      {isTeacher && (
-        <button
-          onClick={handleEdit}
-          className="absolute top-3 right-3 z-10 bg-cyan-500 hover:bg-cyan-600 text-black p-2 rounded-md transition-colors shadow-lg"
-          title="Editar curso"
-          aria-label="Editar curso"
-        >
-          <Edit className="w-4 h-4" />
-        </button>
-      )}
-
-      {/* Imagen del curso */}
-      {imageUrl && (
-        <div className="relative h-40 sm:h-48 w-full overflow-hidden">
-          <img
-            src={imageUrl || "/placeholder.svg"}
-            alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.style.display = "none"
-            }}
-          />
-          {/* Fallback visual si la imagen no carga */}
-          <div className="absolute inset-0 flex items-center justify-center bg-slate-800/60">
-            <Code className="w-12 h-12 text-slate-600" />
-          </div>
-        </div>
-      )}
-
-      {/* Terminal header */}
-      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-slate-800 bg-slate-800/50 flex-shrink-0">
-        <div className="flex items-center space-x-2 min-w-0 flex-1">
-          <div className="flex space-x-1">
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-yellow-500 rounded-full"></div>
-            <div className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full"></div>
-          </div>
-        </div>
-      </div>
-
-      {/* Course content */}
-      <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 flex-1 flex flex-col">
-        <div className="flex-1">
-          <h3 className="text-base sm:text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors line-clamp-2 leading-tight">
-            {title}
-          </h3>
-          <p className="text-slate-400 text-sm leading-relaxed line-clamp-3 mb-3">{description}</p>
-        </div>
-
-        {/* Stats */}
-        <div className="flex flex-col gap-2 text-xs sm:text-sm text-slate-400 font-mono">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1">
-                <Clock className="h-3 w-3 flex-shrink-0" />
-                <span className="truncate">{duration}</span>
+  return (
+    <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-cyan-500/50 transition-all duration-300 group">
+      <CardHeader className="p-0">
+        <div className="relative h-48 overflow-hidden rounded-t-lg">
+          {imageUrl ? (
+            <Image
+              src={imageUrl || "/placeholder.svg"}
+              alt={title}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-cyan-500/20 rounded-lg flex items-center justify-center mx-auto mb-2">
+                  <span className="text-cyan-400 text-2xl font-mono">{"</>"}</span>
+                </div>
+                <p className="text-slate-400 font-mono text-sm">{language}</p>
               </div>
             </div>
-            <div className="text-cyan-400 font-bold text-sm sm:text-base flex-shrink-0">${price}</div>
+          )}
+          <div className="absolute top-2 right-2">
+            <span className="bg-slate-900/80 backdrop-blur-sm text-cyan-400 px-2 py-1 rounded text-xs font-mono">
+              {difficulty}
+            </span>
           </div>
         </div>
+      </CardHeader>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-slate-800 mt-auto">
-          <div className="text-xs text-slate-500 font-mono truncate flex-1 mr-2">by {instructor}</div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <Code className="h-4 w-4 text-slate-500" />
-            <Play className="h-4 w-4 text-cyan-400 group-hover:text-cyan-300" />
+      <CardContent className="p-4 space-y-3">
+        <div className="space-y-2">
+          <h3 className="font-mono text-white font-semibold text-lg line-clamp-2 group-hover:text-cyan-400 transition-colors">
+            {title}
+          </h3>
+          <p className="text-slate-400 text-sm line-clamp-3 font-mono">{description}</p>
+        </div>
+
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag, index) => (
+            <span key={index} className="bg-slate-800 text-cyan-400 px-2 py-1 rounded text-xs font-mono">
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <div className="flex items-center gap-2 text-slate-400">
+            <User className="w-4 h-4" />
+            <span className="font-mono">{instructor}</span>
+          </div>
+          <div className="flex items-center gap-2 text-slate-400">
+            <Clock className="w-4 h-4" />
+            <span className="font-mono">{duration}</span>
           </div>
         </div>
-      </div>
-    </div>
-  )
+      </CardContent>
 
-  if (isTeacher) {
-    return (
-      <div className="block h-full relative">
-        <CardContent />
-      </div>
-    )
-  }
+      <CardFooter className="p-4 pt-0 flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <DollarSign className="w-4 h-4 text-green-400" />
+          <span className="font-mono text-green-400 font-semibold">${price}</span>
+        </div>
 
-  return (
-    <Link href={`/curso/${id}`} className="block h-full">
-      <CardContent />
-    </Link>
+        <Link href={`/cursos/${id}`}>
+          <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono">
+            Ver curso
+          </Button>
+        </Link>
+      </CardFooter>
+    </Card>
   )
 }

@@ -455,8 +455,6 @@ async def login(
         samesite=settings.SAMESITE,
         domain=settings.DOMAIN
     )  
-
-    print(response.headers)
     return response
 
 

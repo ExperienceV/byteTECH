@@ -1,20 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Raleway, Geist_Mono } from "next/font/google"
-import { AuthProvider } from "@/lib/auth-context"
+import { Inter } from "next/font/google"
 import "./globals.css"
 
-const raleway = Raleway({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-raleway",
-})
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-geist-mono",
-})
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "byteTECH - Plataforma de Cursos Online",
@@ -32,9 +21,6 @@ export const metadata: Metadata = {
     "full stack",
   ],
   robots: "index, follow",
-  icons: {
-    icon: "/favicon.ico",
-  },
   openGraph: {
     title: "byteTECH - Plataforma de Cursos Online",
     description: "Aprende tecnología con nuestros cursos especializados",
@@ -42,10 +28,10 @@ export const metadata: Metadata = {
     siteName: "byteTECH",
     images: [
       {
-        url: "/byteTECH_banner.jpg",
+        url: "/byteTECH_1.jpg",
         width: 1200,
         height: 630,
-        alt: "byteTECH - Desarrollo de Software & Formación en Programación",
+        alt: "byteTECH - Plataforma de Cursos Online",
       },
     ],
     locale: "es_ES",
@@ -56,7 +42,7 @@ export const metadata: Metadata = {
     title: "byteTECH - Plataforma de Cursos Online",
     description: "Aprende tecnología con nuestros cursos especializados",
     site: "@bytetechedu",
-    images: ["/byteTECH_banner.jpg"],
+    images: ["/byteTECH_1.jpg"],
   },
 }
 
@@ -66,13 +52,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${raleway.variable} ${geistMono.variable} antialiased`}>
-      <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-      </head>
-      <body>
-        <AuthProvider>{children}</AuthProvider>
-      </body>
+    <html lang="es">
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }

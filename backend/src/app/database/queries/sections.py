@@ -26,7 +26,7 @@ def get_sections_by_course_id(db: Session, course_id: int) -> list[int]:
     if not sections_data:
         return []
     data = [sqlalchemy_to_dict(section) for section in sections_data]
-    print(f"Sections for course {course_id}: {data}")
+    #print(f"Sections for course {course_id}: {data}")
     return data
 
 

@@ -163,10 +163,10 @@ async def del_course(
     )
 
 
-@workbrench_router.post("/new_section/{course_id}")
+@workbrench_router.post("/new_section")
 async def create_section(
-    course_id: int,
-    section_name: str,
+    course_id: int = Form(...),
+    section_name: str = Form(...),
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
 ):
@@ -200,11 +200,17 @@ async def create_section(
         )
 
     mtd_section = {
-        "course_id" : new_section_response.course_id,
-        "section_id" : new_section_response.id
+        "title" : new_section_response.title, # STR
+        "course_id" : new_section_response.course_id, # INT
+        "section_id" : new_section_response.id # INT
     }
 
-    return JSONResponse(content=f"Nueva seccion creada: {mtd_section}")
+    response = {
+        "Message" : "Section created successfully",
+        "mtd_section" : mtd_section
+    }
+
+    return JSONResponse(content=response, status_code=200)
 
 
 @workbrench_router.delete("/delete_section/{section_id}")
@@ -238,7 +244,14 @@ async def delete_section(
 
     delete_section_response = delete_section_by_id(db, section_id)
 
-    return JSONResponse(content=f"Successfully deleted: {delete_section_response}")
+
+    response = {
+        "Message" : "Section deleted successfully",
+        "section_id" : section_id
+    }
+
+    print(response)
+    return JSONResponse(content=response, status_code=200)
 
 
 @workbrench_router.post("/add_lesson")
@@ -286,7 +299,8 @@ async def new_lesson(
         title=title, 
         file_id=file_id, 
         course_id=course_id,
-        mime_type=mime_type
+        mime_type=mime_type,
+        time_validator=time_validator
     )
 
     lesson = {
@@ -295,7 +309,12 @@ async def new_lesson(
         "file_id" : create_response.file_id,
     }
 
-    return JSONResponse(content=f"New lesson: {lesson}", status_code=200)
+    response = {
+        "Message" : "Lesson created successfully",
+        "lesson" : lesson
+    }
+
+    return JSONResponse(content=response, status_code=200)
 
 
 @workbrench_router.post("/delete_lesson/{file_id}/{lesson_id}")
