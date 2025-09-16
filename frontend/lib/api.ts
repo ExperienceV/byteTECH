@@ -8,6 +8,7 @@
 import { API_BASE } from "./config"
 
 // Funciones auxiliares para peticiones API
+import { makeGetRequestNoAuth } from "./api-helpers"
 export { makeApiRequest, makeGetRequest } from "./api-helpers"
 
 // Tipos TypeScript para las respuestas de la API
@@ -110,7 +111,8 @@ export interface Thread {
   id: number;
   lesson_id: number;
   username?: string;
-  topic: string;
+  topic?: string;   // Backend uses 'topic'
+  title?: string;   // UI sometimes expects 'title'
 }
 
 export interface Section {
@@ -239,8 +241,10 @@ export interface Message {
   thread_id: number;
   user_id: number;
   username: string;
-  content: string;
-  created_at: string;
+  // Backend returns 'message'; some UI might look for 'content'. Keep both.
+  message?: string;
+  content?: string;
+  created_at?: string;
 }
 
 export interface MessagesResponse {
@@ -273,6 +277,15 @@ export interface UserStatsResponse {
   total_hours: number;
   achievements: string[];
   rank: string;
+}
+
+// ============================================================================
+// 📈 PLATFORM STATS INTERFACE
+// ============================================================================
+export interface PlatformStats {
+  total_users: number;
+  total_profits: number;
+  profits_by_course: Record<string, number>;
 }
 
 // ============================================================================
@@ -349,7 +362,8 @@ const makeApiRequest = async <T>(
     return {
       ok: false,
       status: 0,
-      data: error instanceof Error ? error.message : "Network error"
+      data: null as any,
+      message: error instanceof Error ? error.message : "Network error"
     };
   }
 };
@@ -384,7 +398,8 @@ const makeGetRequest = async <T>(url: string): Promise<ApiResponse<T>> => {
     return {
       ok: false,
       status: 0,
-      data: error instanceof Error ? error.message : "Network error"
+      data: null as any,
+      message: error instanceof Error ? error.message : "Network error"
     };
   }
 };
@@ -664,6 +679,13 @@ export const getUserStats = async (): Promise<ApiResponse<UserStats>> => {
 };
 
 /**
+ * Obtiene estadísticas globales de la plataforma (para senseis/admin)
+ */
+export const getPlatformStats = async (): Promise<ApiResponse<PlatformStats>> => {
+  return makeGetRequestNoAuth<PlatformStats>(`${API_BASE}/stats`);
+};
+
+/**
  * Sube una imagen de perfil
  */
 export const uploadProfileImage = async (
@@ -742,6 +764,84 @@ export const workbrenchApi = {
         method: "POST",
         body: formData,
         credentials: "include",
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error"
+      };
+    }
+  },
+
+  async markProgress(lessonId: number): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const formData = new FormData();
+      formData.append("lesson_id", String(lessonId));
+      const response = await fetch(`${API_BASE}/courses/mark_progress`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  },
+
+  async unmarkProgress(lessonId: number): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const response = await fetch(`${API_BASE}/courses/unmark_progress?lesson_id=${lessonId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Accept": "application/json" },
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  },
+
+  
+
+  async getCourseContentByName(courseName: string): Promise<ApiResponse<CourseContentResponse>> {
+    try {
+      const response = await fetch(`${API_BASE}/courses/course_content?course_name=${encodeURIComponent(courseName)}`, {
+        method: "GET",
+        credentials: "include",
+        headers: {
+          "Accept": "application/json"
+        }
       });
       const data = await response.json();
       return {
@@ -976,6 +1076,7 @@ export interface CourseData {
   lessons?: number
   hours?: number
   content?: any[]
+  miniature_id?: string
 }
 
 export interface WebhookResponse {
@@ -1088,6 +1189,58 @@ export const coursesApi = {
     }
   },
 
+  // Marca el progreso de una lección para el usuario autenticado
+  async markProgress(lessonId: number): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const formData = new FormData();
+      formData.append("lesson_id", String(lessonId));
+      const response = await fetch(`${API_BASE}/courses/mark_progress`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  },
+
+  // Elimina el progreso de una lección para el usuario autenticado
+  async unmarkProgress(lessonId: number): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const response = await fetch(`${API_BASE}/courses/unmark_progress?lesson_id=${lessonId}`, {
+        method: "DELETE",
+        credentials: "include",
+        headers: { "Accept": "application/json" },
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error",
+      };
+    }
+  },
+
   async stripeWebhook(payload: any, signature: string): Promise<ApiResponse<WebhookResponse>> {
     try {
       const response = await fetch(`${API_BASE}/courses/webhook`, {
@@ -1117,6 +1270,73 @@ export const coursesApi = {
     }
   }
 } 
+
+
+// ============================================================================
+// 💬 FORUMS API CLIENT
+// ============================================================================
+export const forumsApi = {
+  async getThreadsByLesson(lessonId: number): Promise<{ threads: Thread[]; lesson_id?: number; user_id?: number }> {
+    const response = await fetch(`${API_BASE}/forums/mtd_threads?lesson_id=${lessonId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Accept": "application/json" },
+    })
+    const data = await response.json().catch(() => ({}))
+    // Normalizar forma de respuesta
+    return {
+      threads: (data?.threads as Thread[]) || [],
+      lesson_id: data?.lesson_id,
+      user_id: data?.user_id,
+    }
+  },
+
+  async getMessagesByThread(threadId: number): Promise<{ messages: Message[]; thread_id?: number; user_id?: number }> {
+    const response = await fetch(`${API_BASE}/forums/messages_thread?thread_id=${threadId}`, {
+      method: "GET",
+      credentials: "include",
+      headers: { "Accept": "application/json" },
+    })
+    const data = await response.json().catch(() => ({}))
+    return {
+      messages: (data?.messages as Message[]) || [],
+      thread_id: data?.thread_id,
+      user_id: data?.user_id,
+    }
+  },
+
+  async createThread(payload: { lesson_id: number; topic: string }): Promise<{ message?: string; thread?: { id: number; title: string } }> {
+    const response = await fetch(`${API_BASE}/forums/create_thread`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ lesson_id: payload.lesson_id, topic: payload.topic }),
+    })
+    const data = await response.json().catch(() => ({}))
+    return data
+  },
+
+  async sendMessage(payload: { thread_id: number; message: string }): Promise<{ message?: string; thread_id?: number; user_id?: number }> {
+    const response = await fetch(`${API_BASE}/forums/send_message`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Accept": "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({ thread_id: payload.thread_id, message: payload.message }),
+    })
+    const data = await response.json().catch(() => ({}))
+    return data
+  },
+
+  async deleteThread(threadId: number): Promise<{ message?: string }> {
+    const response = await fetch(`${API_BASE}/forums/delete_thread?thread_id=${threadId}`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: { "Accept": "application/json" },
+    })
+    const data = await response.json().catch(() => ({}))
+    return data
+  },
+}
 
 
 /**

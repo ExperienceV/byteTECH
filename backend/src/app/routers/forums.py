@@ -165,6 +165,7 @@ async def send_message(
         content={
             "message": "Message sent", 
             "thread_id": thread_id, 
+            "message_id": create_response.id,
             "user_id": user_id, 
             "message": message
         }
@@ -198,7 +199,8 @@ async def messages_thread(
         thread_id=thread_id,
         db=db
     )
-
+    
+        
     return JSONResponse(
         status_code=200, 
         content={

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@//components/ui/card"
 import { Badge } from "@//components/ui/badge"
 import { Button } from "@//components/ui/button"
-import { Users, Star, DollarSign, Eye, Edit, BarChart3 } from "lucide-react"
+import { Star, DollarSign, Eye, Edit, BarChart3 } from "lucide-react"
 import Link from "next/link"
 
 interface TeacherCourseCardProps {
@@ -71,63 +71,59 @@ export function TeacherCourseCard({
     }
   }
 
-  // Calculate estimated revenue
-  const estimatedRevenue = price * students
 
   return (
-    <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-purple-500/50 transition-all duration-300 group">
-      <CardHeader className="pb-3">
+    <Card className="relative overflow-hidden bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-purple-500/50 transition-all duration-300 group">
+      {/* Background Image */}
+      {imageUrl && (
+        <div className="absolute inset-0 z-0">
+          <img 
+            src={imageUrl} 
+            alt={title} 
+            className="w-full h-full object-cover"
+          />
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/60 group-hover:bg-black/50 transition-all duration-300" />
+        </div>
+      )}
+      
+      <CardHeader className="relative z-10 pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-mono font-bold text-white text-lg mb-2 group-hover:text-purple-400 transition-colors">
+            <h3 className="font-mono font-bold text-white text-lg mb-2 group-hover:text-purple-400 transition-colors drop-shadow-lg">
               {title}
             </h3>
-            <p className="text-slate-400 text-sm font-mono line-clamp-2">{description}</p>
+            <p className="text-slate-200 text-sm font-mono line-clamp-2 drop-shadow-md">{description}</p>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mt-3">
-          <Badge className={getDifficultyColor(difficulty)} variant="outline">
+          <Badge className={`${getDifficultyColor(difficulty)} backdrop-blur-sm`} variant="outline">
             {difficulty}
           </Badge>
-          <Badge className={getLanguageColor(language)} variant="outline">
+          <Badge className={`${getLanguageColor(language)} backdrop-blur-sm`} variant="outline">
             {language}
           </Badge>
         </div>
-        {imageUrl && (
-          <div className="flex justify-center my-4">
-            <img src={imageUrl} alt={title} className="w-32 h-32 object-cover rounded-lg border-2 border-slate-800" />
-          </div>
-        )}
       </CardHeader>
 
-      <CardContent className="py-3">
+      <CardContent className="relative z-10 py-3">
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3 text-center border border-white/10">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <Users className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 font-mono text-sm">Estudiantes</span>
+              <DollarSign className="w-4 h-4 text-green-400" />
+              <span className="text-green-400 font-mono text-sm">Precio</span>
             </div>
-            <div className="text-white font-mono font-bold">{(typeof students === "number" ? students : 0).toLocaleString()}</div>
+            <div className="text-white font-mono font-bold drop-shadow-md">${Number(price || 0).toLocaleString()}</div>
           </div>
-
-          {/*<div className="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3 text-center border border-white/10">
             <div className="flex items-center justify-center gap-1 mb-1">
-              <Star className="w-4 h-4 text-yellow-400" />
-              <span className="text-yellow-400 font-mono text-sm">Rating</span>
+              <BarChart3 className="w-4 h-4 text-purple-400" />
+              <span className="text-purple-400 font-mono text-sm">Horas</span>
             </div>
-            <div className="text-white font-mono font-bold">{(typeof rating === "number" ? rating : 0).toFixed(1)}</div>
-          </div>*/}
-        </div>
-
-        {/* Revenue */}
-        <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4">
-          <div className="flex items-center justify-center gap-2 mb-1">
-            <DollarSign className="w-4 h-4 text-green-400" />
-            <span className="text-green-400 font-mono text-sm">Ingresos Generados</span>
+            <div className="text-white font-mono font-bold drop-shadow-md">{duration || "0h"}</div>
           </div>
-          <div className="text-white font-mono font-bold text-lg">${estimatedRevenue.toLocaleString()}</div>
         </div>
 
         {/* Tags */}
@@ -135,26 +131,26 @@ export function TeacherCourseCard({
           {(Array.isArray(tags) ? tags : []).slice(0, 3).map((tag, index) => (
             <Badge
               key={index}
-              className="bg-slate-700/50 text-slate-300 border-slate-600 text-xs font-mono"
+              className="bg-black/40 backdrop-blur-sm text-slate-200 border-white/20 text-xs font-mono"
               variant="outline"
             >
               {tag}
             </Badge>
           ))}
           {Array.isArray(tags) && tags.length > 3 && (
-            <Badge className="bg-slate-700/50 text-slate-400 border-slate-600 text-xs font-mono" variant="outline">
+            <Badge className="bg-black/40 backdrop-blur-sm text-slate-300 border-white/20 text-xs font-mono" variant="outline">
               +{tags.length - 3}
             </Badge>
           )}
         </div>
       </CardContent>
 
-      <CardFooter className="pt-3">
+      <CardFooter className="relative z-10 pt-3">
         <div className="flex gap-2 w-full">
           <Button
             asChild
             size="sm"
-            className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 font-mono"
+            className="flex-1 bg-black/40 backdrop-blur-sm hover:bg-black/60 text-cyan-400 border border-cyan-400/50 font-mono transition-all duration-300"
             variant="outline"
           >
             <Link href={`/curso/${id}`}>
@@ -165,7 +161,7 @@ export function TeacherCourseCard({
           <Button
             asChild
             size="sm"
-            className="flex-1 bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 border-purple-500/30 font-mono"
+            className="flex-1 bg-black/40 backdrop-blur-sm hover:bg-black/60 text-purple-400 border border-purple-400/50 font-mono transition-all duration-300"
             variant="outline"
           >
             <Link href={`/editor/${id}`}>
@@ -173,7 +169,6 @@ export function TeacherCourseCard({
               Editar
             </Link>
           </Button>
-          
         </div>
       </CardFooter>
     </Card>

@@ -74,7 +74,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
 
   const formatPrice = (price: number) => {
     if (price === 0) return 'Gratis';
-    return `$${price.toFixed(2)}`;
+    return `${price.toFixed(2)}`;
   };
 
   const formatDuration = (hours?: number) => {

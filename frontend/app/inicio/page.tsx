@@ -8,15 +8,17 @@ import { AddCourseModal } from "@//components/add-course-modal"
 import { Terminal, BookOpen, CheckCircle, Clock, TrendingUp, Users, BarChart3, Award, Eye, Plus, Edit, Trash2, Settings } from "lucide-react"
 import { Button } from "@//components/ui/button"
 import { useAuth } from "@//lib/auth-context"
-import { coursesApi, workbrenchApi } from "@/lib/api"
+import { coursesApi, workbrenchApi, getApiBase } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { use } from "react"
+import { useStats } from "@/hooks/use-stats"
 
 export default function Page({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const { user, isLoggedIn } = useAuth()
   const router = useRouter()
+  const { stats, isLoading: isLoadingStats, error: statsError } = useStats()
   const [isLoading, setIsLoading] = useState(true)
   const [showAddCourseModal, setShowAddCourseModal] = useState(false)
   const [courses, setCourses] = useState<any[]>([])
@@ -39,16 +41,14 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     return () => clearTimeout(timer)
   }, [isLoggedIn, router, user])
 
-  // Función auxiliar para obtener los cursos del profesor
-  // Función auxiliar para obtener los cursos del profesor
-  const fetchTeacherCourses = async (teacherName: string) => {
-    const response = await coursesApi.getMtdCourses()
+  // Función auxiliar para obtener los cursos del profesor (usa /courses/my_courses)
+  const fetchTeacherCourses = async () => {
+    const response = await coursesApi.getMyCourses()
     if (!response.ok) {
-      throw new Error(response.message || "Error al obtener los cursos")
+      throw new Error(response.message || "Error al obtener tus cursos")
     }
-    return response.data.mtd_courses.filter(
-      course => course.sensei_name?.toLowerCase() === teacherName.toLowerCase()
-    )
+    const data: any = response.data
+    return Array.isArray(data?.courses) ? data.courses : []
   }
 
   useEffect(() => {
@@ -60,14 +60,16 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       
       try {
         if (user.is_sensei) {
-          const teacherCourses = await fetchTeacherCourses(user.name)
+          const teacherCourses = await fetchTeacherCourses()
           setCourses(teacherCourses)
         } else {
           const response = await coursesApi.getMyCourses()
           if (!response.ok) {
             throw new Error(response.message || "Error al obtener tus cursos")
           }
-          setCourses(response.data)
+          // El endpoint /courses/my_courses retorna { is_sensei: bool, courses: [] }
+          // Aseguramos guardar solo el arreglo de cursos para la vista de estudiante
+          setCourses((response.data as any)?.courses || [])
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Error al cargar cursos"
@@ -121,7 +123,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
       
       // Recargar cursos
       if (user) {
-        const updatedCourses = await fetchTeacherCourses(user.name)
+        const updatedCourses = await fetchTeacherCourses()
         setCourses(updatedCourses)
       }
       
@@ -164,6 +166,29 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     router.push(`/editor/${courseId}`)
   }
 
+  // Mapper para props del TeacherCourseCard
+  const mapToTeacherCardProps = (c: any) => {
+    const base = getApiBase()
+    const imageUrl = c?.miniature_id
+      ? `${base}/media/get_file?file_id=${encodeURIComponent(c.miniature_id)}`
+      : undefined
+    return {
+      id: c?.id,
+      title: c?.name || "Curso",
+      description: c?.description || "",
+      price: Number(c?.price) || 0,
+      duration: c?.hours ? `${c.hours}h` : "",
+      students: Number(c?.students) || 0,
+      tags: Array.isArray(c?.tags) ? c.tags : [],
+      instructor: c?.sensei_name || "",
+      language: c?.language || "",
+      difficulty: (c?.difficulty as any) || "Intermedio",
+      slug: String(c?.id ?? ""),
+      miniature_id: c?.miniature_id,
+      imageUrl,
+    }
+  }
+
   // Show loading while checking auth
   if (isLoading) {
     return (
@@ -186,9 +211,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     const teacherCourses = courses
 
     // Calculate teacher stats
-    const totalStudents = teacherCourses.reduce((acc, course) => acc + (course.students || 0), 0)
-    const averageRating = teacherCourses.reduce((acc, course) => acc + (course.rating || 0), 0) / teacherCourses.length || 0
-    const totalRevenue = teacherCourses.reduce((acc, course) => acc + (course.price || 0) * (course.students || 0), 0)
+    const totalStudents = teacherCourses.reduce((acc: number, course: any) => acc + (course.students || 0), 0)
+    const averageRating = teacherCourses.reduce((acc: number, course: any) => acc + (course.rating || 0), 0) / teacherCourses.length || 0
+    const totalRevenue = teacherCourses.reduce((acc: number, course: any) => acc + (course.price || 0) * (course.students || 0), 0)
 
     return (
       <div className="min-h-screen bg-dynamic-gradient">
@@ -218,23 +243,40 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
               </div>
             )}
 
+            {/* Stats Error Message */}
+            {statsError && (
+              <div className="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-8 text-center">
+                <p className="text-yellow-400 font-mono text-sm">
+                  ⚠️ No se pudieron cargar las estadísticas: {statsError}
+                </p>
+              </div>
+            )}
+
             {/* Stats Overview */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold text-purple-400 font-mono">{teacherCourses.length}</div>
+                <div className="text-2xl font-bold text-purple-400 font-mono">
+                  {isLoadingStats ? "..." : teacherCourses.length}
+                </div>
                 <div className="text-slate-400 text-sm font-mono">Cursos</div>
               </div>
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold text-cyan-400 font-mono">{totalStudents.toLocaleString()}</div>
-                <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
+                <div className="text-2xl font-bold text-cyan-400 font-mono">
+                  {isLoadingStats ? "..." : stats?.total_users?.toLocaleString() || "0"}
+                </div>
+                <div className="text-slate-400 text-sm font-mono">Usuarios Totales</div>
               </div>
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold text-green-400 font-mono">{averageRating.toFixed(1)}</div>
+                <div className="text-2xl font-bold text-green-400 font-mono">
+                  {isLoadingStats ? "..." : averageRating.toFixed(1)}
+                </div>
                 <div className="text-slate-400 text-sm font-mono">Rating</div>
               </div>
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-                <div className="text-2xl font-bold text-orange-400 font-mono">${totalRevenue.toLocaleString()}</div>
-                <div className="text-slate-400 text-sm font-mono">Ingresos</div>
+                <div className="text-2xl font-bold text-orange-400 font-mono">
+                  {isLoadingStats ? "..." : `$${stats?.total_profits?.toLocaleString() || "0"}`}
+                </div>
+                <div className="text-slate-400 text-sm font-mono">Ganancias Totales</div>
               </div>
             </div>
           </div>
@@ -289,7 +331,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {teacherCourses.map((course, index) => (
                     <div key={index} className="relative group">
-                      <TeacherCourseCard {...course} />
+                      <TeacherCourseCard {...mapToTeacherCardProps(course)} />
                       
                       {/* Action Buttons */}
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -370,21 +412,23 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   <div className="bg-slate-800/50 rounded-lg p-4">
                     <div className="flex items-center gap-3 mb-3">
                       <Award className="w-5 h-5 text-green-400" />
-                      <h3 className="font-mono text-green-400 font-semibold">Ingresos</h3>
+                      <h3 className="font-mono text-green-400 font-semibold">Ganancias</h3>
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400 font-mono">Este mes:</span>
-                        <span className="text-white font-mono">${Math.floor(totalRevenue * 0.1).toLocaleString()}</span>
+                        <span className="text-slate-400 font-mono">Total plataforma:</span>
+                        <span className="text-white font-mono">
+                          {isLoadingStats ? "..." : `$${stats?.total_profits?.toLocaleString() || "0"}`}
+                        </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400 font-mono">Total:</span>
+                        <span className="text-slate-400 font-mono">Mis ingresos:</span>
                         <span className="text-green-400 font-mono">${totalRevenue.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-slate-400 font-mono">Promedio/curso:</span>
+                        <span className="text-slate-400 font-mono">Cursos con ganancias:</span>
                         <span className="text-cyan-400 font-mono">
-                          ${teacherCourses.length > 0 ? Math.floor(totalRevenue / teacherCourses.length).toLocaleString() : 0}
+                          {isLoadingStats ? "..." : Object.keys(stats?.profits_by_course || {}).length}
                         </span>
                       </div>
                     </div>
@@ -415,6 +459,44 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
                   </div>
                 </div>
               </div>
+
+              {/* Ganancias por Curso */}
+              {stats?.profits_by_course && Object.keys(stats.profits_by_course).length > 0 && (
+                <div className="mt-8">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-5 h-5 text-black" />
+                    </div>
+                    <div>
+                      <h3 className="font-mono text-xl font-bold text-orange-400">GANANCIAS POR CURSO:</h3>
+                      <p className="text-slate-400 font-mono text-sm">// Desglose de ingresos por curso</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {Object.entries(stats.profits_by_course).map(([courseId, profit]) => {
+                        const course = teacherCourses.find(c => c.id === parseInt(courseId));
+                        return (
+                          <div key={courseId} className="bg-slate-800/50 rounded-lg p-4">
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-mono text-orange-400 font-semibold text-sm">
+                                {course?.name || `Curso #${courseId}`}
+                              </h4>
+                              <span className="text-green-400 font-mono font-bold">
+                                ${profit.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-400 font-mono">
+                              ID: {courseId} • {course?.students || 0} estudiantes
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -432,10 +514,43 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
     )
   }
 
-  // STUDENT VIEW - No changes needed
-  const userCourses = courses
-  const ongoingCourses = userCourses.filter((course) => course.progress < 100)
-  const completedCourses = userCourses.filter((course) => course.progress === 100)
+  // STUDENT VIEW - Normalizar por seguridad (si courses no es arreglo)
+  const userCourses = Array.isArray(courses) ? courses : (courses as any)?.courses || []
+
+  // Mapear datos del backend a props esperadas por StudentCourseCard
+  const toSlug = (value: string) =>
+    (value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+
+  const mapToStudentCardProps = (c: any) => {
+    const base = getApiBase()
+    const imageUrl = c?.miniature_id ? `${base}/media/get_file?file_id=${encodeURIComponent(c.miniature_id)}` : undefined
+    return {
+      title: c?.name || "Curso",
+      description: c?.description || "",
+      price: Number(c?.price) || 0,
+      duration: c?.hours ? `${c.hours}h` : "",
+      students: Number(c?.students) || 0,
+      rating: Number(c?.rating) || 0,
+      tags: Array.isArray(c?.tags) ? c.tags : [],
+      instructor: c?.sensei_name || "",
+      language: c?.language || "",
+      difficulty: (c?.difficulty as any) || "Intermedio",
+      lessons: Number(c?.lessons_count) || 0,
+      hours: Number(c?.hours) || 0,
+      progress: typeof c?.progress === "number" ? c.progress : Number(c?.progress?.progress_percentage || 0),
+      lastAccessed: c?.last_accessed || "",
+      slug: toSlug(c?.name || ""),
+      status: (typeof c?.progress === "number" ? c.progress : Number(c?.progress?.progress_percentage || 0)) === 100 ? "completed" : "ongoing",
+      imageUrl,
+    }
+  }
+  const ongoingCourses = userCourses.filter((course: any) => (course.progress ?? 0) < 100)
+  const completedCourses = userCourses.filter((course: any) => (course.progress ?? 0) === 100)
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
@@ -462,7 +577,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-green-400 font-mono">{userCourses.length}</div>
-              <div className="text-slate-400 text-sm font-mono">Cursos</div>
+              <div className="text-slate-400 text-sm font-mono">Mis Cursos</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-cyan-400 font-mono">{completedCourses.length}</div>
@@ -476,9 +591,9 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-purple-400 font-mono">
-                {userCourses.reduce((acc, course) => acc + (course.hours || 0), 0).toFixed(1)}h
+                {isLoadingStats ? "..." : stats?.total_users?.toLocaleString() || "0"}
               </div>
-              <div className="text-slate-400 text-sm font-mono">Horas</div>
+              <div className="text-slate-400 text-sm font-mono">Usuarios</div>
             </div>
           </div>
         </div>
@@ -505,9 +620,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {ongoingCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {ongoingCourses.map((course, index) => (
-                  <StudentCourseCard key={index} {...course} status="ongoing" />
-                ))}
+                {ongoingCourses.map((course, index) => {
+                  const props = mapToStudentCardProps(course)
+                  return <StudentCourseCard key={index} {...props} />
+                })}
               </div>
             ) : (
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">
@@ -532,9 +648,10 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
             {completedCourses.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {completedCourses.map((course, index) => (
-                  <StudentCourseCard key={index} {...course} status="completed" />
-                ))}
+                {completedCourses.map((course, index) => {
+                  const props = mapToStudentCardProps(course)
+                  return <StudentCourseCard key={index} {...props} />
+                })}
               </div>
             ) : (
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">

@@ -9,7 +9,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://localhost:8000/api/:path*', // <-- backend local
+        destination: 'https://localhost:8000/api/:path*', // <-- backend local over HTTPS
       },
     ]
   },

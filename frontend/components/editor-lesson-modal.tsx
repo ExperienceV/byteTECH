@@ -30,17 +30,19 @@ export const EditorLessonModal: React.FC<EditorLessonModalProps> = ({
 }) => {
   const [formData, setFormData] = useState<LessonFormData>({
     title: '',
-    file: null
+    file: null,
+    time_validator: '0:00'
   });
   const [validationErrors, setValidationErrors] = useState<{
     title?: string;
     file?: string;
+    time_validator?: string;
   }>({});
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const validateForm = (): boolean => {
-    const errors: { title?: string; file?: string } = {};
+    const errors: { title?: string; file?: string; time_validator?: string } = {};
 
     // Validar título
     if (!formData.title || formData.title.length < FORM_VALIDATION.LESSON.TITLE.MIN_LENGTH) {
@@ -67,6 +69,20 @@ export const EditorLessonModal: React.FC<EditorLessonModalProps> = ({
             errors.file = `El archivo es demasiado grande (máximo ${Math.round(maxSize / (1024 * 1024))}MB)`;
           }
         }
+      }
+    }
+
+    // Validar time_validator (formato MM:SS)
+    const timeRegex = /^\d{1,3}:\d{2}$/;
+    if (!formData.time_validator || !timeRegex.test(formData.time_validator)) {
+      errors.time_validator = 'El tiempo debe estar en formato MM:SS (ej: 4:30)';
+    } else {
+      const [minutes, seconds] = formData.time_validator.split(':').map(Number);
+      if (seconds >= 60) {
+        errors.time_validator = 'Los segundos no pueden ser mayor a 59';
+      }
+      if (minutes < 0) {
+        errors.time_validator = 'Los minutos no pueden ser negativos';
       }
     }
 
@@ -99,6 +115,30 @@ export const EditorLessonModal: React.FC<EditorLessonModalProps> = ({
     // Limpiar error de título al escribir
     if (title) {
       setValidationErrors(prev => ({ ...prev, title: undefined }));
+    }
+  };
+
+  const handleTimeValidatorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // Formatear automáticamente el input para MM:SS
+    if (value.length === 1 && /^\d$/.test(value)) {
+      value = `0:${value}`;
+    } else if (value.length === 2 && /^\d{2}$/.test(value)) {
+      value = `${value}:00`;
+    } else if (value.length === 3 && /^\d{2}:\d$/.test(value)) {
+      value = value;
+    } else if (value.length === 4 && /^\d{2}:\d{2}$/.test(value)) {
+      value = value;
+    } else if (value.length === 5 && /^\d{3}:\d{2}$/.test(value)) {
+      value = value;
+    }
+    
+    setFormData(prev => ({ ...prev, time_validator: value }));
+    
+    // Limpiar error de time_validator al escribir
+    if (value) {
+      setValidationErrors(prev => ({ ...prev, time_validator: undefined }));
     }
   };
 
@@ -180,6 +220,31 @@ export const EditorLessonModal: React.FC<EditorLessonModalProps> = ({
               )}
             </div>
 
+            {/* Time Validator */}
+            <div>
+              <label className="block text-cyan-400 font-mono text-sm mb-2">
+                DURACIÓN (MM:SS)
+              </label>
+              <Input
+                value={formData.time_validator}
+                onChange={handleTimeValidatorChange}
+                placeholder="4:30"
+                className={`bg-slate-800/50 border-slate-700 text-white font-mono ${
+                  validationErrors.time_validator ? 'border-red-500' : ''
+                }`}
+                maxLength={5}
+                required
+              />
+              {validationErrors.time_validator && (
+                <p className="text-red-400 font-mono text-xs mt-1">
+                  {validationErrors.time_validator}
+                </p>
+              )}
+              <p className="text-slate-500 font-mono text-xs mt-1">
+                Formato: Minutos:Segundos (ej: 4:30 = 4 minutos y 30 segundos)
+              </p>
+            </div>
+
             {/* Selección de archivo */}
             <div>
               <label className="block text-cyan-400 font-mono text-sm mb-2">
@@ -253,7 +318,7 @@ export const EditorLessonModal: React.FC<EditorLessonModalProps> = ({
             <div className="flex gap-2 pt-2">
               <Button
                 type="submit"
-                disabled={isLoading || !formData.title || !formData.file}
+                disabled={isLoading || !formData.title || !formData.file || !formData.time_validator}
                 className="flex-1 bg-green-500 hover:bg-green-600 text-black font-mono"
               >
                 {isLoading ? (

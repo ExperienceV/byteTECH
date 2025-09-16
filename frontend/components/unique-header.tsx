@@ -70,29 +70,29 @@ export function UniqueHeader() {
             <div className="bg-slate-900/80 backdrop-blur-sm rounded-lg p-1 flex items-center space-x-1 border border-slate-800">
               {isLoggedIn && (
                 <Link
-                  href="/inicio"
+                  href="/perfil"
                   className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-green-400 rounded-md hover:bg-green-400/10 transition-all"
                 >
-                  ./home
+                  PERFIL
                 </Link>
               )}
               <Link
                 href="/cursos"
                 className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-orange-400 rounded-md hover:bg-orange-400/10 transition-all"
               >
-                ./cursos
+                CURSOS
               </Link>
               <Link
                 href="/empresarial"
                 className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-orange-400 rounded-md hover:bg-orange-400/10 transition-all"
               >
-                ./empresarial
+                EMPRESARIAL
               </Link>
               <Link
                 href="/soporte"
                 className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-orange-400 rounded-md hover:bg-orange-400/10 transition-all"
               >
-                ./soporte
+                SOPORTE
               </Link>
             </div>
           </div>
@@ -219,12 +219,12 @@ export function UniqueHeader() {
             <div className="flex flex-col space-y-2">
               {isLoggedIn && (
                 <Link
-                  href="/inicio"
+                  href="/perfil"
                   className="px-4 py-3 text-sm font-raleway text-slate-400 hover:text-green-400 hover:bg-green-400/10 rounded-md transition-all flex items-center gap-2"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   <Home className="w-4 h-4" />
-                  ./inicio
+                  ./perfil
                 </Link>
               )}
               <Link

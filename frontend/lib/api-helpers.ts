@@ -61,3 +61,30 @@ export async function makeGetRequest<T>(url: string): Promise<ApiResponse<T>> {
     };
   }
 }
+
+// Función auxiliar para hacer peticiones GET sin autenticación
+export async function makeGetRequestNoAuth<T>(url: string): Promise<ApiResponse<T>> {
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Accept": "application/json",
+      }
+    });
+    const jsonData = await response.json();
+
+    return {
+      ok: response.ok,
+      status: response.status,
+      data: jsonData,
+      message: jsonData.message
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      status: 500,
+      data: null as any,
+      message: error instanceof Error ? error.message : "Unknown error"
+    };
+  }
+}

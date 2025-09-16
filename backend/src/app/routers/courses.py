@@ -18,6 +18,8 @@ from app.dependencies import get_cookies, get_db
 from app.database.base import Course
 from app.parameters import settings
 import stripe
+from app.database.queries.courses import get_course_by_name
+from typing import Optional
 
 stripe.api_key = settings.STRIPE_API_KEY 
 
@@ -63,7 +65,8 @@ async def get_mtd_courses(
 
 @courses_router.get("/course_content")
 async def get_course_content(
-    course_id: int, 
+    course_name: Optional[str] = None,
+    course_id: Optional[int] = None, 
     user_info: dict = Depends(get_cookies),
     db: Session = Depends(get_db)
 ):
@@ -86,7 +89,10 @@ async def get_course_content(
     Errors:
         404: Curso no encontrado o sin secciones
     """
-    course = get_course_by_id(course_id=course_id, db=db)
+    if course_name:
+        course = get_course_by_name(name=course_name, db=db)
+    else:
+        course = get_course_by_id(course_id=course_id, db=db)
     if not course:
         return JSONResponse(status_code=404, content={"message": "Course not found"})
     
@@ -205,7 +211,8 @@ async def buy_course(
     """
     print("Eta e la userinfo ", user_info)
     get_response = get_purchased_courses_by_user(user_id=user_info["user_id"], db=db)
-    if course_id in get_response:
+    # get_response es una lista de diccionarios de cursos; validar por id
+    if any(c.get("id") == course_id for c in get_response):
         return JSONResponse(
             content="Ya posees este curso",
             status_code=status.HTTP_409_CONFLICT
@@ -219,11 +226,10 @@ async def buy_course(
         )
 
     try:
+        # Construir URLs de retorno para Stripe (evitar tuplas accidentales)
+        success_url = f"{settings.FRONTEND_URL}/success?session_id={{CHECKOUT_SESSION_ID}}"
+        cancel_url = f"{settings.FRONTEND_URL}/cancel"
 
-        succes = "/success?session_id={CHECKOUT_SESSION_ID}"
-        cancel= "/cancel"
-        success_path = settings.FRONTEND_URL + succes if settings.DEBUG else settings.FRONTEND_URL + succes,
-        cancel_path = settings.FRONTEND_URL + cancel if settings.DEBUG else settings.FRONTEND_URL + cancel,
         session = stripe.checkout.Session.create(
             payment_method_types=["card"],
             line_items=[{
@@ -239,8 +245,8 @@ async def buy_course(
             }],
             mode="payment",
             customer_email=user_info["email"],
-            success_url=success_path[0],
-            cancel_url=cancel_path[0],
+            success_url=success_url,
+            cancel_url=cancel_url,
             metadata={
                 "user_id": str(user_info["user_id"]),
                 "course_id": str(course_id),
@@ -250,7 +256,8 @@ async def buy_course(
         return JSONResponse(content={"checkout_url": session.url}, status_code=200)
 
     except Exception as e:
-        return JSONResponse(content="sabra la bola" + str(e), status_code=500)
+        # Reenviar el error real para depurar más fácil (idealmente loggear y no exponer en prod)
+        return JSONResponse(content={"message": f"Stripe error: {str(e)}"}, status_code=500)
 
 
 @courses_router.post("/webhook")

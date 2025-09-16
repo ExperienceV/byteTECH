@@ -14,11 +14,12 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # COOKIE SETTINGS
-    SAMESITE: str = "none" if DEBUG else "lax"
+    # In development with HTTPS certificates, use SameSite=None and Secure=True
+    SAMESITE: str = "none" if DEBUG else "none"
     HTTPONLY: bool = True
-    SECURE: bool = True  # Required when SameSite is None    # URL SETTINGS
+    SECURE: bool = True  # Using HTTPS locally with certs
     FRONTEND_URL: str = "https://bytetechedu.com" if not DEBUG else "http://localhost:3000"
-    BACKEND_URL: str = "https://api.bytetechedu.com" if not DEBUG else "http://localhost:8000"
+    BACKEND_URL: str = "https://api.bytetechedu.com" if not DEBUG else "https://localhost:8000"
     DOMAIN: str = "localhost" if DEBUG else ".bytetechedu.com"
     
     # CORS SETTINGS
@@ -26,12 +27,15 @@ class Settings(BaseSettings):
     CORS_ALLOW_ORIGINS: list = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        "https://localhost:3000",
+        "https://127.0.0.1:3000",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://localhost:8000",
+        "https://127.0.0.1:8000",
         "http://localhost:5500",
-        "http://127.0.0.1:5500",
-        "https://shm52rk5-3000.brs.devtunnels.ms"
-    ] if DEBUG else [
+        "http://127.0.0.1:5500"
+    ] if DEBUG else [   
         "https://bytetechedu.com",
         "https://api.bytetechedu.com"
     ]

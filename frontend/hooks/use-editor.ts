@@ -63,6 +63,7 @@ export interface GiftFormData {
 export interface LessonFormData {
   title: string;
   file: File | null;
+  time_validator: string; // Formato "MM:SS"
 }
 
 // Hook principal del editor
@@ -99,7 +100,8 @@ export const useEditor = (courseId: string) => {
 
   const [lessonForm, setLessonForm] = useState<LessonFormData>({
     title: '',
-    file: null
+    file: null,
+    time_validator: '0:00'
   });
 
   // ============================================================================
@@ -393,12 +395,18 @@ export const useEditor = (courseId: string) => {
     setState(prev => ({ ...prev, isAddingLesson: true, error: null }));
 
     try {
+      // Convertir formato MM:SS a float (ej: "4:30" -> 4.5)
+      const convertTimeToFloat = (timeStr: string): number => {
+        const [minutes, seconds] = timeStr.split(':').map(Number);
+        return minutes + (seconds / 60);
+      };
+
       const formData = new FormData();
       formData.append("section_id", sectionId.toString());
       formData.append("course_id", state.course.id.toString());
       formData.append("title", lessonData.title);
       formData.append("file", lessonData.file);
-      formData.append("time_validator", "0"); // Valor por defecto
+      formData.append("time_validator", convertTimeToFloat(lessonData.time_validator).toString());
 
       const response = await createLesson(formData);
       
@@ -429,7 +437,7 @@ export const useEditor = (courseId: string) => {
       }));
 
       // Limpiar formulario
-      setLessonForm({ title: '', file: null });
+      setLessonForm({ title: '', file: null, time_validator: '0:00' });
 
       setTimeout(() => {
         setState(prev => ({ ...prev, success: null }));

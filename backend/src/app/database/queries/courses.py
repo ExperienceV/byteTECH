@@ -64,6 +64,27 @@ def get_course_by_id(db: Session, course_id: int) -> dict | None:
     }
 
 
+def get_course_by_name(db: Session, name: str) -> dict | None:
+    course = db.query(Course).filter(Course.name == name).first()
+    if not course:
+        return None
+
+    course_data = {
+        "id": course.id,
+        "sensei_id": course.sensei_id,
+        "name": course.name,
+        "description": course.description,
+        "hours": course.hours,
+        "miniature_id": course.miniature_id,
+        "video_id": course.video_id,
+        "price": course.price
+    }
+    return {
+        "object": course,
+        "course_data": course_data
+    }
+
+
 def update_course(db: Session, course_id: int, update_data: dict) -> Course | None:
     course = db.query(Course).filter(Course.id == course_id).first()
     if not course:

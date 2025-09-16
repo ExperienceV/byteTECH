@@ -5,21 +5,30 @@ import { UniqueFooter } from "@/components/unique-footer"
 import { TerminalCourseCard } from "@/components/terminal-course-card"
 import { Terminal, BookOpen } from "lucide-react"
 import { useEffect, useState } from "react"
-import { coursesApi, CourseData } from "@/lib/api"
+import { coursesApi, CourseData, getApiBase } from "@/lib/api"
+import Link from "next/link"
 
 export default function CursosPage() {
   const [cursos, setCursos] = useState<CourseData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+
   const normalizeDifficulty = (
     d?: string
-  ): "Beginner" | "Intermediate" | "Advanced" | "Intermedio" | "Avanzado" => {
+  ): "Beginner" | "Intermediate" | "Advanced" => {
     const val = (d || "").toLowerCase()
     if (["beginner", "basico", "básico"].includes(val)) return "Beginner"
-    if (["intermediate", "intermedio", "medio"].includes(val)) return "Intermedio"
-    if (["advanced", "avanzado"].includes(val)) return "Avanzado"
-    return "Intermedio"
+    if (["intermediate", "intermedio", "medio"].includes(val)) return "Intermediate"
+    if (["advanced", "avanzado"].includes(val)) return "Advanced"
+    return "Intermediate"
   }
 
   useEffect(() => {
@@ -156,23 +165,33 @@ export default function CursosPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {cursos.map((curso, index) => (
-                <TerminalCourseCard
-                  key={index}
-                  title={curso.name}
-                  description={
-                    curso.description || `Curso impartido por ${curso.sensei_name ?? "Sensei"}`
-                  }
-                  instructor={curso.sensei_name || "Sensei"}
-                  price={curso.price || 0}
-                  duration={curso.duration || "Por definir"}
-                  students={curso.students || 0}
-                  rating={curso.rating || 0}
-                  tags={curso.tags || []}
-                  language={curso.language || ""}
-                  difficulty={normalizeDifficulty(curso.difficulty)}
-                />
-              ))}
+              {cursos.map((curso, index) => {
+                const base = getApiBase()
+                const imageUrl = curso.miniature_id
+                  ? `${base}/media/get_file?file_id=${encodeURIComponent(curso.miniature_id)}`
+                  : undefined
+                
+                return (
+                  <TerminalCourseCard
+                    key={index}
+                    id={curso.id}
+                    title={curso.name}
+                    description={
+                      curso.description || `Curso impartido por ${curso.sensei_name ?? "Sensei"}`
+                    }
+                    instructor={curso.sensei_name || "Sensei"}
+                    price={curso.price || 0}
+                    duration={curso.hours ? `${curso.hours}h` : "Por definir"}
+                    students={curso.students || 0}
+                    rating={curso.rating || 0}
+                    tags={curso.tags || []}
+                    language={curso.language || ""}
+                    difficulty={normalizeDifficulty(curso.difficulty)}
+                    href={`/cursos/${slugify(curso.name)}`}
+                    imageUrl={imageUrl}
+                  />
+                )
+              })}
             </div>
           )}
         </div>

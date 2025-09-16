@@ -266,25 +266,27 @@ async def verify_register(
     access_token = create_access_token(data=user_mtd)
     refresh_token = create_refresh_token(data=user_mtd)
 
+    cookie_kwargs = {
+        "httponly": settings.HTTPONLY,
+        "secure": settings.SECURE,
+        "samesite": settings.SAMESITE,
+    }
+    # In development, avoid setting Domain to prevent mismatch with 127.0.0.1 vs localhost
+    if not settings.DEBUG and settings.DOMAIN:
+        cookie_kwargs["domain"] = settings.DOMAIN
+
     response.set_cookie(
         key="access_token",
         value=access_token,
-        httponly=settings.HTTPONLY,
         max_age=settings.ACCESS_TOKEN_MAX_AGE,
-        secure=settings.SECURE,
-        samesite=settings.SAMESITE,
-        domain=settings.DOMAIN
-    ) 
-    
+        **cookie_kwargs,
+    )
     response.set_cookie(
-        key="refresh_token", 
-        value=refresh_token, 
-        httponly=settings.HTTPONLY, 
+        key="refresh_token",
+        value=refresh_token,
         max_age=settings.REFRESH_TOKEN_MAX_AGE,
-        secure=settings.SECURE,
-        samesite=settings.SAMESITE,
-        domain=settings.DOMAIN
-    )  
+        **cookie_kwargs,
+    )
 
     return response
 
@@ -468,19 +470,21 @@ async def logout():
         content: json
     """
     response = JSONResponse(status_code=200, content={"message": "Logout successful"})
+    cookie_kwargs = {
+        "httponly": settings.HTTPONLY,
+        "secure": settings.SECURE,
+        "samesite": settings.SAMESITE,
+    }
+    if not settings.DEBUG and settings.DOMAIN:
+        cookie_kwargs["domain"] = settings.DOMAIN
+
     response.delete_cookie(
         key="access_token",
-        httponly=settings.HTTPONLY,
-        secure=settings.SECURE,
-        samesite=settings.SAMESITE,
-        domain=settings.DOMAIN
+        **cookie_kwargs,
     )
     response.delete_cookie(
         key="refresh_token",
-        httponly=settings.HTTPONLY,
-        secure=settings.SECURE,
-        samesite=settings.SAMESITE,
-        domain=settings.DOMAIN
+        **cookie_kwargs,
     )
 
     return response

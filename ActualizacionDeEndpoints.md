@@ -1,8 +1,5 @@
 # Integracion para el sistema de progreso.
 
-URL_BASE = http://127.0.0.1:8000/api
-
-
 # Endpoints Actualizados
 ```go
 // Todos los endpoints que tienen la dependencia a get_cookies deben tener incluidas las credenciales

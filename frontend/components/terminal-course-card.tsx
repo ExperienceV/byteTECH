@@ -17,6 +17,7 @@ interface TerminalCourseCardProps {
   tags?: string[]
   students?: number
   rating?: number
+  href?: string
 }
 
 export function TerminalCourseCard({
@@ -32,6 +33,7 @@ export function TerminalCourseCard({
   tags = ["Programación"],
   students = 0,
   rating = 0,
+  href,
 }: TerminalCourseCardProps) {
   return (
     <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-cyan-500/50 transition-all duration-300 group">
@@ -96,7 +98,7 @@ export function TerminalCourseCard({
           <span className="font-mono text-green-400 font-semibold">${price}</span>
         </div>
 
-        <Link href={`/cursos/${id}`}>
+        <Link href={href ?? `/cursos/${id}`}>
           <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono">
             Ver curso
           </Button>

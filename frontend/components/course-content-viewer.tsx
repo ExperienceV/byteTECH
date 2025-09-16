@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,7 +22,7 @@ import {
   AlertCircle,
   Loader2,
 } from "lucide-react"
-import { forumsApi, type Thread, type Message } from "@/lib/api"
+import { forumsApi, type Thread, type Message, getApiBase, coursesApi } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
 
 interface Lesson {
@@ -32,6 +32,9 @@ interface Lesson {
   duration?: string
   completed?: boolean
   locked?: boolean
+  file_id?: string
+  mime_type?: string
+  time_validator?: number
 }
 
 interface Section {
@@ -44,9 +47,14 @@ interface CourseContentViewerProps {
   courseTitle: string
   courseSlug: string
   sections: Section[]
+  progress?: {
+    total_lessons: number
+    completed_lessons: number
+    progress_percentage: number
+  }
 }
 
-export function CourseContentViewer({ courseTitle, courseSlug, sections }: CourseContentViewerProps) {
+export function CourseContentViewer({ courseTitle, courseSlug, sections, progress }: CourseContentViewerProps) {
   const { user } = useAuth()
   const [activeSection, setActiveSection] = useState(0)
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
@@ -55,9 +63,31 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
   const [newThreadData, setNewThreadData] = useState({ title: "", description: "" })
   const [newMessage, setNewMessage] = useState("")
   const [threads, setThreads] = useState<Thread[]>([])
-  const [threadMessages, setThreadMessages] = useState<Message[]>([])
-  const [loading, setLoading] = useState(false)
+  const [threadMessages, setThreadMessages] = useState<(Message & { pending?: boolean })[]>([])
+  const [loadingThreads, setLoadingThreads] = useState(false)
+  const [loadingMessages, setLoadingMessages] = useState(false)
+  const [sendingMessage, setSendingMessage] = useState(false)
   const [error, setError] = useState("")
+  // Estado para previsualización de archivos de texto
+  const [textPreview, setTextPreview] = useState<string>("")
+  const [textLoading, setTextLoading] = useState<boolean>(false)
+  const [textError, setTextError] = useState<string>("")
+  // Estado local para marcar lecciones completadas en UI
+  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set())
+  const [marking, setMarking] = useState<boolean>(false)
+  const timerRef = useRef<number | undefined>(undefined)
+  const messagesEndRef = useRef<HTMLDivElement | null>(null)
+  // Progreso local para la barra
+  const [localProgress, setLocalProgress] = useState(progress)
+
+  // Inicializar progreso local desde props o calculado por las lecciones
+  useEffect(() => {
+    const total = sections.reduce((acc, s) => acc + s.lessons.length, 0)
+    const initialCompleted = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
+    const pct = total > 0 ? (initialCompleted / total) * 100 : 0
+    setLocalProgress(prev => prev ?? { total_lessons: total, completed_lessons: initialCompleted, progress_percentage: pct })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections])
 
   // Auto-select first lesson on mount
   useEffect(() => {
@@ -76,9 +106,108 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
     }
   }, [selectedLesson])
 
+  // Auto-scroll al último mensaje cuando se entra a la vista de hilo o cambian los mensajes
+  useEffect(() => {
+    if (forumView === "thread") {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [forumView, selectedThread?.id, threadMessages.length])
+
+  // Iniciar temporizador de progreso basado en time_validator
+  useEffect(() => {
+    // Limpiar temporizador previo si existe
+    if (timerRef.current) {
+      clearTimeout(timerRef.current)
+      timerRef.current = undefined
+    }
+
+    if (!selectedLesson) return
+    const alreadyCompleted = Boolean(selectedLesson.completed) || completedLessons.has(String(selectedLesson.id))
+    const toSeconds = (val?: number): number => {
+      if (!val && val !== 0) return 0
+      // Interpretar formato M.S donde la parte decimal representa segundos
+      const asStr = String(val)
+      const [mStr, sStr] = asStr.split(".")
+      const minutes = parseInt(mStr || "0", 10)
+      const secondsPart = parseInt((sStr || "0").slice(0, 2), 10) || 0 // máx 2 dígitos
+      return minutes * 60 + secondsPart
+    }
+    const seconds = toSeconds(selectedLesson.time_validator)
+    if (alreadyCompleted || !seconds || seconds <= 0) return
+
+    // Programar marcado automático
+    timerRef.current = window.setTimeout(async () => {
+      try {
+        setMarking(true)
+        await coursesApi.markProgress(Number(selectedLesson.id))
+        // Actualizar estado local de completado
+        setCompletedLessons((prev) => new Set(prev).add(String(selectedLesson.id)))
+        setSelectedLesson((prev) => (prev ? { ...prev, completed: true } : prev))
+        // Actualizar progreso local
+        setLocalProgress((prev) => {
+          const total = prev?.total_lessons ?? sections.reduce((acc, s) => acc + s.lessons.length, 0)
+          const currentCompletedSet = new Set(completedLessons)
+          currentCompletedSet.add(String(selectedLesson.id))
+          // Calcular completados reales combinando props y estado local
+          const completedCountFromProps = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
+          const additional = currentCompletedSet.size - completedLessons.size // normalmente 1
+          const completed = Math.min(total, (prev?.completed_lessons ?? completedCountFromProps) + additional)
+          const pct = total > 0 ? (completed / total) * 100 : 0
+          return { total_lessons: total, completed_lessons: completed, progress_percentage: pct }
+        })
+      } catch (e) {
+        console.error('Error marking progress:', e)
+      } finally {
+        setMarking(false)
+      }
+    }, seconds * 1000)
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current)
+        timerRef.current = undefined
+      }
+    }
+  }, [selectedLesson?.id, selectedLesson?.time_validator])
+
+  // Cargar contenido de texto cuando la lección es de tipo text/*
+  useEffect(() => {
+    const mime = selectedLesson?.mime_type || ""
+    const fileId = selectedLesson?.file_id
+    setTextPreview("")
+    setTextError("")
+    if (!fileId || !mime.startsWith("text/")) return
+
+    const controller = new AbortController()
+    const fetchText = async () => {
+      try {
+        setTextLoading(true)
+        const src = `${getApiBase()}/media/get_file?file_id=${encodeURIComponent(fileId)}`
+        const resp = await fetch(src, { method: "GET", credentials: "include", signal: controller.signal })
+        const contentType = resp.headers.get("Content-Type") || ""
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+        // Asegurar que sea texto
+        if (!contentType.startsWith("text/")) {
+          const asText = await resp.text().catch(() => "")
+          setTextPreview(asText)
+          return
+        }
+        const text = await resp.text()
+        setTextPreview(text)
+      } catch (e: any) {
+        if (e?.name === "AbortError") return
+        setTextError(e?.message || "No se pudo cargar el archivo de texto")
+      } finally {
+        setTextLoading(false)
+      }
+    }
+    fetchText()
+    return () => controller.abort()
+  }, [selectedLesson?.file_id, selectedLesson?.mime_type])
+
   const loadThreadsForLesson = async (lessonId: number) => {
     try {
-      setLoading(true)
+      setLoadingThreads(true)
       setError("")
       const response = await forumsApi.getThreadsByLesson(lessonId)
       setThreads(response.threads || [])
@@ -91,16 +220,16 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
         setError("Error al cargar los hilos del foro")
       }
     } finally {
-      setLoading(false)
+      setLoadingThreads(false)
     }
   }
 
   const loadMessagesForThread = async (threadId: number) => {
     try {
-      setLoading(true)
+      setLoadingMessages(true)
       setError("")
       const response = await forumsApi.getMessagesByThread(threadId)
-      setThreadMessages(response.messages || [])
+      setThreadMessages((response.messages as (Message & { pending?: boolean })[]) || [])
     } catch (err: any) {
       console.error("Error loading messages:", err)
       if (err.message?.includes("404")) {
@@ -110,7 +239,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
         setError("Error al cargar los mensajes")
       }
     } finally {
-      setLoading(false)
+      setLoadingMessages(false)
     }
   }
 
@@ -133,7 +262,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
     if (!newThreadData.title.trim() || !newThreadData.description.trim() || !selectedLesson) return
 
     try {
-      setLoading(true)
+      setLoadingThreads(true)
       setError("")
 
       // Crear el topic combinando título y descripción
@@ -153,7 +282,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
       console.error("Error creating thread:", err)
       setError("Error al crear el hilo: " + (err.message || "Error desconocido"))
     } finally {
-      setLoading(false)
+      setLoadingThreads(false)
     }
   }
 
@@ -162,23 +291,46 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
     if (!newMessage.trim() || !selectedThread) return
 
     try {
-      setLoading(true)
+      setSendingMessage(true)
       setError("")
 
-      await forumsApi.sendMessage({
+      // Optimistic UI: agregar mensaje temporal en estado "Enviando"
+      const tempId = -Date.now()
+      const tempMessage: Message & { pending?: boolean } = {
+        id: tempId,
         thread_id: selectedThread.id,
+        user_id: user?.id || 0,
+        username: user?.name || "Tú",
         message: newMessage,
+        content: newMessage,
+        pending: true,
+      }
+      setThreadMessages((prev) => [...prev, tempMessage])
+      // Despejar input y hacer scroll al final
+      setNewMessage("")
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+
+      const apiResp = await forumsApi.sendMessage({
+        thread_id: selectedThread.id,
+        message: tempMessage.message || "",
       })
 
-      // Recargar mensajes
-      await loadMessagesForThread(selectedThread.id)
-
-      setNewMessage("")
+      // Actualizar el mensaje temporal a confirmado (sin recargar)
+      setThreadMessages((prev) =>
+        prev.map((m) => (
+          m.id === tempId
+            ? { ...m, pending: false, id: (apiResp as any)?.message_id ?? m.id }
+            : m
+        ))
+      )
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     } catch (err: any) {
       console.error("Error sending message:", err)
+      // Si falla, eliminar el mensaje temporal y mostrar error
+      setThreadMessages((prev) => prev.filter((m) => m.pending !== true))
       setError("Error al enviar el mensaje: " + (err.message || "Error desconocido"))
     } finally {
-      setLoading(false)
+      setSendingMessage(false)
     }
   }
 
@@ -186,7 +338,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
     if (!confirm("¿Estás seguro de que quieres eliminar este hilo?")) return
 
     try {
-      setLoading(true)
+      setLoadingThreads(true)
       setError("")
 
       await forumsApi.deleteThread(threadId)
@@ -205,7 +357,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
       console.error("Error deleting thread:", err)
       setError("Error al eliminar el hilo: " + (err.message || "Error desconocido"))
     } finally {
-      setLoading(false)
+      setLoadingThreads(false)
     }
   }
 
@@ -218,7 +370,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
         <Button
           onClick={() => setForumView("create")}
           className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-3 py-1 h-auto"
-          disabled={!selectedLesson || loading}
+          disabled={!selectedLesson || loadingThreads}
         >
           <Plus className="w-3 h-3 mr-1" />
           ABRIR HILO
@@ -245,7 +397,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
           <MessageCircle className="w-12 h-12 text-slate-500 mx-auto mb-4" />
           <p className="text-slate-400 font-mono">Selecciona una lección para ver los hilos del foro</p>
         </div>
-      ) : loading ? (
+      ) : loadingThreads ? (
         <div className="text-center py-8">
           <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
           <p className="text-green-400 font-mono">Cargando hilos...</p>
@@ -280,18 +432,20 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
                     {thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}
                   </div>
                 </div>
-                <Button
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleDeleteThread(thread.id)
-                  }}
-                  variant="ghost"
-                  size="sm"
-                  className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-auto"
-                  disabled={loading}
-                >
-                  <Trash2 className="w-3 h-3" />
-                </Button>
+                {user?.is_sensei && (
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      handleDeleteThread(thread.id)
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-auto"
+                    disabled={loadingThreads}
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                )}
               </div>
             </div>
           ))}
@@ -308,7 +462,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
           onClick={() => setForumView("threads")}
           variant="outline"
           className="border-slate-700 text-slate-400 hover:bg-slate-800/50 font-mono text-xs px-3 py-1 h-auto"
-          disabled={loading}
+          disabled={loadingThreads}
         >
           <ArrowLeft className="w-3 h-3 mr-1" />
           VOLVER
@@ -342,7 +496,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             value={newThreadData.title}
             onChange={(e) => setNewThreadData((prev) => ({ ...prev, title: e.target.value }))}
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm"
-            disabled={loading}
+            disabled={loadingThreads}
             required
           />
         </div>
@@ -359,7 +513,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             onChange={(e) => setNewThreadData((prev) => ({ ...prev, description: e.target.value }))}
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm resize-none"
             rows={4}
-            disabled={loading}
+            disabled={loadingThreads}
             required
           />
         </div>
@@ -367,9 +521,9 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
         <Button
           type="submit"
           className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-6 py-2"
-          disabled={loading || !newThreadData.title.trim() || !newThreadData.description.trim()}
+          disabled={loadingThreads || !newThreadData.title.trim() || !newThreadData.description.trim()}
         >
-          {loading ? (
+          {loadingThreads ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
               CREANDO...
@@ -390,7 +544,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             onClick={() => setForumView("threads")}
             variant="outline"
             className="border-slate-700 text-slate-400 hover:bg-slate-800/50 font-mono text-xs px-3 py-1 h-auto"
-            disabled={loading}
+            disabled={loadingMessages}
           >
             <ArrowLeft className="w-3 h-3 mr-1" />
             VOLVER
@@ -424,7 +578,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
 
       {/* Thread Messages */}
       <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
-        {loading ? (
+        {loadingMessages ? (
           <div className="text-center py-8">
             <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
             <p className="text-green-400 font-mono">Cargando mensajes...</p>
@@ -437,7 +591,10 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
           </div>
         ) : (
           threadMessages.map((message) => (
-            <div key={message.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+            <div
+              key={message.id}
+              className={`bg-slate-800/50 border border-slate-700 rounded-lg p-4 ${message.pending ? "opacity-60" : ""}`}
+            >
               <div className="flex items-start gap-3">
                 <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-4 h-4 text-white" />
@@ -445,9 +602,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="font-mono text-sm font-semibold text-cyan-400">
-                      {message.name || `Usuario #${message.user_id}`}
+                      {message.username || `Usuario #${message.user_id}`}
                     </span>
-                    <span className="font-mono text-xs text-slate-500">#{message.id}</span>
+                    {/* Eliminado: enumeración de mensajes */}
+                    {message.pending && (
+                      <span className="font-mono text-[11px] text-yellow-400">Enviando...</span>
+                    )}
                   </div>
                   <p className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
                     {message.message}
@@ -457,6 +617,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             </div>
           ))
         )}
+        {/* Sentinel to autoscroll */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Reply Form */}
@@ -469,15 +631,15 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             placeholder="Escribe tu respuesta..."
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm resize-none"
             rows={3}
-            disabled={loading}
+            disabled={sendingMessage}
             required
           />
           <Button
             type="submit"
             className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-4 py-2"
-            disabled={loading || !newMessage.trim()}
+            disabled={sendingMessage || !newMessage.trim()}
           >
-            {loading ? (
+            {sendingMessage ? (
               <>
                 <Loader2 className="w-3 h-3 mr-1 animate-spin" />
                 ENVIANDO...
@@ -504,6 +666,26 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
             <span className="text-green-400 text-sm font-mono">./course --active</span>
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-green-400 font-mono">{courseTitle.toUpperCase()}</h1>
+          {/* Progress bar */}
+          {localProgress && (
+            <div className="mt-6 max-w-2xl mx-auto text-left">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-slate-300 font-mono text-sm">Progreso del curso</span>
+                <span className="text-green-400 font-mono text-sm">
+                  {Math.round(localProgress.progress_percentage)}%
+                </span>
+              </div>
+              <div className="w-full h-3 bg-slate-800 rounded-full border border-slate-700 overflow-hidden">
+                <div
+                  className="h-full bg-green-500"
+                  style={{ width: `${Math.min(100, Math.max(0, localProgress.progress_percentage))}%` }}
+                />
+              </div>
+              <div className="mt-2 text-slate-400 font-mono text-xs">
+                {localProgress.completed_lessons} / {localProgress.total_lessons} lecciones completadas
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -546,7 +728,9 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
 
                 {/* Lessons List */}
                 <div className="space-y-2">
-                  {sections[activeSection]?.lessons.map((lesson) => (
+                  {sections[activeSection]?.lessons.map((lesson) => {
+                    const isCompleted = Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
+                    return (
                     <div
                       key={lesson.id}
                       onClick={() => handleLessonClick(lesson)}
@@ -555,7 +739,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
                       }`}
                     >
                       <div className="flex-shrink-0">
-                        {lesson.completed ? (
+                        {isCompleted ? (
                           <CheckCircle className="w-4 h-4 text-green-400" />
                         ) : lesson.type === "video" ? (
                           <Play className="w-4 h-4 text-cyan-400" />
@@ -568,7 +752,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
                         {lesson.duration && <span className="text-xs text-slate-500 font-mono">{lesson.duration}</span>}
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               </div>
             </div>
@@ -621,21 +805,96 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections }: Cours
 
               <div className="p-6 h-full flex items-center justify-center">
                 {selectedLesson ? (
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center border border-slate-700">
-                      {selectedLesson.type === "video" ? (
-                        <Play className="w-8 h-8 text-cyan-400" />
-                      ) : (
-                        <FileText className="w-8 h-8 text-blue-400" />
-                      )}
-                    </div>
-                    <h3 className="text-xl font-mono text-slate-300">{selectedLesson.title}</h3>
-                    <p className="text-green-400 font-mono text-lg">
-                      {selectedLesson.type === "video" ? "VIDEO" : "TEXTO"}
-                    </p>
+                  <div className="w-full h-full flex flex-col items-center justify-start gap-4">
+                    <h3 className="text-xl font-mono text-slate-300 text-center mt-2">{selectedLesson.title}</h3>
                     {selectedLesson.duration && (
                       <p className="text-slate-500 font-mono text-sm">Duración: {selectedLesson.duration}</p>
                     )}
+                    {/* Renderizar contenido basado en file_id y mime_type */}
+                    {(() => {
+                      const baseUrl = getApiBase()
+                      const fileId = selectedLesson.file_id
+                      const mime = selectedLesson.mime_type || ""
+                      if (!fileId) {
+                        // Fallback visual cuando no hay archivo asociado
+                        return (
+                          <div className="text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center border border-slate-700">
+                              {selectedLesson.type === "video" ? (
+                                <Play className="w-8 h-8 text-cyan-400" />
+                              ) : (
+                                <FileText className="w-8 h-8 text-blue-400" />
+                              )}
+                            </div>
+                            <p className="text-slate-400 font-mono text-sm">Esta lección no tiene un archivo asociado.</p>
+                          </div>
+                        )
+                      }
+                      const src = `${baseUrl}/media/get_file?file_id=${encodeURIComponent(fileId)}`
+                      if (mime.startsWith("image/")) {
+                        return (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={src} alt={selectedLesson.title} className="max-h-[60vh] max-w-full rounded-lg border border-slate-700" />
+                        )
+                      }
+                      if (mime.startsWith("video/")) {
+                        return (
+                          <video
+                            key={src}
+                            controls
+                            className="w-full max-h-[70vh] rounded-lg border border-slate-700 bg-black"
+                          >
+                            <source src={src} type={mime} />
+                            Tu navegador no soporta la reproducción de video.
+                          </video>
+                        )
+                      }
+                      if (mime === "application/pdf") {
+                        return (
+                          <iframe
+                            key={src}
+                            src={src}
+                            className="w-full h-[75vh] rounded-lg border border-slate-700 bg-white"
+                            title={selectedLesson.title}
+                          />
+                        )
+                      }
+                      if (mime.startsWith("text/")) {
+                        return (
+                          <div className="w-full">
+                            {textLoading ? (
+                              <div className="text-center py-8">
+                                <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
+                                <p className="text-green-400 font-mono">Cargando archivo de texto...</p>
+                              </div>
+                            ) : textError ? (
+                              <div className="text-center py-8">
+                                <AlertCircle className="w-6 h-6 text-red-400 mx-auto mb-2" />
+                                <p className="text-red-400 font-mono text-sm">{textError}</p>
+                              </div>
+                            ) : (
+                              <pre className="w-full h-[70vh] overflow-auto bg-slate-950 text-slate-200 border border-slate-700 rounded-md p-4 font-mono text-sm whitespace-pre-wrap break-words">
+                                {textPreview || "(Archivo de texto vacío)"}
+                              </pre>
+                            )}
+                          </div>
+                        )
+                      }
+                      // Otros tipos de documentos: ofrecer descarga/visualización genérica
+                      return (
+                        <div className="text-center space-y-3">
+                          <p className="text-slate-400 font-mono text-sm">Tipo de archivo no soportado para vista previa.</p>
+                          <a
+                            href={src}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-black rounded-md font-mono text-sm"
+                          >
+                            ABRIR / DESCARGAR
+                          </a>
+                        </div>
+                      )
+                    })()}
                   </div>
                 ) : (
                   <div className="text-center">

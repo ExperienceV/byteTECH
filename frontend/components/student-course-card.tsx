@@ -24,6 +24,7 @@ interface StudentCourseCardProps {
   lastAccessed: string
   slug: string
   status: "ongoing" | "completed"
+  imageUrl?: string
 }
 
 export function StudentCourseCard({
@@ -43,8 +44,10 @@ export function StudentCourseCard({
   lastAccessed,
   slug,
   status,
+  imageUrl,
 }: StudentCourseCardProps) {
-  const getDifficultyColor = (diff: string) => {
+  const getDifficultyColor = (diff?: string) => {
+    if (!diff) return "bg-slate-500/20 text-slate-400 border-slate-500/30"
     switch (diff.toLowerCase()) {
       case "beginner":
       case "principiante":
@@ -60,7 +63,8 @@ export function StudentCourseCard({
     }
   }
 
-  const getLanguageColor = (lang: string) => {
+  const getLanguageColor = (lang?: string) => {
+    if (!lang) return "bg-purple-500/20 text-purple-400 border-purple-500/30"
     switch (lang.toLowerCase()) {
       case "javascript":
         return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
@@ -82,15 +86,35 @@ export function StudentCourseCard({
     return "bg-red-500"
   }
 
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "--"
     return new Date(dateString).toLocaleDateString("es-ES", {
       day: "numeric",
       month: "short",
     })
   }
 
+  // Normalizaciones seguras
+  const safeDifficulty = difficulty ?? "Desconocido"
+  const safeLanguage = language ?? "General"
+  const safeTags = Array.isArray(tags) ? tags : []
+  const safeLessons = typeof lessons === "number" ? lessons : 0
+  const safeHours = typeof hours === "number" ? hours : 0
+  const safeProgress = typeof progress === "number" ? progress : Number((progress as any)?.progress_percentage ?? 0)
+  const safeInstructor = instructor || "Instructor"
+  const targetSlug = slug && slug.length > 0
+    ? slug
+    : (title ? title.toLowerCase().replace(/\s+/g, "-").replace(/[^\w-]/g, "") : "")
+
   return (
     <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-green-500/50 transition-all duration-300 group">
+      {/* Cover Image */}
+      {imageUrl && (
+        <div className="w-full aspect-video overflow-hidden rounded-t-xl bg-slate-800/50 border-b border-slate-800">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
+        </div>
+      )}
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -98,6 +122,7 @@ export function StudentCourseCard({
               {title}
             </h3>
             <p className="text-slate-400 text-sm font-mono line-clamp-2">{description}</p>
+            <p className="text-slate-500 text-xs font-mono mt-1">Instructor: <span className="text-slate-300">{safeInstructor}</span></p>
           </div>
           {status === "completed" && (
             <div className="ml-2">
@@ -107,11 +132,11 @@ export function StudentCourseCard({
         </div>
 
         <div className="flex flex-wrap gap-2 mt-3">
-          <Badge className={getDifficultyColor(difficulty)} variant="outline">
-            {difficulty}
+          <Badge className={getDifficultyColor(safeDifficulty)} variant="outline">
+            {safeDifficulty}
           </Badge>
-          <Badge className={getLanguageColor(language)} variant="outline">
-            {language}
+          <Badge className={getLanguageColor(safeLanguage)} variant="outline">
+            {safeLanguage}
           </Badge>
         </div>
       </CardHeader>
@@ -121,13 +146,12 @@ export function StudentCourseCard({
         <div className="mb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-slate-400 font-mono text-sm">Progreso</span>
-            <span className="text-white font-mono font-bold">{progress}%</span>
+            <span className="text-white font-mono font-bold">{safeProgress}%</span>
           </div>
-          <Progress value={progress} className="h-2" />
-          <div className="flex items-center justify-between mt-2 text-xs font-mono text-slate-500">
-            <span>Último acceso: {formatDate(lastAccessed)}</span>
+          <Progress value={safeProgress} className="h-2 bg-slate-700/60" indicatorClassName="bg-cyan-500" />
+          <div className="flex items-center justify-end mt-2 text-xs font-mono text-slate-500">
             <span>
-              {lessons} lecciones • {hours}h
+              {safeLessons} lecciones • {safeHours}h
             </span>
           </div>
         </div>
@@ -148,7 +172,7 @@ export function StudentCourseCard({
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1">
-          {tags.slice(0, 3).map((tag, index) => (
+          {safeTags.slice(0, 3).map((tag, index) => (
             <Badge
               key={index}
               className="bg-slate-700/50 text-slate-300 border-slate-600 text-xs font-mono"
@@ -157,9 +181,9 @@ export function StudentCourseCard({
               {tag}
             </Badge>
           ))}
-          {tags.length > 3 && (
+          {safeTags.length > 3 && (
             <Badge className="bg-slate-700/50 text-slate-400 border-slate-600 text-xs font-mono" variant="outline">
-              +{tags.length - 3}
+              +{safeTags.length - 3}
             </Badge>
           )}
         </div>
@@ -175,7 +199,7 @@ export function StudentCourseCard({
                 className="flex-1 bg-green-500/20 hover:bg-green-500/30 text-green-400 border border-green-500/30 font-mono"
                 variant="outline"
               >
-                <Link href={`/courses/${slug}`}>
+                <Link href={`/cursos/${targetSlug}`}>
                   <Award className="w-4 h-4 mr-1" />
                   Certificado
                 </Link>
@@ -186,7 +210,7 @@ export function StudentCourseCard({
                 className="flex-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 border border-cyan-500/30 font-mono"
                 variant="outline"
               >
-                <Link href={`/courses/${slug}`}>
+                <Link href={`/cursos/${targetSlug}`}>
                   <BookOpen className="w-4 h-4 mr-1" />
                   Revisar
                 </Link>
@@ -194,7 +218,7 @@ export function StudentCourseCard({
             </>
           ) : (
             <Button asChild size="sm" className="w-full bg-green-500 hover:bg-green-600 text-black font-mono">
-              <Link href={`/courses/${slug}`}>
+              <Link href={`/cursos/${targetSlug}`}>
                 <Play className="w-4 h-4 mr-1" />
                 Continuar Curso
               </Link>

@@ -242,21 +242,25 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
     }
   }
 
-  const handleAddLesson = async (sectionId: number, lessonData: { title: string; file: File }) => {
+  const handleAddLesson = async (sectionId: number, lessonData: { title: string; file: File; time_validator: string }) => {
     if (!course) return
 
     setIsAddingLesson(true)
     setError("")
 
     try {
+      // Convertir formato MM:SS a float (ej: "4:30" -> 4.5)
+      const convertTimeToFloat = (timeStr: string): number => {
+        const [minutes, seconds] = timeStr.split(':').map(Number);
+        return minutes + (seconds / 60);
+      };
 
-      const time = 3.4
       const formData = new FormData()
       formData.append('section_id', sectionId.toString())
       formData.append('course_id', course.id.toString())
       formData.append('title', lessonData.title)
       formData.append('file', lessonData.file)
-      formData.append('time_validator', time.toString())
+      formData.append('time_validator', convertTimeToFloat(lessonData.time_validator).toString())
 
       const response = await workbrenchApi.createLesson(formData)
       if (!response.ok) {
@@ -816,19 +820,40 @@ function AddLessonModal({
 }: { 
   isOpen: boolean
   onClose: () => void
-  onSubmit: (data: { title: string; file: File }) => void
+  onSubmit: (data: { title: string; file: File; time_validator: string }) => void
   isLoading: boolean
 }) {
   const [title, setTitle] = useState("")
   const [file, setFile] = useState<File | null>(null)
+  const [timeValidator, setTimeValidator] = useState("0:00")
+
+  const handleTimeValidatorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // Formatear automáticamente el input para MM:SS
+    if (value.length === 1 && /^\d$/.test(value)) {
+      value = `0:${value}`;
+    } else if (value.length === 2 && /^\d{2}$/.test(value)) {
+      value = `${value}:00`;
+    } else if (value.length === 3 && /^\d{2}:\d$/.test(value)) {
+      value = value;
+    } else if (value.length === 4 && /^\d{2}:\d{2}$/.test(value)) {
+      value = value;
+    } else if (value.length === 5 && /^\d{3}:\d{2}$/.test(value)) {
+      value = value;
+    }
+    
+    setTimeValidator(value);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!title || !file) return
+    if (!title || !file || !timeValidator) return
     
-    onSubmit({ title, file })
+    onSubmit({ title, file, time_validator: timeValidator })
     setTitle("")
     setFile(null)
+    setTimeValidator("0:00")
   }
 
   if (!isOpen) return null
@@ -854,6 +879,21 @@ function AddLessonModal({
               className="bg-slate-800/50 border-slate-700 text-white font-mono"
               required
             />
+          </div>
+
+          <div>
+            <label className="block text-cyan-400 font-mono text-sm mb-2">DURACIÓN (MM:SS)</label>
+            <Input
+              value={timeValidator}
+              onChange={handleTimeValidatorChange}
+              placeholder="4:30"
+              className="bg-slate-800/50 border-slate-700 text-white font-mono"
+              maxLength={5}
+              required
+            />
+            <p className="text-slate-500 font-mono text-xs mt-1">
+              Formato: Minutos:Segundos (ej: 4:30 = 4 minutos y 30 segundos)
+            </p>
           </div>
 
           <div>
@@ -885,7 +925,7 @@ function AddLessonModal({
           <div className="flex gap-2">
             <Button
               type="submit"
-              disabled={isLoading || !title || !file}
+              disabled={isLoading || !title || !file || !timeValidator}
               className="flex-1 bg-green-500 hover:bg-green-600 text-black font-mono"
             >
               {isLoading ? (
