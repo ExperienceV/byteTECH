@@ -8,8 +8,8 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Mail, CheckCircle, AlertCircle, RotateCcw } from "lucide-react"
-import { UniqueHeader } from "@/components/unique-header"
-import { UniqueFooter } from "@/components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 
 const API_BASE = "http://127.0.0.1:8000/api"
 
@@ -95,7 +95,7 @@ export default function VerificationPage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <UniqueHeader />
+      <NormalHeader />
 
       <section className="bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
@@ -225,7 +225,7 @@ export default function VerificationPage() {
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 "use client"
 
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { StudentCourseCard } from "@//components/student-course-card"
 import { TeacherCourseCard } from "@//components/teacher-course-card"
 import { AddCourseModal } from "@//components/add-course-modal"
@@ -217,7 +217,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
     return (
       <div className="min-h-screen bg-dynamic-gradient">
-        <UniqueHeader />
+        <NormalHeader />
 
         {/* Hero Section */}
         <section className="bg-slate-950 relative overflow-hidden">
@@ -509,7 +509,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
           isLoading={isCreatingCourse}
         />
 
-        <UniqueFooter />
+        <NormalFooter />
       </div>
     )
   }
@@ -554,7 +554,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -666,7 +666,7 @@ export default function Page({ params }: { params: Promise<{ slug: string }> }) 
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

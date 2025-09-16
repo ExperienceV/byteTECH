@@ -1,7 +1,7 @@
 "use client"
 
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { Button } from "@//components/ui/button"
 import { Input } from "@//components/ui/input"
 import { Textarea } from "@//components/ui/textarea"
@@ -472,7 +472,7 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Header Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -806,7 +806,7 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
         />
       )}
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

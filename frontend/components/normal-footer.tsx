@@ -2,7 +2,7 @@
 
 import { Github, Twitter, MessageCircle, Terminal } from "lucide-react"
 
-export function UniqueFooter() {
+export function NormalFooter() {
   return (
         <footer className="bg-slate-950 border-t border-slate-800/50 relative overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 relative z-10">

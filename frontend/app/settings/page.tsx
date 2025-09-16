@@ -1,7 +1,7 @@
 "use client"
 
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { Badge } from "@//components/ui/badge"
 import { Terminal, User, Camera, Shield, BookOpen, Clock, Trophy, TrendingUp } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
@@ -64,7 +64,7 @@ export default function PerfilPage() {
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
@@ -147,7 +147,7 @@ export default function PerfilPage() {
           </div>
         </div>
       </section>
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

@@ -1,11 +1,11 @@
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { Terminal, Code, Users, Zap, Heart, Coffee, Rocket } from "lucide-react"
 
 export default function NosotrosPage() {
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -188,7 +188,7 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

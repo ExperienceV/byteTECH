@@ -1,6 +1,6 @@
 "use client"
 
-import { UniqueHeader } from "@/components/unique-header"
+import { NormalHeader } from "@/components/normal-header"
 import { HomeFooter } from "@/components/home-footer"
 import { TerminalCourseCard } from "@/components/terminal-course-card"
 import { Button } from "@/components/ui/button"
@@ -83,7 +83,7 @@ export default function index() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* ── Hero ─────────────────────────── */}
       <section className="relative overflow-hidden bg-dynamic-gradient">

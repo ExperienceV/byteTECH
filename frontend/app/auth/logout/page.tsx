@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { LogOut } from "lucide-react"
-import { UniqueHeader } from "@/components/unique-header"
-import { UniqueFooter } from "@/components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 
 const API_BASE = "http://127.0.0.1:8000/api"
 
@@ -31,7 +31,7 @@ export default function LogoutPage() {
 
   return (
     <div className="min-h-screen bg-slate-950">
-      <UniqueHeader />
+      <NormalHeader />
 
       <section className="bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
@@ -82,7 +82,7 @@ export default function LogoutPage() {
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

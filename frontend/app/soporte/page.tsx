@@ -1,7 +1,7 @@
 "use client"
 
-import { UniqueHeader } from "@//components/unique-header"
-import { UniqueFooter } from "@//components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { SupportForm } from "@/components/support-form"
 import {
   Terminal,
@@ -12,40 +12,23 @@ import {
   Video,
   Users,
   Clock,
-  CheckCircle,
-  AlertCircle,
-  Zap,
 } from "lucide-react"
 
 export default function SoportePage() {
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-8">
-              <Terminal className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-sm font-mono">./support --help</span>
-            </div>
 
             <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
-              {">"} Centro de <span className="text-cyan-400">Soporte</span>
+              Centro de <span className="text-cyan-400">Soporte</span>
             </h1>
-
-            <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 max-w-2xl mx-auto border border-slate-800 text-left font-mono text-xs sm:text-sm space-y-2">
-              <p className="text-green-400">
-                <span className="text-slate-500">$</span> help --available
-              </p>
-              <p className="text-slate-400 ml-2">✓ Soporte técnico 24/7</p>
-              <p className="text-slate-400 ml-2">✓ Documentación completa</p>
-              <p className="text-slate-400 ml-2">✓ Comunidad activa</p>
-              <p className="text-cyan-400 ml-2">¡Estamos aquí para ayudarte! 🚀</p>
-            </div>
           </div>
         </div>
       </section>
@@ -118,23 +101,12 @@ export default function SoportePage() {
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono">Contáctanos Directamente</h2>
               </div>
-              <p className="text-slate-400 font-mono">// ¿No encontraste lo que buscabas? ¡Escríbenos!</p>
+              <p className="text-slate-400 font-mono">¿No encontraste lo que buscabas? ¡Escríbenos!</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Formulario */}
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex space-x-1">
-                      <div className="w-3 h-3 bg-red-500 rounded-full" />
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                      <div className="w-3 h-3 bg-green-500 rounded-full" />
-                    </div>
-                    <span className="text-xs font-mono text-slate-400">~/support/ticket.js</span>
-                  </div>
-                </div>
-
                 <div className="p-6">
                   <SupportForm />
                 </div>
@@ -168,7 +140,7 @@ export default function SoportePage() {
                       href="https://discord.gg/DCva2DSauG" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-2 rounded-lg hover:bg-green-500/10 transition-colors"
+                      className="flex items-center gap-3 rounded-lg hover:bg-green-500/10 transition-colors"
                     >
                       <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                         <Users className="w-5 h-5 text-green-400" />
@@ -224,7 +196,7 @@ export default function SoportePage() {
 
                   <div className="mt-4 p-3 bg-slate-800/50 rounded-lg">
                     <div className="text-xs font-mono text-slate-400">
-                      <span className="text-green-400">// Nota:</span> Para problemas urgentes, usa Telegram para
+                      <span className="text-green-400">Nota:</span> Para problemas urgentes, usa Telegram para
                       respuesta más rápida
                     </div>
                   </div>
@@ -235,7 +207,7 @@ export default function SoportePage() {
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

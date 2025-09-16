@@ -10,7 +10,7 @@ import { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
 
-export function UniqueHeader() {
+export function NormalHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [showUserMenu, setShowUserMenu] = useState(false)
   const { user, isLoggedIn, logout } = useAuth()

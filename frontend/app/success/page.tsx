@@ -1,8 +1,8 @@
 "use client"
 
 import { Suspense } from "react"
-import { UniqueHeader } from "@/components/unique-header"
-import { UniqueFooter } from "@/components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { Button } from "@/components/ui/button"
 import { CheckCircle, Terminal, Play, ArrowRight } from "lucide-react"
 import Link from "next/link"
@@ -16,7 +16,7 @@ function SuccessContent() {
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Success Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -142,7 +142,7 @@ function SuccessContent() {
         </div>
       </section>
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

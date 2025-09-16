@@ -93,28 +93,24 @@ export const SupportForm = () => {
   const isSubmitDisabled = submitStatus === 'loading' || !isFormComplete();
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5 text-blue-500" />
-          Formulario de Soporte
-        </CardTitle>
-        
+    <div className="w-full max-w-2xl mx-auto bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl shadow-2xl">
+      <div className="p-8">
+        <div className="flex items-center gap-2 mb-6">
+          <MessageCircle className="w-6 h-6 text-cyan-400" />
+          <h2 className="text-2xl font-bold text-white font-mono">Formulario de Soporte</h2>
+        </div>
         {/* Barra de progreso */}
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-gray-600">
+        <div className="space-y-2 mb-8">
+          <div className="flex justify-between text-sm text-slate-400 font-mono">
             <span>Progreso del formulario</span>
             <span>{getFormProgress()}%</span>
           </div>
-          <Progress value={getFormProgress()} className="h-2" />
+          <Progress value={getFormProgress()} className="h-2 bg-slate-800" />
         </div>
-      </CardHeader>
-
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Tipos de problemas rápidos */}
           <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-mono text-slate-300">
               Tipo de problema (selección rápida)
             </label>
             <div className="flex flex-wrap gap-2">
@@ -122,7 +118,7 @@ export const SupportForm = () => {
                 <Badge
                   key={key}
                   variant={formData.issue === value ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-blue-50 transition-colors"
+                  className={`cursor-pointer font-mono px-3 py-1 rounded-lg border ${formData.issue === value ? 'bg-cyan-500 text-black border-cyan-500' : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-cyan-900/30 hover:text-cyan-400'} transition-colors`}
                   onClick={() => selectIssueType(key as keyof typeof SUPPORT_ISSUES)}
                 >
                   {value}
@@ -133,8 +129,8 @@ export const SupportForm = () => {
 
           {/* Nombre */}
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <User className="w-4 h-4" />
+            <label htmlFor="name" className="text-sm font-mono text-slate-300 flex items-center gap-2">
+              <User className="w-4 h-4 text-cyan-400" />
               Nombre completo
             </label>
             <Input
@@ -145,16 +141,17 @@ export const SupportForm = () => {
               onChange={(e) => handleFieldChange('name', e.target.value)}
               maxLength={FORM_VALIDATION.MAX_NAME_LENGTH}
               required
+              className="bg-slate-800 border-slate-700 text-white font-mono placeholder:text-slate-500"
             />
-            <div className="text-xs text-gray-500 text-right">
+            <div className="text-xs text-slate-500 text-right font-mono">
               {formData.name.length}/{FORM_VALIDATION.MAX_NAME_LENGTH}
             </div>
           </div>
 
           {/* Email */}
           <div className="space-y-2">
-            <label htmlFor="mail" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <Mail className="w-4 h-4" />
+            <label htmlFor="mail" className="text-sm font-mono text-slate-300 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-cyan-400" />
               Email de contacto
             </label>
             <Input
@@ -164,13 +161,14 @@ export const SupportForm = () => {
               value={formData.mail}
               onChange={(e) => handleFieldChange('mail', e.target.value)}
               required
+              className="bg-slate-800 border-slate-700 text-white font-mono placeholder:text-slate-500"
             />
           </div>
 
           {/* Asunto */}
           <div className="space-y-2">
-            <label htmlFor="issue" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <FileText className="w-4 h-4" />
+            <label htmlFor="issue" className="text-sm font-mono text-slate-300 flex items-center gap-2">
+              <FileText className="w-4 h-4 text-cyan-400" />
               Asunto del problema
             </label>
             <Input
@@ -181,16 +179,17 @@ export const SupportForm = () => {
               onChange={(e) => handleFieldChange('issue', e.target.value)}
               maxLength={FORM_VALIDATION.MAX_ISSUE_LENGTH}
               required
+              className="bg-slate-800 border-slate-700 text-white font-mono placeholder:text-slate-500"
             />
-            <div className="text-xs text-gray-500 text-right">
+            <div className="text-xs text-slate-500 text-right font-mono">
               {formData.issue.length}/{FORM_VALIDATION.MAX_ISSUE_LENGTH}
             </div>
           </div>
 
           {/* Mensaje */}
           <div className="space-y-2">
-            <label htmlFor="message" className="text-sm font-medium text-gray-700 flex items-center gap-2">
-              <MessageCircle className="w-4 h-4" />
+            <label htmlFor="message" className="text-sm font-mono text-slate-300 flex items-center gap-2">
+              <MessageCircle className="w-4 h-4 text-cyan-400" />
               Descripción detallada
             </label>
             <Textarea
@@ -201,25 +200,26 @@ export const SupportForm = () => {
               rows={5}
               maxLength={FORM_VALIDATION.MAX_MESSAGE_LENGTH}
               required
+              className="bg-slate-800 border-slate-700 text-white font-mono placeholder:text-slate-500"
             />
-            <div className="text-xs text-gray-500 text-right">
+            <div className="text-xs text-slate-500 text-right font-mono">
               {formData.message.length}/{FORM_VALIDATION.MAX_MESSAGE_LENGTH}
             </div>
           </div>
 
           {/* Sugerencias de asunto */}
           {showSuggestions && suggestions.length > 0 && (
-            <Alert className="border-blue-200 bg-blue-50">
-              <Lightbulb className="h-4 w-4 text-blue-600" />
-              <AlertDescription className="text-blue-800">
+            <Alert className="border-cyan-400 bg-cyan-900/10">
+              <Lightbulb className="h-4 w-4 text-cyan-400" />
+              <AlertDescription className="text-cyan-300">
                 <div className="space-y-2">
-                  <p className="font-medium">Sugerencias de asunto basadas en tu mensaje:</p>
+                  <p className="font-mono font-medium">Sugerencias de asunto basadas en tu mensaje:</p>
                   <div className="flex flex-wrap gap-2">
                     {suggestions.map((suggestion, index) => (
                       <Badge
                         key={index}
                         variant="outline"
-                        className="cursor-pointer hover:bg-blue-100 transition-colors"
+                        className="cursor-pointer font-mono px-3 py-1 rounded-lg border bg-slate-800 text-cyan-400 border-cyan-400 hover:bg-cyan-900/30 transition-colors"
                         onClick={() => {
                           selectIssueType(suggestion as keyof typeof SUPPORT_ISSUES);
                           setShowSuggestions(false);
@@ -236,16 +236,16 @@ export const SupportForm = () => {
 
           {/* Mensajes de estado */}
           {errorMessage && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{errorMessage}</AlertDescription>
+            <Alert variant="destructive" className="border-red-400 bg-red-900/10">
+              <AlertCircle className="h-4 w-4 text-red-400" />
+              <AlertDescription className="text-red-300 font-mono">{errorMessage}</AlertDescription>
             </Alert>
           )}
 
           {successMessage && (
-            <Alert className="border-green-200 bg-green-50">
-              <CheckCircle className="h-4 w-4 text-green-600" />
-              <AlertDescription className="text-green-800">
+            <Alert className="border-green-400 bg-green-900/10">
+              <CheckCircle className="h-4 w-4 text-green-400" />
+              <AlertDescription className="text-green-300 font-mono">
                 {successMessage}
               </AlertDescription>
             </Alert>
@@ -256,30 +256,30 @@ export const SupportForm = () => {
             <Button
               type="submit"
               disabled={isSubmitDisabled}
-              className="flex-1"
+              className="flex-1 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold py-3 rounded-lg font-mono disabled:opacity-50"
             >
               {getStatusIcon()}
               {getStatusText()}
             </Button>
-            
             <Button
               type="button"
               variant="outline"
               onClick={resetForm}
               disabled={submitStatus === 'loading'}
+              className="flex-1 border border-slate-700 bg-slate-800 text-slate-300 font-mono rounded-lg hover:bg-slate-700"
             >
               Limpiar
             </Button>
           </div>
 
           {/* Información adicional */}
-          <div className="text-xs text-gray-500 text-center pt-4 border-t">
+          <div className="text-xs text-slate-500 text-center pt-6 border-t border-slate-800 font-mono">
             <p>Nuestro equipo de soporte te responderá en las próximas 24 horas.</p>
-            <p>Para emergencias técnicas, contacta directamente a soporte@bytetech.edu</p>
+            <p>Para emergencias técnicas, contacta directamente a <span className="text-cyan-400">soporte@bytetech.edu</span></p>
           </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 

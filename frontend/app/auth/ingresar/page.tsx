@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Mail, Lock, Eye, EyeOff, User, ArrowRight, AlertCircle } from "lucide-react"
-import { UniqueHeader } from "@/components/unique-header"
-import { UniqueFooter } from "@/components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { useAuth } from "@/lib/auth-context"
 
 const EMAIL_DOMAINS = [
@@ -59,7 +59,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-950">
       {/* Unique Header */}
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -193,7 +193,7 @@ export default function LoginPage() {
       </section>
 
       {/* Unique Footer */}
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { UniqueHeader } from "@/components/unique-header"
-import { UniqueFooter } from "@/components/unique-footer"
+import { NormalHeader } from "@/components/normal-header"
+import { NormalFooter } from "@/components/normal-footer"
 import { CourseContentViewer } from "@/components/course-content-viewer"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -167,7 +167,7 @@ export default function CursoDetallePage() {
   if (isPaid && contentSections.length > 0) {
     return (
       <div className="min-h-screen bg-dynamic-gradient">
-        <UniqueHeader />
+        <NormalHeader />
         <CourseContentViewer
           courseTitle={courseData.name}
           courseSlug={slug}
@@ -188,14 +188,14 @@ export default function CursoDetallePage() {
             })),
           }))}
         />
-        <UniqueFooter />
+        <NormalFooter />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
-      <UniqueHeader />
+      <NormalHeader />
 
       {/* Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
@@ -460,7 +460,7 @@ export default function CursoDetallePage() {
         </section>
       )}
 
-      <UniqueFooter />
+      <NormalFooter />
     </div>
   )
 }
