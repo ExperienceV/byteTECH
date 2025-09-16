@@ -69,11 +69,6 @@ export default function VerificationPage() {
 
     setError(null)
     setLoading(true)
-    setTerminalMessages([])
-
-    addTerminalMessage("$ npm run auth:resend-code", 0)
-    addTerminalMessage("→ Generando nuevo código...", 500)
-    addTerminalMessage("→ Enviando email...", 1000)
 
     try {
       const formData = new FormData()
@@ -86,16 +81,13 @@ export default function VerificationPage() {
       })
 
       if (response.ok) {
-        addTerminalMessage("✓ Código reenviado exitosamente", 1500)
         setSuccess("Código de verificación reenviado a tu email.")
       } else {
         const errorText = await response.text()
         setError(errorText || "Error al reenviar código")
-        addTerminalMessage("✗ Error al reenviar código", 1500)
       }
     } catch (err) {
       setError("Error de conexión")
-      addTerminalMessage("✗ Error de conexión", 1500)
     } finally {
       setLoading(false)
     }
@@ -209,13 +201,6 @@ export default function VerificationPage() {
                     </>
                   )}
                 </Button>
-
-                {loading && (
-                  <div className="mt-6 flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-blue-400 font-mono text-sm">Procesando...</span>
-                  </div>
-                )}
               </form>
             </div>
 

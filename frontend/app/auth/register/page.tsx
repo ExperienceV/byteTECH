@@ -282,13 +282,6 @@ export default function RegisterPage() {
                     </Link>
                   </div>
                 </div>
-
-                {loading && (
-                  <div className="mt-6 flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
-                    <span className="text-green-400 font-mono text-sm">Procesando...</span>
-                  </div>
-                )}
               </form>
             </div>
 
