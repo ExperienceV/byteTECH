@@ -13,21 +13,13 @@ export default function NosotrosPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-8">
-              <Terminal className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-sm font-mono">./about --team</span>
+              <span className="text-cyan-400 text-sm font-mono">Acerca del equipo</span>
             </div>
 
             <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
-              {">"} Conoce a byte<span className="text-cyan-400">TECH</span>
+            Conoce a byte<span className="text-cyan-400">TECH</span>
             </h1>
 
-            <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 max-w-2xl mx-auto border border-slate-800 text-left font-mono text-xs sm:text-sm space-y-2">
-              <p className="text-green-400">
-                <span className="text-slate-500">$</span> whoami
-              </p>
-              <p className="text-slate-400 ml-2">Somos desarrolladores apasionados por la educación</p>
-              <p className="text-cyan-400 ml-2">Construyendo el futuro del aprendizaje tecnológico 🚀</p>
-            </div>
           </div>
         </div>
       </section>

@@ -6,7 +6,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Terminal, KeyRound, Mail, AlertCircle, Check } from "lucide-react"
+import { KeyRound, Mail, AlertCircle, Check } from "lucide-react"
 import { UniqueHeader } from "@/components/unique-header"
 import { UniqueFooter } from "@/components/unique-footer"
 
@@ -17,48 +17,29 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [terminalMessages, setTerminalMessages] = useState<string[]>([])
 
-  const addTerminalMessage = (message: string, delay: number) => {
-    setTimeout(() => {
-      setTerminalMessages((prev) => [...prev, message])
-    }, delay)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setSuccess(null)
     setLoading(true)
-    setTerminalMessages([])
-
-    // Progressive terminal messages
-    addTerminalMessage("$ npm run auth:forgot-password", 0)
-    addTerminalMessage("→ Validando email...", 500)
-    addTerminalMessage("→ Generando token de recuperación...", 1000)
-    addTerminalMessage("→ Enviando email...", 1500)
-
     try {
       const formData = new FormData()
       formData.append("email", email)
-
       const response = await fetch(`${API_BASE}/auth/init_restore_password`, {
         method: "POST",
         credentials: "include",
         body: formData,
       })
-
       if (response.ok) {
-        addTerminalMessage("✓ Email enviado exitosamente", 2000)
         setSuccess("Enlace de recuperación enviado a tu email. Revisa tu bandeja de entrada.")
       } else {
         const errorText = await response.text()
         setError(errorText || "Error al enviar enlace de recuperación")
-        addTerminalMessage("✗ Error al enviar email", 2000)
       }
     } catch (err) {
       setError("Error de conexión")
-      addTerminalMessage("✗ Error de conexión", 2000)
     } finally {
       setLoading(false)
     }
@@ -73,16 +54,12 @@ export default function ForgotPasswordPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-mono">./auth --forgot-password</span>
-              </div>
 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-4xl mb-4">
-                {">"} <span className="text-yellow-400">RECUPERAR</span>
+                <span className="text-yellow-400">RECUPERAR</span>
               </h1>
 
-              <p className="text-slate-400 font-mono text-sm">// Restablece tu contraseña de ByteTechEdu</p>
+              <p className="text-slate-400 font-mono text-sm">Restablece tu contraseña de ByteTechEdu</p>
             </div>
 
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -93,7 +70,6 @@ export default function ForgotPasswordPage() {
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/auth/forgot-password.js</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <KeyRound className="w-4 h-4 text-yellow-400" />
@@ -103,9 +79,7 @@ export default function ForgotPasswordPage() {
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> email =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">EMAIL</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Email</span>
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -120,20 +94,20 @@ export default function ForgotPasswordPage() {
                       disabled={loading}
                     />
                   </div>
-                  <p className="text-xs font-mono text-slate-500 mt-1">// Ingresa el email asociado a tu cuenta</p>
+                  <p className="text-xs font-mono text-slate-500 mt-1">Ingresa el email asociado a tu cuenta</p>
                 </div>
 
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-red-400" />
-                    <p className="text-red-400 text-sm font-mono">// Error: {error}</p>
+                    <p className="text-red-400 text-sm font-mono">Error: {error}</p>
                   </div>
                 )}
 
                 {success && (
                   <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <Check className="w-4 h-4 text-green-400" />
-                    <p className="text-green-400 text-sm font-mono">// Success: {success}</p>
+                    <p className="text-green-400 text-sm font-mono">Success: {success}</p>
                   </div>
                 )}
 
@@ -155,29 +129,10 @@ export default function ForgotPasswordPage() {
                   )}
                 </Button>
 
-                {/* Terminal Output - Progressive messages */}
-                {terminalMessages.length > 0 && (
-                  <div className="mt-6 p-3 bg-slate-800/50 rounded-lg">
-                    <div className="text-xs font-mono text-slate-500 space-y-1">
-                      {terminalMessages.map((message, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            message.startsWith("$")
-                              ? "text-green-400"
-                              : message.startsWith("✓")
-                                ? "text-green-400"
-                                : message.startsWith("→")
-                                  ? "text-slate-400"
-                                  : message.startsWith("✗")
-                                    ? "text-red-400"
-                                    : "text-cyan-400"
-                          }`}
-                        >
-                          {message}
-                        </div>
-                      ))}
-                    </div>
+                {loading && (
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-yellow-400 font-mono text-sm">Procesando...</span>
                   </div>
                 )}
               </form>
@@ -185,13 +140,13 @@ export default function ForgotPasswordPage() {
 
             <div className="mt-6 text-center space-y-2">
               <p className="text-xs font-mono text-slate-500">
-                // ¿Recordaste tu contraseña?{" "}
+                ¿Recordaste tu contraseña?{" "}
                 <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
                   Inicia sesión
                 </Link>
               </p>
               <p className="text-xs font-mono text-slate-500">
-                // ¿No tienes cuenta?{" "}
+                ¿No tienes cuenta?{" "}
                 <Link href="/auth/register" className="text-cyan-400 hover:text-cyan-300">
                   Regístrate
                 </Link>

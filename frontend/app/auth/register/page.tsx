@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Terminal, Mail, Lock, Eye, EyeOff, User, UserPlus, Check, AlertCircle } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, User, UserPlus, Check, AlertCircle } from "lucide-react"
 import { UniqueHeader } from "@/components/unique-header"
 import { UniqueFooter } from "@/components/unique-footer"
 
@@ -34,18 +34,12 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [terminalMessages, setTerminalMessages] = useState<string[]>([])
   const router = useRouter()
 
   const buildFullEmail = (username: string, domain: string) => {
     return domain === "custom" ? username : username + domain
   }
 
-  const addTerminalMessage = (message: string, delay: number) => {
-    setTimeout(() => {
-      setTerminalMessages((prev) => [...prev, message])
-    }, delay)
-  }
 
   const getPasswordStrength = () => {
     const passwordValue = password
@@ -65,14 +59,6 @@ export default function RegisterPage() {
     setError(null)
     setSuccess(null)
     setLoading(true)
-    setTerminalMessages([])
-
-    // Progressive terminal messages
-    addTerminalMessage("$ npm run auth:register", 0)
-    addTerminalMessage("→ Validando datos...", 500)
-    addTerminalMessage("→ Conectando con el servidor...", 1000)
-    addTerminalMessage("→ Creando usuario...", 1500)
-
     try {
       const fullEmail = buildFullEmail(emailUser, emailDomain)
       const formData = new FormData()
@@ -80,29 +66,22 @@ export default function RegisterPage() {
       formData.append("email", fullEmail)
       formData.append("password", password)
       formData.append("is_sensei", isSensei.toString())
-
       const response = await fetch(`${API_BASE}/auth/init_register`, {
         method: "POST",
         credentials: "include",
         body: formData,
       })
-
       if (response.ok) {
-        addTerminalMessage("✓ Cuenta creada exitosamente", 2000)
-        addTerminalMessage("→ Redirigiendo a verificación...", 2500)
         setSuccess("Usuario registrado. Revisa tu email para el código de verificación.")
-        // Redirect to verification page with email
         setTimeout(() => {
           router.push(`/auth/verification?email=${encodeURIComponent(fullEmail)}`)
-        }, 3000)
+        }, 2000)
       } else {
         const errorText = await response.text()
         setError(errorText || "Error en el registro")
-        addTerminalMessage("✗ Error en el registro", 2000)
       }
     } catch (err) {
       setError("Error de conexión")
-      addTerminalMessage("✗ Error en el registro", 2000)
     } finally {
       setLoading(false)
     }
@@ -117,16 +96,12 @@ export default function RegisterPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-mono">./auth --register</span>
-              </div>
 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-4xl mb-4">
-                {">"} <span className="text-green-400">CREAR CUENTA</span>
+              <span className="text-green-400">CREAR CUENTA</span>
               </h1>
 
-              <p className="text-slate-400 font-mono text-sm">// Únete a la comunidad ByteTechEdu</p>
+              <p className="text-slate-400 font-mono text-sm">Únete a la comunidad ByteTechEdu</p>
             </div>
 
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -137,7 +112,6 @@ export default function RegisterPage() {
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/auth/register.js</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <UserPlus className="w-4 h-4 text-green-400" />
@@ -148,9 +122,7 @@ export default function RegisterPage() {
                 {/* Name Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> name =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">NAME</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Nombre</span>
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -170,9 +142,7 @@ export default function RegisterPage() {
                 {/* Email Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> email =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">EMAIL</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Email</span>
                   </label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -206,9 +176,7 @@ export default function RegisterPage() {
                 {/* Password Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> password =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">PASSWORD</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Contraseña</span>
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -265,7 +233,7 @@ export default function RegisterPage() {
                     disabled={loading}
                   />
                   <label htmlFor="sensei" className="text-sm font-mono text-slate-300">
-                    <span className="text-green-400">bool</span> isSensei ={" "}
+                    ¿Es un profesor?{" "}
                     <span className="text-yellow-400">{isSensei ? "true" : "false"}</span>
                   </label>
                 </div>
@@ -274,7 +242,7 @@ export default function RegisterPage() {
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-red-400" />
-                    <p className="text-red-400 text-sm font-mono">// Error: {error}</p>
+                    <p className="text-red-400 text-sm font-mono">Error: {error}</p>
                   </div>
                 )}
 
@@ -282,7 +250,7 @@ export default function RegisterPage() {
                 {success && (
                   <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <Check className="w-4 h-4 text-green-400" />
-                    <p className="text-green-400 text-sm font-mono">// Success: {success}</p>
+                    <p className="text-green-400 text-sm font-mono">Success: {success}</p>
                   </div>
                 )}
 
@@ -315,29 +283,10 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Terminal Output - Progressive messages */}
-                {terminalMessages.length > 0 && (
-                  <div className="mt-6 p-3 bg-slate-800/50 rounded-lg">
-                    <div className="text-xs font-mono text-slate-500 space-y-1">
-                      {terminalMessages.map((message, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            message.startsWith("$")
-                              ? "text-green-400"
-                              : message.startsWith("✓")
-                                ? "text-green-400"
-                                : message.startsWith("→")
-                                  ? "text-slate-400"
-                                  : message.startsWith("✗")
-                                    ? "text-red-400"
-                                    : "text-cyan-400"
-                          }`}
-                        >
-                          {message}
-                        </div>
-                      ))}
-                    </div>
+                {loading && (
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-green-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-green-400 font-mono text-sm">Procesando...</span>
                   </div>
                 )}
               </form>
@@ -345,7 +294,7 @@ export default function RegisterPage() {
 
             <div className="mt-6 text-center">
               <p className="text-xs font-mono text-slate-500">
-                // Al crear una cuenta, aceptas nuestros{" "}
+                Al crear una cuenta, aceptas nuestros{" "}
                 <Link href="/terms" className="text-cyan-400 hover:text-cyan-300">
                   términos
                 </Link>{" "}

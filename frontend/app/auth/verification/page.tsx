@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Terminal, Mail, CheckCircle, AlertCircle, RotateCcw } from "lucide-react"
+import { Mail, CheckCircle, AlertCircle, RotateCcw } from "lucide-react"
 import { UniqueHeader } from "@/components/unique-header"
 import { UniqueFooter } from "@/components/unique-footer"
 
@@ -19,7 +19,6 @@ export default function VerificationPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [terminalMessages, setTerminalMessages] = useState<string[]>([])
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -31,52 +30,32 @@ export default function VerificationPage() {
     }
   }, [searchParams])
 
-  const addTerminalMessage = (message: string, delay: number) => {
-    setTimeout(() => {
-      setTerminalMessages((prev) => [...prev, message])
-    }, delay)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setSuccess(null)
     setLoading(true)
-    setTerminalMessages([])
-
-    // Progressive terminal messages
-    addTerminalMessage("$ npm run auth:verify", 0)
-    addTerminalMessage("→ Validando código...", 500)
-    addTerminalMessage("→ Verificando email...", 1000)
-    addTerminalMessage("→ Activando cuenta...", 1500)
-
     try {
       const formData = new FormData()
       formData.append("email", email)
       formData.append("code", code)
-
       const response = await fetch(`${API_BASE}/auth/verify_register`, {
         method: "POST",
         credentials: "include",
         body: formData,
       })
-
       if (response.ok) {
-        addTerminalMessage("✓ Cuenta verificada exitosamente", 2000)
-        addTerminalMessage("→ Redirigiendo al login...", 2500)
         setSuccess("Usuario verificado correctamente.")
-        // Redirect to login after successful verification
         setTimeout(() => {
           router.push("/auth/login")
-        }, 3000)
+        }, 2000)
       } else {
         const errorText = await response.text()
         setError(errorText || "Error en la verificación")
-        addTerminalMessage("✗ Error en la verificación", 2000)
       }
     } catch (err) {
       setError("Error de conexión")
-      addTerminalMessage("✗ Error de conexión", 2000)
     } finally {
       setLoading(false)
     }
@@ -131,16 +110,12 @@ export default function VerificationPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-mono">./auth --verify</span>
-              </div>
 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-4xl mb-4">
-                {">"} <span className="text-blue-400">VERIFICAR</span>
+                <span className="text-blue-400">VERIFICAR</span>
               </h1>
 
-              <p className="text-slate-400 font-mono text-sm">// Confirma tu dirección de email</p>
+              <p className="text-slate-400 font-mono text-sm">Confirma tu dirección de email</p>
             </div>
 
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -151,7 +126,6 @@ export default function VerificationPage() {
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/auth/verification.js</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Mail className="w-4 h-4 text-blue-400" />
@@ -162,9 +136,7 @@ export default function VerificationPage() {
                 {/* Email Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> email =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">EMAIL</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Email</span>
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -183,17 +155,14 @@ export default function VerificationPage() {
                     />
                   </div>
                   {searchParams.get("email") && (
-                    <p className="text-xs font-mono text-slate-500 mt-1">// Email completado automáticamente</p>
+                    <p className="text-xs font-mono text-slate-500 mt-1">Email completado automáticamente</p>
                   )}
                 </div>
 
                 {/* Verification Code Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> verificationCode =
-                    <span className="text-yellow-400">"</span>
-                    <span className="text-red-400">CODE</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Codigo de verificación</span>
                   </label>
                   <Input
                     id="code"
@@ -206,20 +175,20 @@ export default function VerificationPage() {
                     className="text-center text-lg tracking-widest bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono focus:border-cyan-400"
                     disabled={loading}
                   />
-                  <p className="text-xs font-mono text-slate-500 mt-1">// Revisa tu bandeja de entrada y spam</p>
+                  <p className="text-xs font-mono text-slate-500 mt-1">Revisa tu bandeja de entrada y spam</p>
                 </div>
 
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-red-400" />
-                    <p className="text-red-400 text-sm font-mono">// Error: {error}</p>
+                    <p className="text-red-400 text-sm font-mono">Error: {error}</p>
                   </div>
                 )}
 
                 {success && (
                   <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
                     <CheckCircle className="w-4 h-4 text-green-400" />
-                    <p className="text-green-400 text-sm font-mono">// Success: {success}</p>
+                    <p className="text-green-400 text-sm font-mono">Success: {success}</p>
                   </div>
                 )}
 
@@ -241,29 +210,10 @@ export default function VerificationPage() {
                   )}
                 </Button>
 
-                {/* Terminal Output - Progressive messages */}
-                {terminalMessages.length > 0 && (
-                  <div className="mt-6 p-3 bg-slate-800/50 rounded-lg">
-                    <div className="text-xs font-mono text-slate-500 space-y-1">
-                      {terminalMessages.map((message, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            message.startsWith("$")
-                              ? "text-green-400"
-                              : message.startsWith("✓")
-                                ? "text-green-400"
-                                : message.startsWith("→")
-                                  ? "text-slate-400"
-                                  : message.startsWith("✗")
-                                    ? "text-red-400"
-                                    : "text-cyan-400"
-                          }`}
-                        >
-                          {message}
-                        </div>
-                      ))}
-                    </div>
+                {loading && (
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-blue-400 font-mono text-sm">Procesando...</span>
                   </div>
                 )}
               </form>
@@ -280,7 +230,7 @@ export default function VerificationPage() {
                 REENVIAR CÓDIGO
               </Button>
               <p className="text-xs font-mono text-slate-500">
-                // ¿Ya tienes cuenta verificada?{" "}
+                ¿Ya tienes cuenta verificada?{" "}
                 <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
                   Inicia sesión
                 </Link>

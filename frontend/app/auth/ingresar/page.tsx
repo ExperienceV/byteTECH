@@ -8,7 +8,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Terminal, Mail, Lock, Eye, EyeOff, User, ArrowRight, AlertCircle } from "lucide-react"
+import { Mail, Lock, Eye, EyeOff, User, ArrowRight, AlertCircle } from "lucide-react"
 import { UniqueHeader } from "@/components/unique-header"
 import { UniqueFooter } from "@/components/unique-footer"
 import { useAuth } from "@/lib/auth-context"
@@ -29,7 +29,6 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [terminalMessages, setTerminalMessages] = useState<string[]>([])
   const router = useRouter()
   const { login } = useAuth()
 
@@ -37,40 +36,21 @@ export default function LoginPage() {
     return domain === "custom" ? username : username + domain
   }
 
-  const addTerminalMessage = (message: string, delay: number) => {
-    setTimeout(() => {
-      setTerminalMessages((prev) => [...prev, message])
-    }, delay)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    setTerminalMessages([])
-
-    // Progressive terminal messages
-    addTerminalMessage("$ npm run auth:login", 0)
-    addTerminalMessage("→ Validando credenciales...", 500)
-    addTerminalMessage("→ Conectando con el servidor...", 1000)
-    addTerminalMessage("→ Estableciendo sesión...", 1500)
-
     try {
       const fullEmail = buildFullEmail(emailUser, emailDomain)
       const ok = await login(fullEmail, password)
-
       if (ok) {
-        addTerminalMessage("✓ Login exitoso", 2000)
-        setTimeout(() => {
-          router.push("/")
-        }, 2500)
+        router.push("/")
       } else {
         setError("Error en el login")
-        addTerminalMessage("✗ Error en el login", 2000)
       }
     } catch (err) {
       setError("Error de conexión")
-      addTerminalMessage("✗ Error en el login", 2000)
     } finally {
       setLoading(false)
     }
@@ -87,51 +67,28 @@ export default function LoginPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="max-w-md mx-auto">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-mono">./auth --login</span>
-              </div>
 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-4xl mb-4">
-                {">"} <span className="text-cyan-400">INGRESAR</span>
+              <span className="text-cyan-400">INGRESAR</span>
               </h1>
 
-              <p className="text-slate-400 font-mono text-sm">// Accede a tu cuenta de ByteTechEdu</p>
+              <p className="text-slate-400 font-mono text-sm">Accede a tu cuenta de ByteTechEdu</p>
             </div>
 
-            {/* Login Form Terminal */}
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
-              {/* Terminal Header */}
-              <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full" />
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  </div>
-                  <span className="text-xs font-mono text-slate-400">~/auth/login.js</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <User className="w-4 h-4 text-cyan-400" />
-                </div>
-              </div>
-
-              {/* Form Content */}
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
                 {/* General Error */}
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-red-400" />
-                    <p className="text-red-400 text-sm font-mono">// Error: {error}</p>
+                    <p className="text-red-400 text-sm font-mono">Error: {error}</p>
                   </div>
                 )}
 
                 {/* Email Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> email =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">EMAIL</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Email</span>
                   </label>
                   <div className="flex gap-2">
                     <div className="relative flex-1">
@@ -165,9 +122,7 @@ export default function LoginPage() {
                 {/* Password Field */}
                 <div>
                   <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">const</span> password =<span className="text-yellow-400">"</span>
-                    <span className="text-red-400">PASSWORD</span>
-                    <span className="text-yellow-400">"</span>
+                    <span className="text-cyan-400">Contraseña</span>
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-500" />
@@ -222,29 +177,10 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Terminal Output - Progressive messages */}
-                {terminalMessages.length > 0 && (
-                  <div className="mt-6 p-3 bg-slate-800/50 rounded-lg">
-                    <div className="text-xs font-mono text-slate-500 space-y-1">
-                      {terminalMessages.map((message, index) => (
-                        <div
-                          key={index}
-                          className={`${
-                            message.startsWith("$")
-                              ? "text-green-400"
-                              : message.startsWith("✓")
-                                ? "text-green-400"
-                                : message.startsWith("→")
-                                  ? "text-slate-400"
-                                  : message.startsWith("✗")
-                                    ? "text-red-400"
-                                    : "text-cyan-400"
-                          }`}
-                        >
-                          {message}
-                        </div>
-                      ))}
-                    </div>
+                {loading && (
+                  <div className="mt-6 flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+                    <span className="text-cyan-400 font-mono text-sm">Procesando...</span>
                   </div>
                 )}
               </form>
@@ -253,7 +189,7 @@ export default function LoginPage() {
             {/* Additional Options */}
             <div className="mt-6 text-center">
               <p className="text-xs font-mono text-slate-500">
-                // ¿Olvidaste tu contraseña?{" "}
+                ¿Olvidaste tu contraseña?{" "}
                 <Link href="/auth/forgot-password" className="text-cyan-400 hover:text-cyan-300">
                   Recuperar
                 </Link>

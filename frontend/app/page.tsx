@@ -171,11 +171,11 @@ export default function index() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500">
               <Zap className="h-5 w-5 text-black" />
             </span>
-            <h2 className="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold text-white">./courses</h2>
+            <h2 className="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold text-white">Cursos</h2>
           </header>
 
           <p className="mb-8 sm:mb-12 text-base sm:text-lg font-mono text-slate-400">
-            // ¡Mira nuestros cursos más vistos!
+          ¡Mira nuestros cursos más vistos!
           </p>
 
           {/* Estados de carga y error */}
