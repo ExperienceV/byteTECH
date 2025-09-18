@@ -68,7 +68,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${raleway.variable} ${geistMono.variable} antialiased`}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/act.ico" sizes="any" />
       </head>
       <body>
         <AuthProvider>{children}</AuthProvider>

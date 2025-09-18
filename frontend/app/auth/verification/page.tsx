@@ -10,8 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Mail, CheckCircle, AlertCircle, RotateCcw } from "lucide-react"
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
-
-const API_BASE = "http://127.0.0.1:8000/api"
+import { API_BASE } from "@/lib/config"
 
 export default function VerificationPage() {
   const [email, setEmail] = useState("")
@@ -48,7 +47,7 @@ export default function VerificationPage() {
       if (response.ok) {
         setSuccess("Usuario verificado correctamente.")
         setTimeout(() => {
-          router.push("/auth/login")
+          router.push("/auth/ingresar")
         }, 2000)
       } else {
         const errorText = await response.text()
@@ -216,7 +215,7 @@ export default function VerificationPage() {
               </Button>
               <p className="text-xs font-mono text-slate-500">
                 ¿Ya tienes cuenta verificada?{" "}
-                <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
+                <Link href="/auth/ingresar" className="text-cyan-400 hover:text-cyan-300">
                   Inicia sesión
                 </Link>
               </p>

@@ -10,8 +10,8 @@ load_dotenv(env_path)  # ¡Funcionará siempre!
 class Settings(BaseSettings):
 
     # API STATUS
-    VERSION: str = "v1.1.14"
-    DEBUG: bool = True
+    VERSION: str = "v1.0.0"
+    DEBUG: bool = False
 
     # COOKIE SETTINGS
     # In development with HTTPS certificates, use SameSite=None and Secure=True
@@ -72,6 +72,7 @@ class Settings(BaseSettings):
 
     # DATABASE
     SUPABASE_URL: str
+    SUPABASE_URL_TEST: str
 
     # RESEND API
     RESEND_API_KEY: str 

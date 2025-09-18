@@ -1,15 +1,17 @@
 from app.database.queries.threads import get_threads_by_lesson_id
 from app.database.config import SessionLocal
 from app.database.base import Course
-from app.services.services_google import delete_file
+from app.utils.storage import delete_file
 from app.parameters import settings
 import resend
 from app.database.queries.codes import create_code, delete_expired_codes
 from sqlalchemy.orm import Session
 from app.utils.signature import create_reset_token
 from app.database.queries.tokens import save_token
-
-
+import ffmpeg
+import tempfile
+import math
+import os
 
 def include_threads(lessons: list) -> list:
     new_list = []
@@ -45,12 +47,12 @@ def get_all_drive_ids(course: Course):
 def delete_drive_files(file_ids: list[str]):
     for fid in file_ids:
         try:
-            delete_file(fid) 
+            delete_file(name=fid) 
         except Exception as e:
             print(f"Error deleting {fid}: {e}")
 
 
-def resend_mail(message, issue, client_mail, username):
+def resend_mail(message, issue, client_mail, username, is_restore_or_verify:bool=False):
     """
     Function that sends an email using the Resend API.
     
@@ -62,6 +64,7 @@ def resend_mail(message, issue, client_mail, username):
         issue (str): The subject of the email.
         client_mail (str): The email address of the client.
         username (str): The username of the client sending the message.
+        is_restore (bool, optional): Whether the email is for password restoration. Defaults to False.
     
     Returns:
         resend.Emails.SendResponse: The response object from the Resend API containing email details.
@@ -73,9 +76,14 @@ def resend_mail(message, issue, client_mail, username):
         # Set the Resend API key from the environment variables
         resend.api_key = settings.RESEND_API_KEY
 
-        # Format the message with the user's details
-        ident_message = dot_separator(message)
-        build_message = f"Hello @{username}!\n{ident_message}"
+        if is_restore_or_verify:
+            # Format the message with the user's details
+            ident_message = dot_separator(message)
+            build_message = message
+        else:
+            # Format the message with the user's details
+            ident_message = dot_separator(message)
+            build_message = f"El usuario @{username} con el correo {client_mail} envio un mensaje con el asunto {issue}.\n{ident_message}"
 
         # Prepare the email parameters
         params: resend.Emails.SendParams = {
@@ -167,12 +175,13 @@ def process_code(
             message=f"""
             We received a request to reset your password.
             To proceed with resetting your password, please use the following URL:
-            {settings.FRONTEND_URL}/auth/reset_password?token={token}
+            {settings.FRONTEND_URL}/auth/reset-password?token={token}
             If you did not request a password reset, please ignore this email.
             """,
             issue=f"Reset your password - ByteTech",
             client_mail=email,
-            username=username
+            username=username,
+            is_restore_or_verify=True
         )
     else:
         send_mail_response = resend_mail(
@@ -184,7 +193,8 @@ def process_code(
             """,
             issue=f"Your verification code - {code.code}",
             client_mail=email,
-            username=username
+            username=username,
+            is_restore_or_verify=True
         )
 
     if not send_mail_response:
@@ -202,4 +212,76 @@ def process_code(
 
 
 
+
+async def get_video_duration_minutes(contents: bytes) -> int:
+    if not contents:
+        raise ValueError("El contenido del video está vacío.")
+    
+    with tempfile.NamedTemporaryFile(delete=True, suffix=".mp4") as temp:
+        temp.write(contents)
+        temp.flush()
+
+        size = os.path.getsize(temp.name)
+        if size == 0:
+            raise ValueError("El archivo temporal está vacío.")
+
+        try:
+            probe = ffmpeg.probe(temp.name)
+            duration_sec = float(probe['format']['duration'])
+        except ffmpeg.Error as e:
+            raise RuntimeError(f"Error al analizar el video con ffprobe: {e.stderr.decode()}")
+
+    return math.floor(duration_sec / 60)
+
+
+async def mkv_to_mp4_bytes(contents: bytes) -> bytes:
+    """
+    Transcode MKV bytes to MP4 (H.264 + AAC) and return the resulting MP4 bytes.
+    Uses temporary files with ffmpeg for reliability.
+    """
+    if not contents:
+        raise ValueError("El contenido MKV está vacío.")
+
+    with tempfile.NamedTemporaryFile(delete=True, suffix=".mkv") as in_file, \
+         tempfile.NamedTemporaryFile(delete=True, suffix=".mp4") as out_file:
+        in_file.write(contents)
+        in_file.flush()
+
+        # Ensure input size > 0
+        if os.path.getsize(in_file.name) == 0:
+            raise ValueError("El archivo temporal de entrada está vacío.")
+
+        # 1) Intentar REMUX (copia de streams) si los codecs ya son compatibles con MP4 (p.ej., H.264 + AAC)
+        remux_ok = False
+        try:
+            (
+                ffmpeg
+                .input(in_file.name)
+                .output(out_file.name, c='copy', movflags='faststart')
+                .overwrite_output()
+                .run(quiet=True)
+            )
+            remux_ok = True
+        except ffmpeg.Error:
+            remux_ok = False
+
+        if not remux_ok:
+            # 2) Fallback: transcodificar usando libopenh264 + aac (más disponible que libx264 en algunos builds)
+            try:
+                (
+                    ffmpeg
+                    .input(in_file.name)
+                    .output(out_file.name, vcodec='libopenh264', acodec='aac', movflags='faststart')
+                    .overwrite_output()
+                    .run(quiet=True)
+                )
+            except ffmpeg.Error as e:
+                raise RuntimeError(
+                    "Error al convertir MKV a MP4 con ffmpeg (remux y transcode fallaron): "
+                    + getattr(e, 'stderr', b'').decode(errors='ignore')
+                )
+
+        # Read output mp4 bytes
+        out_file.seek(0)
+        return out_file.read()
 

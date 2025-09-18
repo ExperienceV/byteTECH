@@ -5,8 +5,8 @@ from app.parameters import settings
 
 app = FastAPI(
     title="ByteTech API",
-    version=settings.VERSION
-    #docs_url="/docs" if settings.DEBUG else None  # Desactiva docs en producción
+    version=settings.VERSION,
+    docs_url="/docs" if settings.DEBUG else None  # Desactiva docs en producción
 )
 
 # -------- MiddlWeware Configuration --------

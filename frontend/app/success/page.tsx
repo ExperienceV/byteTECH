@@ -89,12 +89,12 @@ function SuccessContent() {
                 </Link>
               )}
 
-              <Link href="/cursos">
+              <Link href="/perfil">
                 <Button
                   variant="outline"
                   className="border-slate-600 text-slate-300 hover:bg-slate-800/50 font-mono px-8 py-3 text-lg bg-transparent"
                 >
-                  VER TODOS LOS CURSOS
+                  VER MIS CURSOS
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>

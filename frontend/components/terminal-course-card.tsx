@@ -35,6 +35,14 @@ export function TerminalCourseCard({
   rating = 0,
   href,
 }: TerminalCourseCardProps) {
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+
   return (
     <Card className="bg-slate-900/80 backdrop-blur-sm border-slate-800 hover:border-cyan-500/50 transition-all duration-300 group">
       <CardHeader className="p-0">
@@ -56,11 +64,7 @@ export function TerminalCourseCard({
               </div>
             </div>
           )}
-          <div className="absolute top-2 right-2">
-            <span className="bg-slate-900/80 backdrop-blur-sm text-cyan-400 px-2 py-1 rounded text-xs font-mono">
-              {difficulty}
-            </span>
-          </div>
+          {/* Difficulty badge removed */}
         </div>
       </CardHeader>
 
@@ -94,11 +98,11 @@ export function TerminalCourseCard({
 
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div className="flex items-center gap-1">
-          <DollarSign className="w-4 h-4 text-green-400" />
+          {/* <DollarSign className="w-4 h-4 text-green-400" /> */}
           <span className="font-mono text-green-400 font-semibold">${price}</span>
         </div>
 
-        <Link href={href ?? `/cursos/${id}`}>
+        <Link href={href ?? `/cursos/${slugify(title)}`}>
           <Button size="sm" className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono">
             Ver curso
           </Button>

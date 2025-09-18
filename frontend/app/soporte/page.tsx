@@ -127,7 +127,7 @@ export default function SoportePage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    {/*<div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                         <MessageCircle className="w-5 h-5 text-purple-400" />
                       </div>
@@ -135,7 +135,7 @@ export default function SoportePage() {
                         <div className="text-white font-mono text-sm">Telegram</div>
                         <div className="text-slate-400 text-sm">@byteTECH_support</div>
                       </div>
-                    </div>
+                    </div>*/}
                     <a 
                       href="https://discord.gg/DCva2DSauG" 
                       target="_blank" 
@@ -196,7 +196,7 @@ export default function SoportePage() {
 
                   <div className="mt-4 p-3 bg-slate-800/50 rounded-lg">
                     <div className="text-xs font-mono text-slate-400">
-                      <span className="text-green-400">Nota:</span> Para problemas urgentes, usa Telegram para
+                      <span className="text-green-400">Nota:</span> Para problemas urgentes, usa Discord para
                       respuesta más rápida
                     </div>
                   </div>

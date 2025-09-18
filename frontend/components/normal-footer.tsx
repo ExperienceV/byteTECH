@@ -27,16 +27,16 @@ export function NormalFooter() {
           </div>
 
           <div>
-            <h3 className="text-white font-mono font-semibold mb-4 text-sm sm:text-base">./links</h3>
+            <h3 className="text-white font-mono font-semibold mb-4 text-sm sm:text-base">ENLACES</h3>
             <div className="space-y-2 font-mono text-xs sm:text-sm">
-              <a href="#" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
-                → cursos/
+              <a href="/cursos" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
+                → cursos
               </a>
-              <a href="#" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
-                → empresarial/
+              <a href="/empresarial" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
+                → empresarial
               </a>
-              <a href="#" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
-                → soporte/
+              <a href="/soporte" className="block text-slate-400 hover:text-cyan-400 transition-colors py-1">
+                → soporte
               </a>
             </div>
           </div>

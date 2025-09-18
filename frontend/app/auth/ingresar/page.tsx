@@ -169,7 +169,7 @@ export default function LoginPage() {
 
                   <div className="text-center">
                     <Link
-                      href="/auth/register"
+                      href="/auth/registro"
                       className="text-sm font-mono text-slate-400 hover:text-cyan-400 transition-colors border-b border-slate-700 hover:border-cyan-400 pb-1"
                     >
                       CREAR CUENTA

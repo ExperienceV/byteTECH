@@ -132,9 +132,6 @@ export function StudentCourseCard({
         </div>
 
         <div className="flex flex-wrap gap-2 mt-3">
-          <Badge className={getDifficultyColor(safeDifficulty)} variant="outline">
-            {safeDifficulty}
-          </Badge>
           <Badge className={getLanguageColor(safeLanguage)} variant="outline">
             {safeLanguage}
           </Badge>

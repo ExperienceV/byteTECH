@@ -71,6 +71,10 @@ async def delete_thread(
     Errors:
         400: Error al eliminar el hilo
     """
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
     deleted = delete_thread_by_id(
         thread_id=thread_id,
         db=db

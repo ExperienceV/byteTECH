@@ -34,7 +34,7 @@ import {
   Clock
 } from "lucide-react"
 import { useAuth } from "@//lib/auth-context"
-import { coursesApi, workbrenchApi } from "@/lib/api"
+import { coursesApi, workbrenchApi, getUsers, getApiBase } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import React, { useEffect, useState } from "react"
@@ -69,6 +69,12 @@ interface CourseContent {
   sensei_id: number
   sensei_name: string
   video_id: string | null
+  // Nuevo: archivo de previsualización
+  preview?: {
+    id: number
+    course_id: number
+    file_id: string
+  } | null
 }
 
 interface CourseData extends CourseContent {
@@ -91,12 +97,115 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
   const [selectedSection, setSelectedSection] = useState<number | null>(null)
   const [showSectionModal, setShowSectionModal] = useState(false)
   const [newSectionName, setNewSectionName] = useState("")
+  // Subida de preview
+  const [isUploadingPreview, setIsUploadingPreview] = useState(false)
+  const [previewError, setPreviewError] = useState("")
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
     price: "",
     hours: ""
   })
+
+  // Horizontal tabs for sections
+  const [selectedSectionTab, setSelectedSectionTab] = useState<number | null>(null)
+
+  // Initialize the selected section tab to the first section when content is available
+  useEffect(() => {
+    if (!course || !course.content || selectedSectionTab !== null) return
+    const entries = Object.entries(course.content as Record<string, Section>)
+      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+    if (entries.length > 0) {
+      const firstSection = entries[0][1]
+      setSelectedSectionTab(firstSection.id)
+    }
+  }, [course, selectedSectionTab])
+
+  // =============================
+  // Regalar Curso - Buscar Emails
+  // =============================
+  const [users, setUsers] = useState<Array<{ id: number; name: string; email: string; is_sensei: boolean }>>([])
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+  const [userSearch, setUserSearch] = useState("")
+  const [userSuggestions, setUserSuggestions] = useState<typeof users>([])
+  const [showUserSuggestions, setShowUserSuggestions] = useState(false)
+  const [activeUserIndex, setActiveUserIndex] = useState(-1)
+  const [selectedEmail, setSelectedEmail] = useState("")
+  const userBoxRef = React.useRef<HTMLDivElement>(null)
+
+  const ensureUsersLoaded = async () => {
+    if (users.length > 0) return
+    try {
+      setIsLoadingUsers(true)
+      const res = await getUsers()
+      if (res.ok && Array.isArray(res.data)) {
+        setUsers(res.data as any)
+      }
+    } finally {
+      setIsLoadingUsers(false)
+    }
+  }
+
+  const updateUserSuggestions = (q: string) => {
+    const query = q.trim().toLowerCase()
+    if (!query) {
+      setUserSuggestions([])
+      return
+    }
+    const filtered = users.filter(u =>
+      u.email.toLowerCase().includes(query) ||
+      u.name.toLowerCase().includes(query)
+    ).slice(0, 8)
+    setUserSuggestions(filtered)
+  }
+
+  const handleUserSearchChange = async (value: string) => {
+    setUserSearch(value)
+    setSelectedEmail("")
+    if (!value.trim()) {
+      setUserSuggestions([])
+      setShowUserSuggestions(false)
+      setActiveUserIndex(-1)
+      return
+    }
+    await ensureUsersLoaded()
+    updateUserSuggestions(value)
+    setShowUserSuggestions(true)
+  }
+
+  const handleUserKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (!showUserSuggestions || userSuggestions.length === 0) return
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveUserIndex(prev => (prev + 1) % userSuggestions.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveUserIndex(prev => (prev - 1 + userSuggestions.length) % userSuggestions.length)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      const sel = activeUserIndex >= 0 ? userSuggestions[activeUserIndex] : userSuggestions[0]
+      if (sel) {
+        setSelectedEmail(sel.email)
+        setUserSearch(`${sel.name} <${sel.email}>`)
+        setShowUserSuggestions(false)
+        setActiveUserIndex(-1)
+      }
+    } else if (e.key === "Escape") {
+      setShowUserSuggestions(false)
+      setActiveUserIndex(-1)
+    }
+  }
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userBoxRef.current && !userBoxRef.current.contains(e.target as Node)) {
+        setShowUserSuggestions(false)
+        setActiveUserIndex(-1)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -480,16 +589,19 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <Link href="/home">
-                <Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Volver
-                </Button>
+              <Link href="/perfil">
+              <Button
+                variant="outline"
+                className="border-blue-800 text-white bg-blue-900 hover:bg-blue-800 hover:text-blue-100 transition-colors duration-200"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Volver
+              </Button>
               </Link>
               
               <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2">
                 <Terminal className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-400 text-sm font-mono">./editor --course {courseId}</span>
+                <span className="text-purple-400 text-sm font-mono">Editor del Curso {courseId}</span>
               </div>
             </div>
 
@@ -514,12 +626,12 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                     )}
                   </Button>
                   <Button
-                    onClick={() => setIsEditing(false)}
-                    variant="outline"
-                    className="border-slate-700 text-slate-300 hover:bg-slate-800"
-                  >
-                    Cancelar
-                  </Button>
+                  onClick={() => setIsEditing(false)}
+                  variant="outline"
+                  className="border-blue-800 text-white bg-blue-900 hover:bg-blue-800 hover:text-blue-100 transition-colors duration-200"
+                >
+                  Cancelar
+                </Button>
                 </>
               ) : (
                 <Button
@@ -542,13 +654,91 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
 
           {/* Course Info */}
           <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Course Details */}
-              <div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Course Details - Left Column */}
+              <div className="lg:col-span-2">
                 <h1 className="font-mono font-bold text-white text-2xl sm:text-3xl mb-4">
                   {">"} {course.name}
                 </h1>
                 
+                {/* Video Preview - Moved below title */}
+                <div className="mb-6">
+                  <h4 className="font-mono text-green-400 font-semibold mb-3">PREVISUALIZACIÓN PÚBLICA</h4>
+
+                  {previewError && (
+                    <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 mb-3 text-red-300 font-mono text-sm">
+                      {previewError}
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {course?.preview?.file_id ? (
+                      <video
+                        className="w-full max-w-lg aspect-video rounded-lg border border-slate-700"
+                        controls
+                        preload="metadata"
+                        src={`${getApiBase()}/media/get_file?file_id=${encodeURIComponent(course.preview.file_id)}`}
+                      />
+                    ) : (
+                      <div className="w-full max-w-lg aspect-video bg-slate-900/50 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-700">
+                        <div className="text-center">
+                          <Play className="w-6 h-6 text-green-400 mx-auto mb-2 opacity-60" />
+                          <p className="text-slate-400 font-mono text-xs">Aún no hay video de previsualización</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-slate-400 font-mono text-xs">
+                        {course?.preview?.file_id ? (
+                          <>Archivo actual: <span className="text-green-400">{course.preview.file_id}</span></>
+                        ) : (
+                          <>Sube un video .mp4/.webm para mostrar al público</>
+                        )}
+                      </div>
+                      <label className="inline-flex items-center gap-2">
+                        <input
+                          type="file"
+                          accept="video/*"
+                          disabled={isUploadingPreview}
+                          className="hidden"
+                          onChange={async (e) => {
+                            if (!course) return
+                            const inputEl = e.currentTarget as HTMLInputElement
+                            const file = inputEl.files?.[0]
+                            if (!file) return
+                            if (!file.type.startsWith('video/')) {
+                              setPreviewError('El archivo debe ser un video')
+                              inputEl.value = ''
+                              return
+                            }
+                            setPreviewError('')
+                            setIsUploadingPreview(true)
+                            try {
+                              const resp = await workbrenchApi.uploadPreview(course.id, file)
+                              if (!resp.ok) throw new Error(resp.message || 'Error subiendo preview')
+                              const { id, course_id, file_id } = resp.data || {}
+                              setCourse((prev) => prev ? ({
+                                ...prev,
+                                preview: file_id ? { id: id ?? prev.preview?.id ?? 0, course_id: course_id ?? prev.id, file_id } : prev.preview
+                              }) : prev)
+                            } catch (err: any) {
+                              setPreviewError(err.message || 'Error al subir el preview')
+                            } finally {
+                              setIsUploadingPreview(false)
+                              inputEl.value = ''
+                            }
+                          }}
+                        />
+                        <Button asChild disabled={isUploadingPreview} className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono">
+                          <span>{isUploadingPreview ? 'Subiendo...' : 'Subir / Actualizar Preview'}</span>
+                        </Button>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course Description and Details */}
                 {isEditing ? (
                   <div className="space-y-4">
                     <div>
@@ -612,7 +802,7 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                 )}
               </div>
 
-              {/* Course Stats */}
+              {/* Course Stats + Actions - Right Column */}
               <div className="bg-slate-800/50 rounded-lg p-4">
                 <h3 className="font-mono text-cyan-400 font-semibold mb-4">ESTADÍSTICAS DEL CURSO</h3>
                 <div className="space-y-3">
@@ -639,14 +829,76 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                     </span>
                   </div>
                 </div>
+
+                {/* Regalar curso */}
+                <div className="mt-6 pt-4 border-t border-slate-700">
+                  <h4 className="font-mono text-green-400 font-semibold mb-2">REGALAR CURSO</h4>
+                  <div className="text-slate-400 font-mono text-xs mb-3">Busca un usuario por nombre o email y transfiérele acceso a este curso.</div>
+                  <div className="relative" ref={userBoxRef}>
+                    <Input
+                      value={userSearch}
+                      onChange={(e) => handleUserSearchChange(e.target.value)}
+                      onFocus={() => { ensureUsersLoaded(); if (userSearch.trim()) setShowUserSuggestions(true) }}
+                      onKeyDown={handleUserKeyDown}
+                      placeholder="Buscar por email o nombre..."
+                      className="bg-slate-900/80 border-slate-700 text-white font-mono"
+                    />
+                    {showUserSuggestions && (
+                      <div className="absolute mt-1 w-full bg-slate-900/95 border border-slate-800 rounded-lg shadow-xl z-20 overflow-hidden">
+                        {isLoadingUsers && (
+                          <div className="px-3 py-2 text-xs text-slate-400 font-mono">Cargando usuarios...</div>
+                        )}
+                        {!isLoadingUsers && userSuggestions.length === 0 && (
+                          <div className="px-3 py-2 text-xs text-slate-400 font-mono">Sin resultados</div>
+                        )}
+                        {!isLoadingUsers && userSuggestions.map((u, idx) => (
+                          <button
+                            key={u.id}
+                            onMouseDown={(e) => { e.preventDefault(); setSelectedEmail(u.email); setUserSearch(`${u.name} <${u.email}>`); setShowUserSuggestions(false); setActiveUserIndex(-1) }}
+                            className={`w-full text-left px-3 py-2 font-raleway text-sm ${idx === activeUserIndex ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70'}`}
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-white">{u.name}</span>
+                              <span className="text-xs text-slate-400">{u.email}</span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    <Button
+                      onClick={async () => {
+                        if (!course || !selectedEmail) return
+                        setError("")
+                        try {
+                          const res = await workbrenchApi.giveCourse(course.id, selectedEmail)
+                          if (!res.ok) {
+                            throw new Error(res.message || "No se pudo regalar el curso")
+                          }
+                          // feedback simple
+                          alert(`Curso regalado a ${selectedEmail}`)
+                          setUserSearch("")
+                          setSelectedEmail("")
+                        } catch (err: any) {
+                          setError(err.message || "Error al regalar el curso")
+                        }
+                      }}
+                      disabled={!selectedEmail}
+                      className="bg-green-500 hover:bg-green-600 text-black font-mono disabled:opacity-50"
+                    >
+                      Regalar Curso
+                    </Button>
+                    {selectedEmail && (
+                      <Badge className="bg-slate-700 text-slate-300 font-mono">{selectedEmail}</Badge>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Transición suave */}
-      <div className="section-transition-up"></div>
 
       {/* Content Editor */}
       <section className="bg-slate-900 relative overflow-hidden">
@@ -684,6 +936,36 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
               </Button>
             </div>
 
+            {/* Sections horizontal tabs */}
+            {course.content && Object.keys(course.content).length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-slate-400 font-mono text-sm">
+                    Secciones totales: {Object.keys(course.content).length}
+                  </div>
+                </div>
+                <div className="relative">
+                  <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                    {Object.entries(course.content as Record<string, Section>)
+                      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                      .map(([id, section]) => (
+                        <button
+                          key={section.id}
+                          onClick={() => setSelectedSectionTab(section.id)}
+                          className={`whitespace-nowrap px-3 py-2 rounded-lg border font-mono text-sm transition-colors ${
+                            selectedSectionTab === section.id
+                              ? 'bg-cyan-500 text-black border-cyan-400'
+                              : 'bg-slate-900/80 text-slate-300 border-slate-700 hover:bg-slate-800'
+                          }`}
+                        >
+                          {section.title || `Sección ${id}`}
+                        </button>
+                      ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
             <AlertDialog open={showSectionModal} onOpenChange={setShowSectionModal}>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -713,9 +995,11 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
             {/* Sections List */}
             {course.content && Object.keys(course.content).length > 0 ? (
               <div className="space-y-6">
-                {Object.entries(course.content as Record<string, Section>).sort((a, b) => 
-                  parseInt(a[0]) - parseInt(b[0])
-                ).map(([id, section], sectionIndex) => (
+                {(() => {
+                  const entries = Object.entries(course.content as Record<string, Section>)
+                    .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                    .filter(([_, section]) => selectedSectionTab ? section.id === selectedSectionTab : true)
+                  return entries.map(([id, section], sectionIndex) => (
                   <div key={section.id} className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
                       <div className="flex items-center gap-3">
@@ -724,7 +1008,7 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                           <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                           <div className="w-3 h-3 bg-green-500 rounded-full" />
                         </div>
-                        <span className="text-xs font-mono text-slate-400">~/section/{id}.js</span>
+                        <span className="text-xs font-mono text-slate-400">~Sección #{id}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Badge className="bg-slate-700 text-slate-300 font-mono">
@@ -783,7 +1067,8 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                       </Button>
                     </div>
                   </div>
-                ))}
+                  ))
+                })()}
               </div>
             ) : (
               <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">
@@ -880,22 +1165,6 @@ function AddLessonModal({
               required
             />
           </div>
-
-          <div>
-            <label className="block text-cyan-400 font-mono text-sm mb-2">DURACIÓN (MM:SS)</label>
-            <Input
-              value={timeValidator}
-              onChange={handleTimeValidatorChange}
-              placeholder="4:30"
-              className="bg-slate-800/50 border-slate-700 text-white font-mono"
-              maxLength={5}
-              required
-            />
-            <p className="text-slate-500 font-mono text-xs mt-1">
-              Formato: Minutos:Segundos (ej: 4:30 = 4 minutos y 30 segundos)
-            </p>
-          </div>
-
           <div>
             <label className="block text-cyan-400 font-mono text-sm mb-2">ARCHIVO</label>
             <div className="border-2 border-dashed border-slate-700 rounded-lg p-4 text-center">

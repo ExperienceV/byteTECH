@@ -143,6 +143,12 @@ export interface CourseContent {
       lessons: Lesson[];
     };
   };
+  // Nuevo: archivo de previsualización público del curso
+  preview?: {
+    id: number;
+    course_id: number;
+    file_id: string;
+  } | null;
 }
 
 export interface CourseContentResponse {
@@ -658,6 +664,18 @@ export const updateUserCredentials = async (
 };
 
 /**
+ * Actualiza solo el nombre de usuario (username)
+ */
+export const updateUserName = async (
+  name: string
+): Promise<ApiResponse<{ message: string; name: string; email: string }>> => {
+  const formData = new FormData();
+  formData.append("username", name);
+
+  return makeApiRequest<{ message: string; name: string; email: string }>(`${API_BASE}/user/modify_credentials`, formData);
+};
+
+/**
  * Actualiza la contraseña del usuario
  */
 export const updateUserPassword = async (
@@ -958,7 +976,7 @@ export const workbrenchApi = {
         ok: response.ok,
         status: response.status,
         data: normalized,
-        message: raw?.Message || raw?.message
+        message: raw?.Message || raw?.message || raw?.detail
       };
     } catch (error) {
       return {
@@ -1033,21 +1051,26 @@ export const workbrenchApi = {
 
   async giveCourse(courseId: number, userEmail: string): Promise<ApiResponse<GiveCourseResponse>> {
     try {
-      const formData = new FormData();
-      formData.append("course_id", String(courseId));
-      formData.append("user_email_to_give", userEmail);
+      const payload = {
+        course_id: courseId,
+        user_email_to_give: userEmail,
+      } as GiveCourseRequest;
 
       const response = await fetch(`${API_BASE}/workbrench/give_course`, {
         method: "POST",
-        body: formData,
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
       const data = await response.json();
       return {
         ok: response.ok,
         status: response.status,
         data,
-        message: data.message
+        message: data.message || data.Message
       };
     } catch (error) {
       return {
@@ -1055,6 +1078,35 @@ export const workbrenchApi = {
         status: 500,
         data: null as any,
         message: error instanceof Error ? error.message : "Unknown error"
+      };
+    }
+  },
+
+  async uploadPreview(courseId: number, file: File): Promise<ApiResponse<{ id?: number; course_id?: number; file_id?: string }>> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // En FastAPI, los parámetros simples (int/str) sin Form/Body se leen desde query.
+      // Por eso enviamos course_id en la query y el archivo en el cuerpo multipart.
+      const response = await fetch(`${API_BASE}/workbrench/upload_preview?course_id=${encodeURIComponent(String(courseId))}`, {
+        method: "POST",
+        credentials: "include",
+        body: formData,
+      });
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data?.message || data?.Message,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        status: 500,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Unknown error",
       };
     }
   },

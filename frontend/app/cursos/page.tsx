@@ -86,7 +86,7 @@ export default function CursosPage() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-8">
               <Terminal className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-sm font-mono">./courses --list-all</span>
+              <span className="text-cyan-400 text-sm font-mono">CURSOS</span>
             </div>
 
             <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
@@ -97,7 +97,7 @@ export default function CursosPage() {
 
             <div className="bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 sm:p-6 max-w-2xl mx-auto border border-slate-800 text-left font-mono text-xs sm:text-sm space-y-2">
               <p className="text-green-400">
-                <span className="text-slate-500">$</span> find ./courses -type course -status available
+                <span className="text-slate-500">$</span> Buscando cursos disponibles...
               </p>
               <p className="text-slate-400 ml-2">✓ Encontrados {cursos.length} cursos activos</p>
               <p className="text-slate-400 ml-2">✓ Todos los niveles disponibles</p>
@@ -120,9 +120,9 @@ export default function CursosPage() {
               <BookOpen className="h-5 w-5 text-black" />
             </span>
             <div className="flex-1">
-              <h2 className="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold text-white">./catalog</h2>
+              <h2 className="font-mono text-2xl sm:text-3xl lg:text-4xl font-bold text-white"> CATÁLOGO</h2>
               <p className="text-slate-400 font-mono text-sm sm:text-base mt-1">
-                // Explora nuestros cursos especializados
+                 Explora nuestros cursos especializados
               </p>
             </div>
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2">
@@ -131,14 +131,14 @@ export default function CursosPage() {
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 sm:mb-12">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8 sm:mb-12">
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-cyan-400 font-mono">{cursos.length}</div>
               <div className="text-slate-400 text-sm font-mono">Cursos</div>
             </div>
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-green-400 font-mono">
-                {cursos.reduce((total, curso) => total + (curso.students || 0), 0)}
+                +100 {/*cursos.reduce((total, curso) => total + (curso.students || 0), 0)}}*/}
               </div>
               <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
             </div>
@@ -148,14 +148,14 @@ export default function CursosPage() {
               </div>
               <div className="text-slate-400 text-sm font-mono">Tecnologías</div>
             </div>
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
+            {/*<div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-orange-400 font-mono">
                 {cursos.length > 0
                   ? (cursos.reduce((sum, curso) => sum + (curso.rating || 0), 0) / cursos.length).toFixed(1)
                   : "0.0"}
               </div>
               <div className="text-slate-400 text-sm font-mono">Rating</div>
-            </div>
+            </div>*/}
           </div>
 
           {/* Courses Grid */}

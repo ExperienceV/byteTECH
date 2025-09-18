@@ -1,8 +1,11 @@
 "use client"
 
 import { NormalHeader } from "@/components/normal-header"
-import { HomeFooter } from "@/components/home-footer"
+import { NormalFooter } from "@/components/normal-footer"
+//import { HomeFooter } from "@/components/home-footer"
 import { TerminalCourseCard } from "@/components/terminal-course-card"
+import { TechnologyCarousel } from "@/components/technology-carousel"
+import { FeaturesSection } from "@/components/features-section"
 import { Button } from "@/components/ui/button"
 import { Terminal, Code, Zap } from 'lucide-react'
 import Link from "next/link"
@@ -126,15 +129,15 @@ export default function index() {
                   <h2 className="text-2xl sm:text-3xl font-bold mb-2">
                     {">"} byte<span className="text-cyan-400">TECH</span>
                   </h2>
-                  <p className="text-slate-400 text-lg mb-4">init --learning</p>
+                  <p className="text-slate-400 text-lg mb-4">Empieza a Aprender!</p>
 
                   <div className="text-sm space-y-1">
                     <p className="text-green-400">
-                      <span className="text-slate-500">$</span> npm install knowledge --save
+                      <span className="text-slate-500">Buscando en la biblioteca de conocimientos...</span> 
                     </p>
-                    <p className="text-slate-400 ml-2">✓ Instalando habilidades de programación…</p>
-                    <p className="text-slate-400 ml-2">✓ Configurando el entorno de desarrollo…</p>
-                    <p className="text-cyan-400 ml-2">¡Listo para programar! 🚀</p>
+                    <p className="text-slate-400 ml-2">✓ Adquiere nuevas habilidades</p>
+                    <p className="text-slate-400 ml-2">✓ Aprende a desarrollar</p>
+                    <p className="text-cyan-400 ml-2">¡Listo para aprender! 🚀</p>
                   </div>
 
                   <div className="flex gap-4 mt-6">
@@ -149,7 +152,7 @@ export default function index() {
                         variant="outline"
                         className="border-slate-700 text-slate-300 font-mono hover:bg-slate-800 px-4 py-2 text-sm bg-transparent"
                       >
-                        ./dudas --support
+                        ¿Dudas? Contáctanos
                       </Button>
                     </Link>
                   </div>
@@ -159,6 +162,23 @@ export default function index() {
           </div>
         </div>
       </section>
+
+      {/* Transición suave */}
+      <div className="section-transition-up"></div>
+
+      {/* ── Technology Carousel ──────────────────────── */}
+      <section className="bg-slate-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 via-transparent to-cyan-900/5" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
+          <TechnologyCarousel />
+        </div>
+      </section>
+
+      {/* Transición suave */}
+      <div className="section-transition-down"></div>
+
+      {/* ── Features ──────────────────────── */}
+      <FeaturesSection />
 
       {/* Transición suave */}
       <div className="section-transition-up"></div>
@@ -242,7 +262,7 @@ export default function index() {
         </div>
       </section>
 
-      <HomeFooter />
+      <NormalFooter />
     </div>
   )
 }

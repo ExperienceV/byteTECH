@@ -1,8 +1,5 @@
 from sqlalchemy.orm import Session
-from app.database.base import User, Lesson
-from sqlalchemy import Column, Integer, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from app.database.base import Lesson
 from app.database.base import LessonComplete
 
 # Query 1: Guardar/marcar lección como completada

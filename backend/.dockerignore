@@ -1,0 +1,35 @@
+# Backend .dockerignore
+# VCS
+.git
+.gitignore
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+.env
+.env.*
+
+# Build / dist artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+.coverage
+.pytest_cache/
+.mypy_cache/
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Misc
+.scratch/

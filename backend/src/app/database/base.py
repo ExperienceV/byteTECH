@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float
+from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Float, BigInteger, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone, timedelta
 from sqlalchemy import UniqueConstraint, DateTime
@@ -134,3 +134,14 @@ class LessonComplete(Base):
     # Relaciones opcionales
     user = relationship("User")
     lesson = relationship("Lesson")
+
+
+class PreviewFile(Base):
+    __tablename__ = "preview_files"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    course_id = Column(Integer, ForeignKey("courses.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=True)
+    file_id = Column(Text, nullable=False)
+
+    def __repr__(self):
+        return f"<PreviewFile(id={self.id}, course_id={self.course_id}, file_id={self.file_id})>"

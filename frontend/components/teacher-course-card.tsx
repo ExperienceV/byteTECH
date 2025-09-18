@@ -38,6 +38,13 @@ export function TeacherCourseCard({
   miniature_id,
   imageUrl, // NUEVO
 }: TeacherCourseCardProps) {
+  const slugify = (value: string) =>
+    (value || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
   const getDifficultyColor = (diff: string | undefined | null) => {
     if (!diff) return "bg-slate-500/20 text-slate-400 border-slate-500/30";
     switch (diff.toLowerCase()) {
@@ -98,9 +105,6 @@ export function TeacherCourseCard({
         </div>
 
         <div className="flex flex-wrap gap-2 mt-3">
-          <Badge className={`${getDifficultyColor(difficulty)} backdrop-blur-sm`} variant="outline">
-            {difficulty}
-          </Badge>
           <Badge className={`${getLanguageColor(language)} backdrop-blur-sm`} variant="outline">
             {language}
           </Badge>
@@ -153,7 +157,7 @@ export function TeacherCourseCard({
             className="flex-1 bg-black/40 backdrop-blur-sm hover:bg-black/60 text-cyan-400 border border-cyan-400/50 font-mono transition-all duration-300"
             variant="outline"
           >
-            <Link href={`/curso/${id}`}>
+            <Link href={`/cursos/${slugify(title)}`}>
               <Eye className="w-4 h-4 mr-1" />
               Ver
             </Link>

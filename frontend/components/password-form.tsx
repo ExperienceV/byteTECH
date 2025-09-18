@@ -22,7 +22,9 @@ import {
 import { useProfile, PasswordFormState } from '@/hooks/use-profile';
 import { PROFILE_VALIDATION } from '@/lib/profile-config';
 
-export const PasswordForm = () => {
+type ProfileHook = ReturnType<typeof useProfile>
+
+export const PasswordForm = ({ profileHook }: { profileHook?: ProfileHook }) => {
   const {
     editMode,
     isSaving,
@@ -33,7 +35,7 @@ export const PasswordForm = () => {
     cancelEdit,
     setEditMode,
     hasPasswordChanges
-  } = useProfile();
+  } = profileHook ?? useProfile();
 
   const [showPasswords, setShowPasswords] = useState({
     current: false,

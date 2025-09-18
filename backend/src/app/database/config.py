@@ -2,9 +2,11 @@
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from app.parameters import settings
 
+debug = settings.DEBUG
 
-DATABASE_URL = "postgresql://postgres.xlofuwhnkksvfvxofump:isuperrubick69@aws-0-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require"
+DATABASE_URL = settings.SUPABASE_URL_TEST if debug else settings.SUPABASE_URL
 
 engine = create_engine(
     DATABASE_URL,

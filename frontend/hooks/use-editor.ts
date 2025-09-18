@@ -395,18 +395,13 @@ export const useEditor = (courseId: string) => {
     setState(prev => ({ ...prev, isAddingLesson: true, error: null }));
 
     try {
-      // Convertir formato MM:SS a float (ej: "4:30" -> 4.5)
-      const convertTimeToFloat = (timeStr: string): number => {
-        const [minutes, seconds] = timeStr.split(':').map(Number);
-        return minutes + (seconds / 60);
-      };
-
+      // Enviar siempre 0 como time_validator según nueva regla de negocio
       const formData = new FormData();
       formData.append("section_id", sectionId.toString());
       formData.append("course_id", state.course.id.toString());
       formData.append("title", lessonData.title);
       formData.append("file", lessonData.file);
-      formData.append("time_validator", convertTimeToFloat(lessonData.time_validator).toString());
+      formData.append("time_validator", "0");
 
       const response = await createLesson(formData);
       

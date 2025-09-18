@@ -8,6 +8,7 @@ setup(
     install_requires=[
         "fastapi",
         "uvicorn",
+        "python-magic"
         # Otras dependencias (coincide con requirements.txt)
     ],
 )

@@ -224,7 +224,7 @@ export default function PerfilPage() {
             <div className="text-center mb-12">
               <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
                 <Terminal className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-400 text-sm font-mono">./perfil --teacher</span>
+                <span className="text-purple-400 text-sm font-mono">./perfil instructor</span>
               </div>
 
               <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-5xl mb-4">
@@ -561,7 +561,7 @@ export default function PerfilPage() {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
               <Terminal className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-sm font-mono">./perfil --student</span>
+              <span className="text-green-400 text-sm font-mono">./perfil --estudiante</span>
             </div>
 
             <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-5xl mb-4">
@@ -572,7 +572,7 @@ export default function PerfilPage() {
           </div>
 
           {/* Stats Overview */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
               <div className="text-2xl font-bold text-green-400 font-mono">{userCourses.length}</div>
               <div className="text-slate-400 text-sm font-mono">Mis Cursos</div>
@@ -586,12 +586,6 @@ export default function PerfilPage() {
                 {Math.round(userCourses.reduce((acc, course) => acc + (course.progress || 0), 0) / userCourses.length) || 0}%
               </div>
               <div className="text-slate-400 text-sm font-mono">Progreso</div>
-            </div>
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-4 text-center">
-              <div className="text-2xl font-bold text-purple-400 font-mono">
-                {isLoadingStats ? "..." : stats?.total_users?.toLocaleString() || "0"}
-              </div>
-              <div className="text-slate-400 text-sm font-mono">Usuarios</div>
             </div>
           </div>
         </div>

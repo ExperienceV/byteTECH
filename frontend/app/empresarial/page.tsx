@@ -13,7 +13,7 @@ export default function NosotrosPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-8">
-              <span className="text-cyan-400 text-sm font-mono">Acerca del equipo</span>
+              <span className="text-cyan-400 text-sm font-mono">./empresa</span>
             </div>
 
             <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
@@ -75,36 +75,57 @@ export default function NosotrosPage() {
               </div>
             </div>
 
-            {/* Imagen/Terminal */}
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
-              <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
-                <div className="flex items-center space-x-2">
-                  <div className="flex space-x-1">
-                    <div className="w-3 h-3 bg-red-500 rounded-full" />
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
-                  </div>
-                  <span className="text-xs font-mono text-slate-400">~/team/vision.js</span>
+            {/* Misión - Tarjeta corporativa */}
+            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 sm:p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
+                  <Rocket className="w-5 h-5 text-black" />
                 </div>
+                <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono">Nuestra misión</h2>
               </div>
 
-              <div className="p-6 font-mono text-sm space-y-3">
-                <div className="text-purple-400">
-                  <span className="text-slate-500">const</span> <span className="text-cyan-400">mision</span> ={" "}
-                  <span className="text-green-400">{`{`}</span>
+              <p className="text-slate-300 leading-relaxed mb-6">
+                Impulsar el crecimiento profesional de cada estudiante mediante formación tecnológica accesible,
+                práctica y actualizada, conectándolos con oportunidades reales en la industria.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                    <span className="text-white font-mono text-sm">Aprendizaje práctico</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">
+                    Cursos orientados a proyectos reales para construir un portafolio sólido.
+                  </p>
                 </div>
-                <div className="ml-4 text-slate-300">
-                  objetivo: <span className="text-yellow-400">"Formar desarrolladores excepcionales"</span>,
+                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+                    <span className="text-white font-mono text-sm">Acompañamiento humano</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">
+                    Comunidad y mentores que guían cada paso del proceso de aprendizaje.
+                  </p>
                 </div>
-                <div className="ml-4 text-slate-300">
-                  metodo: <span className="text-yellow-400">"Aprendizaje práctico y colaborativo"</span>,
+                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                    <span className="text-white font-mono text-sm">Contenido actualizado</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">
+                    Planes de estudio alineados con las tecnologías y prácticas del mercado.
+                  </p>
                 </div>
-                <div className="ml-4 text-slate-300">
-                  impacto: <span className="text-yellow-400">"Transformar vidas a través del código"</span>
+                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                    <span className="text-white font-mono text-sm">Enfoque en empleabilidad</span>
+                  </div>
+                  <p className="text-slate-400 text-sm">
+                    Habilidades demandadas y preparación para procesos de selección.
+                  </p>
                 </div>
-                <div className="text-green-400">{`}`}</div>
-                <div className="text-slate-500 mt-4">// Ejecutando misión...</div>
-                <div className="text-green-400">✓ Misión iniciada con éxito</div>
               </div>
             </div>
           </div>
@@ -165,15 +186,15 @@ export default function NosotrosPage() {
 
             {/* Stats */}
             <div className="mt-12 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 sm:p-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-cyan-400 font-mono">5K+</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-cyan-400 font-mono">100+</div>
                   <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
                 </div>
-                <div className="text-center">
+                {/*<div className="text-center">
                   <div className="text-2xl sm:text-3xl font-bold text-green-400 font-mono">50+</div>
                   <div className="text-slate-400 text-sm font-mono">Cursos</div>
-                </div>
+                </div>*/}
                 <div className="text-center">
                   <div className="text-2xl sm:text-3xl font-bold text-purple-400 font-mono">98%</div>
                   <div className="text-slate-400 text-sm font-mono">Satisfacción</div>

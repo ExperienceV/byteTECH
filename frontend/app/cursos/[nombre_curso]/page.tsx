@@ -1,17 +1,20 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
 import { CourseContentViewer } from "@/components/course-content-viewer"
+import { CourseContentPreview } from "@/components/course-content-preview"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { coursesApi, type CourseData, type CourseContentResponse } from "@/lib/api"
+import { coursesApi, type CourseData, type CourseContentResponse, getApiBase } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
+import "../../../styles/video-player.css"
 import {
   Terminal,
   Play,
+  Clock,
   Users,
   Star,
   BookOpen,
@@ -21,6 +24,10 @@ import {
   Code,
   AlertCircle,
   ArrowLeft,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  PlayCircle,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -37,12 +44,14 @@ export default function CursoDetallePage() {
   const params = useParams<{ nombre_curso: string }>()
   const slug = (params?.nombre_curso || "").toString()
   const { user, isLoggedIn } = useAuth()
+  const router = useRouter()
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>("")
   const [courseData, setCourseData] = useState<CourseData | null>(null)
   const [isPaid, setIsPaid] = useState<boolean>(false)
   const [isPurchasing, setIsPurchasing] = useState(false)
+  const [isAuthError, setIsAuthError] = useState(false)
 
   useEffect(() => {
     let alive = true
@@ -64,6 +73,16 @@ export default function CursoDetallePage() {
         // 2) Obtener contenido detallado del curso (por id)
         const courseContentResp = await coursesApi.getCourseContent(course.id)
         if (!courseContentResp.ok) {
+          // Verificar si es un error 401 (no autorizado)
+          if (courseContentResp.status === 401) {
+            setIsAuthError(true)
+            setError("Debes iniciar sesión para acceder a este curso")
+            // Redirigir después de 3 segundos
+            setTimeout(() => {
+              router.push('/auth/ingresar')
+            }, 3000)
+            return
+          }
           throw new Error(courseContentResp.message || "Error al cargar el curso")
         }
         const payload = courseContentResp.data as CourseContentResponse
@@ -73,7 +92,17 @@ export default function CursoDetallePage() {
       } catch (err: any) {
         if (!alive) return
         console.error("Error fetching course:", err)
-        setError(err?.message || "Error al cargar el curso")
+        // Verificar si el error incluye información de status 401
+        if (err?.status === 401 || err?.message?.includes('401')) {
+          setIsAuthError(true)
+          setError("Debes iniciar sesión para acceder a este curso")
+          // Redirigir después de 3 segundos
+          setTimeout(() => {
+            router.push('/auth/ingresar')
+          }, 3000)
+        } else {
+          setError(err?.message || "Error al cargar el curso")
+        }
       } finally {
         if (alive) setLoading(false)
       }
@@ -140,15 +169,34 @@ export default function CursoDetallePage() {
   if (error || !courseData) {
     return (
       <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
-        <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center max-w-md mx-auto">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-red-400 font-mono mb-4">{error || "Curso no encontrado"}</p>
+        <div className={`bg-slate-900/80 backdrop-blur-sm border ${isAuthError ? 'border-yellow-800' : 'border-red-800'} rounded-xl p-8 text-center max-w-md mx-auto`}>
+          {isAuthError ? (
+            <Lock className="w-12 h-12 text-yellow-400 mx-auto mb-4" />
+          ) : (
+            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
+          )}
+          <p className={`${isAuthError ? 'text-yellow-400' : 'text-red-400'} font-mono mb-4`}>
+            {error || "Curso no encontrado"}
+          </p>
+          {isAuthError && (
+            <p className="text-slate-400 font-mono text-sm mb-4">
+              Serás redirigido al login en unos segundos...
+            </p>
+          )}
           <div className="space-y-2">
-            <Link href="/cursos">
-              <Button className="w-full px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
-                Volver a Cursos
-              </Button>
-            </Link>
+            {isAuthError ? (
+              <Link href="/auth/ingresar">
+                <Button className="w-full px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
+                  Iniciar Sesión
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/cursos">
+                <Button className="w-full px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
+                  Volver a Cursos
+                </Button>
+              </Link>
+            )}
             <Button
               onClick={() => window.location.reload()}
               variant="outline"
@@ -164,6 +212,12 @@ export default function CursoDetallePage() {
 
   // Si el usuario compró el curso, mostrar el contenido
   const contentSections = Object.values((courseData as any).content || {})
+  // Totales para vista de detalles (no comprada)
+  const contentMap = (courseData as any).content || {}
+  const totalSections = Object.keys(contentMap).length
+  const totalLessons =
+    (courseData as any).progress?.total_lessons ??
+    Object.values(contentMap).reduce((sum: number, section: any) => sum + ((section?.lessons || []).length), 0)
   if (isPaid && contentSections.length > 0) {
     return (
       <div className="min-h-screen bg-dynamic-gradient">
@@ -197,94 +251,130 @@ export default function CursoDetallePage() {
     <div className="min-h-screen bg-dynamic-gradient">
       <NormalHeader />
 
-      {/* Hero Section */}
+      {/* Compact Hero Section */}
       <section className="bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-          <div className="max-w-6xl mx-auto">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-900/10 via-transparent to-cyan-900/10" />
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            {/* Navigation */}
             <div className="mb-6">
               <Link href="/cursos" className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-mono">
                 <ArrowLeft className="w-4 h-4" /> Volver a cursos
               </Link>
             </div>
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-                <Terminal className="w-4 h-4 text-cyan-400" />
-                <span className="text-cyan-400 text-sm font-mono">./course --details</span>
+
+            {/* Hero Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+              {/* Left: Course Title & Info */}
+              <div className="lg:col-span-2">
+                <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-4">
+                  <Terminal className="w-4 h-4 text-cyan-400" />
+                  <span className="text-cyan-400 text-sm font-mono">./course --preview</span>
+                </div>
+
+                <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl lg:text-4xl mb-4">
+                  {">"} <span className="text-green-400">{courseData.name.toUpperCase()}</span>
+                </h1>
+
+                <p className="text-slate-300 text-lg leading-relaxed mb-6 max-w-2xl">
+                  {courseData.description}
+                </p>
+
+                {/* Quick Stats */}
+                <div className="flex flex-wrap gap-4 mb-6">
+                  <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
+                    <Clock className="w-4 h-4 text-cyan-400" />
+                    <span className="text-slate-300 font-mono text-sm">{courseData.hours || "TBD"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
+                    <BookOpen className="w-4 h-4 text-green-400" />
+                    <span className="text-slate-300 font-mono text-sm">{totalLessons} lecciones</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
+                    <Users className="w-4 h-4 text-purple-400" />
+                    <span className="text-slate-300 font-mono text-sm">{totalSections} secciones</span>
+                  </div>
+                  {(courseData as any).difficulty && (
+                    <Badge className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}>
+                      {(courseData as any).difficulty}
+                    </Badge>
+                  )}
+                </div>
               </div>
 
-              <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl md:text-5xl mb-4">
-                {">"} <span className="text-green-400">{courseData.name.toUpperCase()}</span>
-              </h1>
-
-              {/* Purchase Status */}
-              <div className="flex justify-center mb-6">
-                {!isLoggedIn ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 bg-yellow-500/20 border border-yellow-500/30 rounded-lg px-4 py-2">
-                      <AlertCircle className="w-4 h-4 text-yellow-400" />
-                      <span className="text-yellow-400 font-mono text-sm">Debes iniciar sesión para comprar este curso</span>
-                    </div>
-                    <Link href="/login">
-                      <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold px-6 py-3 rounded-lg font-mono">
-                        INICIAR SESIÓN
-                      </Button>
-                    </Link>
+              {/* Right: Purchase Card */}
+              <div className="lg:col-span-1">
+                <div className="bg-gradient-to-br from-green-900/30 to-cyan-900/30 backdrop-blur-sm border border-green-500/40 rounded-xl p-6">
+                  <div className="text-center mb-4">
+                    <div className="text-4xl font-bold text-green-400 font-mono mb-2">${courseData.price}</div>
+                    <div className="text-slate-300 font-mono text-sm">Acceso completo</div>
                   </div>
-                ) : !isPaid ? (
-                  <div className="space-y-4">
-                    {error && (
-                      <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2 max-w-md">
-                        <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
-                        <span className="text-red-400 font-mono text-sm">{error}</span>
+                  
+                  {!isLoggedIn ? (
+                    <div className="space-y-3">
+                      <div className="text-center text-yellow-400 font-mono text-sm mb-3">
+                        Inicia sesión para comprar
                       </div>
-                    )}
-                    <div className="flex items-center gap-2 bg-red-500/20 border border-red-500/30 rounded-lg px-4 py-2">
-                      <ShoppingCart className="w-4 h-4 text-red-400" />
-                      <span className="text-red-400 font-mono text-sm">Debes comprar este curso para acceder</span>
+                      <Link href="/login" className="block">
+                        <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono font-bold py-3">
+                          INICIAR SESIÓN
+                        </Button>
+                      </Link>
                     </div>
-                    <Button
-                      onClick={handlePurchase}
-                      disabled={isPurchasing}
-                      className="bg-green-500 hover:bg-green-600 text-black font-semibold px-6 py-3 rounded-lg font-mono disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {isPurchasing ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
-                          PROCESANDO...
-                        </>
-                      ) : (
-                        <>
-                          <ShoppingCart className="mr-2 h-4 w-4" />
-                          COMPRAR CURSO - ${courseData.price}
-                        </>
+                  ) : !isPaid ? (
+                    <div className="space-y-3">
+                      {error && (
+                        <div className="text-center text-red-400 font-mono text-xs mb-2">{error}</div>
                       )}
-                    </Button>
+                      <Button
+                        onClick={handlePurchase}
+                        disabled={isPurchasing}
+                        className="w-full bg-green-500 hover:bg-green-600 text-black font-mono font-bold py-3 text-lg"
+                      >
+                        {isPurchasing ? (
+                          <>
+                            <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
+                            PROCESANDO...
+                          </>
+                        ) : (
+                          <>
+                            <ShoppingCart className="mr-2 h-5 w-5" />
+                            COMPRAR AHORA
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-2 bg-green-500/20 border border-green-500/30 rounded-lg px-4 py-3">
+                        <CheckCircle className="w-5 h-5 text-green-400" />
+                        <span className="text-green-400 font-mono font-bold">YA TIENES ACCESO</span>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 space-y-1 text-center">
+                    <div className="text-slate-400 font-mono text-xs">✓ Acceso de por vida</div>
+                    <div className="text-slate-400 font-mono text-xs">✓ Certificado incluido</div>
+                    <div className="text-slate-400 font-mono text-xs">✓ Soporte del instructor</div>
                   </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-green-500/20 border border-green-500/30 rounded-lg px-4 py-2">
-                    <CheckCircle className="w-4 h-4 text-green-400" />
-                    <span className="text-green-400 font-mono text-sm">¡Ya tienes acceso a este curso!</span>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Transición suave */}
-      <div className="section-transition-up"></div>
-
       {/* Course Preview Content - Only show if not purchased */}
       {!isPaid && (
         <section className="bg-slate-900 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/3 via-transparent to-blue-900/3" />
+          <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 via-transparent to-cyan-900/5" />
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-            <div className="max-w-6xl mx-auto">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="max-w-7xl mx-auto">
+
+              <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
                 {/* Left Column - Video and Content Preview */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="xl:col-span-3 space-y-8">
                   {/* Video Section */}
                   <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
                     <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
@@ -300,18 +390,69 @@ export default function CursoDetallePage() {
                     </div>
 
                     <div className="p-6">
-                      <div className="aspect-video bg-slate-800/50 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-700 relative">
-                        <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
-                          <Lock className="w-16 h-16 text-slate-500" />
+                      {Boolean((courseData as any).preview?.file_id) ? (
+                        <div className="custom-video-player w-full aspect-video">
+                          <video
+                            className="w-full h-full"
+                            controls
+                            preload="metadata"
+                            src={`${getApiBase()}/media/get_file?file_id=${encodeURIComponent((courseData as any).preview.file_id)}`}
+                          />
                         </div>
-                        <div className="text-center relative z-10">
-                          <Play className="w-16 h-16 text-green-400 mx-auto mb-4 opacity-50" />
-                          <p className="text-green-400 font-mono text-lg">VISTA PREVIA</p>
-                          <p className="text-slate-400 font-mono text-sm mt-2">Compra el curso para acceder</p>
+                      ) : (
+                        <div className="aspect-video bg-slate-800/50 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-700 relative">
+                          <div className="absolute inset-0 bg-slate-900/50 flex items-center justify-center">
+                            <Lock className="w-16 h-16 text-slate-500" />
+                          </div>
+                          <div className="text-center relative z-10">
+                            <Play className="w-16 h-16 text-green-400 mx-auto mb-4 opacity-50" />
+                            <p className="text-green-400 font-mono text-lg">VISTA PREVIA</p>
+                            <p className="text-slate-400 font-mono text-sm mt-2">Sin video de previsualización disponible</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Content metadata (sections and lessons names) */}
+                  <CourseContentPreview courseData={courseData} />
+
+                </div>
+
+                {/* Right Column - Course Info */}
+                <div className="xl:col-span-2 space-y-6">
+                  {/* Instructor Card */}
+                  <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
+                    <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
+                      <div className="flex items-center space-x-2">
+                        <div className="flex space-x-1">
+                          <div className="w-3 h-3 bg-red-500 rounded-full" />
+                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
+                          <div className="w-3 h-3 bg-green-500 rounded-full" />
+                        </div>
+                        <span className="text-xs font-mono text-slate-400">~/instructor/profile.js</span>
+                      </div>
+                      <Users className="w-4 h-4 text-cyan-400" />
+                    </div>
+
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-green-400 font-mono mb-4">INSTRUCTOR</h3>
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-cyan-400 rounded-full flex items-center justify-center">
+                          <span className="text-black font-mono font-bold text-xl">
+                            {((courseData as any).sensei_name || "TBD").charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="text-slate-200 font-mono font-semibold text-lg">
+                            {(courseData as any).sensei_name || "Por definir"}
+                          </div>
+                          <div className="text-slate-400 font-mono text-sm">Instructor Principal</div>
                         </div>
                       </div>
                     </div>
                   </div>
+
 
                   {/* Course Description */}
                   <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
@@ -329,100 +470,47 @@ export default function CursoDetallePage() {
 
                     <div className="p-6">
                       <h3 className="text-xl font-bold text-green-400 font-mono mb-4">DESCRIPCIÓN</h3>
-                      <p className="text-slate-300 leading-relaxed">{courseData.description}</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - Course Info */}
-                <div className="space-y-6">
-                  {/* About Section */}
-                  <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
-                    <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          <div className="w-3 h-3 bg-red-500 rounded-full" />
-                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                          <div className="w-3 h-3 bg-green-500 rounded-full" />
-                        </div>
-                        <span className="text-xs font-mono text-slate-400">~/course/info.js</span>
+                      <div className="prose prose-slate max-w-none">
+                        <p className="text-slate-300 leading-relaxed text-base">{courseData.description}</p>
                       </div>
-                      <Terminal className="w-4 h-4 text-cyan-400" />
-                    </div>
-
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-green-400 font-mono mb-6">ACERCA DE</h3>
-
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                          <span className="text-slate-400 font-mono text-sm">PRICE:</span>
-                          <span className="text-green-400 font-mono font-bold">${courseData.price}</span>
-                        </div>
-
-                        {courseData.duration && (
-                          <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                            <span className="text-slate-400 font-mono text-sm">DURACIÓN:</span>
-                            <span className="text-green-400 font-mono font-bold">{courseData.duration}</span>
-                          </div>
-                        )}
-
-                        <div className="flex justify-between items-center py-2">
-                          <span className="text-slate-400 font-mono text-sm">INSTRUCTOR:</span>
-                          <span className="text-green-400 font-mono font-bold">
-                            {(courseData as any).sensei_name || "Por definir"}
-                          </span>
+                      
+                      {/* Course metadata integrated */}
+                      <div className="mt-6 pt-6 border-t border-slate-700">
+                        <div className="grid grid-cols-1 gap-4">
+                          {(courseData as any).difficulty && (
+                            <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
+                              <span className="text-slate-400 font-mono text-sm">Nivel:</span>
+                              <Badge className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}>
+                                {(courseData as any).difficulty}
+                              </Badge>
+                            </div>
+                          )}
+                          
+                          {(courseData as any).language && (
+                            <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
+                              <span className="text-slate-400 font-mono text-sm">Idioma:</span>
+                              <span className="text-slate-300 font-mono text-sm">{(courseData as any).language}</span>
+                            </div>
+                          )}
+                          
+                          {(courseData as any).students && (
+                            <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
+                              <span className="text-slate-400 font-mono text-sm">Estudiantes:</span>
+                              <span className="text-cyan-400 font-mono text-sm font-bold">{(courseData as any).students.toLocaleString()}</span>
+                            </div>
+                          )}
+                          
+                          {(courseData as any).rating && (
+                            <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
+                              <span className="text-slate-400 font-mono text-sm">Rating:</span>
+                              <div className="flex items-center gap-1">
+                                <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                                <span className="text-yellow-400 font-mono text-sm font-bold">{(courseData as any).rating}</span>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Additional Info */}
-                  <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
-                    <div className="flex items-center justify-between p-4 border-b border-slate-800 bg-slate-800/50">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          <div className="w-3 h-3 bg-red-500 rounded-full" />
-                          <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                          <div className="w-3 h-3 bg-green-500 rounded-full" />
-                        </div>
-                        <span className="text-xs font-mono text-slate-400">~/course/details.js</span>
-                      </div>
-                      <Star className="w-4 h-4 text-yellow-400" />
-                    </div>
-
-                    <div className="p-6">
-                      <h3 className="text-lg font-bold text-white font-mono mb-4">DETALLES DEL CURSO</h3>
-
-                      <div className="space-y-3">
-                        {(courseData as any).students && (
-                          <div className="flex items-center gap-3">
-                            <Users className="w-4 h-4 text-cyan-400" />
-                            <span className="text-slate-300 text-sm">{(courseData as any).students.toLocaleString()} estudiantes</span>
-                          </div>
-                        )}
-
-                        {(courseData as any).rating && (
-                          <div className="flex items-center gap-3">
-                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                            <span className="text-slate-300 text-sm">{(courseData as any).rating} de calificación</span>
-                          </div>
-                        )}
-
-                        {(courseData as any).language && (
-                          <div className="flex items-center gap-3">
-                            <Terminal className="w-4 h-4 text-purple-400" />
-                            <span className="text-slate-300 text-sm">Lenguaje: {(courseData as any).language}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {(courseData as any).difficulty && (
-                        <div className="mt-4">
-                          <Badge className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}>
-                            {(courseData as any).difficulty}
-                          </Badge>
-                        </div>
-                      )}
                     </div>
                   </div>
 

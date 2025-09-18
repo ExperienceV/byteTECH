@@ -23,12 +23,7 @@ import {
   Lock
 } from 'lucide-react';
 import { CourseData } from '@/hooks/use-courses';
-import { 
-  BADGE_CONFIG, 
-  PROGRESS_CONFIG, 
-  COURSE_STATES,
-  UI_CONFIG 
-} from '@/lib/courses-config';
+import { UI_CONFIG } from '@/lib/courses-config';
 
 interface CourseCardProps {
   course: CourseData;
@@ -55,21 +50,11 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   // 🧮 FUNCIONES DE CÁLCULO
   // ============================================================================
 
-  const getProgressLevel = (percentage: number) => {
-    if (percentage >= PROGRESS_CONFIG.THRESHOLDS.EXPERT) return 'EXCELLENT';
-    if (percentage >= PROGRESS_CONFIG.THRESHOLDS.ADVANCED) return 'HIGH';
-    if (percentage >= PROGRESS_CONFIG.THRESHOLDS.INTERMEDIATE) return 'MEDIUM';
-    return 'LOW';
-  };
-
   const getProgressColor = (percentage: number) => {
-    const level = getProgressLevel(percentage);
-    return PROGRESS_CONFIG.COLORS[level as keyof typeof PROGRESS_CONFIG.COLORS];
-  };
-
-  const getProgressLabel = (percentage: number) => {
-    const level = getProgressLevel(percentage);
-    return PROGRESS_CONFIG.LABELS[level as keyof typeof PROGRESS_CONFIG.LABELS];
+    if (percentage >= 100) return '#10B981'; // green
+    if (percentage >= 75) return '#06B6D4'; // cyan
+    if (percentage >= 50) return '#F59E0B'; // orange
+    return '#EF4444'; // red
   };
 
   const formatPrice = (price: number) => {
@@ -99,33 +84,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   // 🎨 FUNCIONES DE UI
   // ============================================================================
 
-  const getCourseStatus = () => {
-    if (course.progress !== undefined) {
-      if (course.progress === 100) return COURSE_STATES.COMPLETED;
-      if (course.progress > 0) return COURSE_STATES.IN_PROGRESS;
-      return COURSE_STATES.PURCHASED;
-    }
-    return COURSE_STATES.AVAILABLE;
-  };
-
-  const getStatusBadge = () => {
-    const status = getCourseStatus();
-    const config = BADGE_CONFIG.COURSE_STATUS[status];
-    
-    return (
-      <Badge 
-        variant={config.variant as any} 
-        className={`text-xs font-mono ${
-          status === COURSE_STATES.COMPLETED ? 'bg-green-500/20 text-green-400' :
-          status === COURSE_STATES.IN_PROGRESS ? 'bg-yellow-500/20 text-yellow-400' :
-          status === COURSE_STATES.PURCHASED ? 'bg-blue-500/20 text-blue-400' :
-          'bg-slate-500/20 text-slate-400'
-        }`}
-      >
-        {config.label}
-      </Badge>
-    );
-  };
+  // Estado: simplificado o no mostrado
 
   const getDifficultyBadge = () => {
     if (!course.difficulty) return null;
@@ -207,16 +166,13 @@ export const CourseCard: React.FC<CourseCardProps> = ({
   // ============================================================================
 
   return (
-    <Card className={`bg-slate-900/80 backdrop-blur-sm border border-slate-800 hover:border-slate-700 transition-all duration-${UI_CONFIG.ANIMATIONS.CARD_HOVER_DURATION} hover:shadow-xl hover:shadow-cyan-500/10 group ${className}`}>
+    <Card className={`bg-slate-900/80 backdrop-blur-sm border border-slate-800 hover:border-slate-700 transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 group ${className}`}>
       {/* Imagen del curso */}
       <div className="relative overflow-hidden rounded-t-lg">
         {renderCourseImage()}
         
-        {/* Overlay de estado */}
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
-          {getStatusBadge()}
-          {getDifficultyBadge()}
-        </div>
+        {/* Overlay superior derecho reservado (sin dificultad/estado) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2" />
         
         {/* Overlay de categoría */}
         {course.category && (
@@ -313,9 +269,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
                 '--progress-color': getProgressColor(course.progress)
               } as React.CSSProperties}
             />
-            <div className="text-xs text-slate-400 font-mono text-center">
-              Nivel: {getProgressLabel(course.progress)}
-            </div>
+            <div className="text-xs text-slate-400 font-mono text-center" />
           </div>
         )}
 

@@ -10,8 +10,7 @@ import { Input } from "@/components/ui/input"
 import { KeyRound, Eye, EyeOff, Lock, CheckCircle, AlertCircle } from "lucide-react"
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
-
-const API_BASE = "http://127.0.0.1:8000/api"
+import { API_BASE } from "@/lib/config"
 
 export default function ResetPasswordPage() {
   const [token, setToken] = useState("")
@@ -51,6 +50,10 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setError(null)
     setSuccess(null)
+    if (!token) {
+      setError("Token faltante o inválido. Abre el enlace del correo nuevamente.")
+      return
+    }
     if (newPassword !== confirmPassword) {
       setError("Las contraseñas no coinciden")
       return
@@ -72,7 +75,7 @@ export default function ResetPasswordPage() {
       if (response.ok) {
         setSuccess("Contraseña actualizada correctamente. Redirigiendo al login...")
         setTimeout(() => {
-          router.push("/auth/login")
+          router.push("/auth/ingresar")
         }, 2000)
       } else {
         const errorText = await response.text()
@@ -117,30 +120,6 @@ export default function ResetPasswordPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 space-y-6">
-                {/* Token Field */}
-                <div>
-                  <label className="block text-sm font-mono text-slate-300 mb-2">
-                    <span className="text-cyan-400">Token de recuperación</span>
-                  </label>
-                  <Input
-                    id="token"
-                    type="text"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    placeholder="Token del email"
-                    required
-                    className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 font-mono focus:border-cyan-400 ${
-                      searchParams.get("token") ? "bg-slate-700/50" : ""
-                    }`}
-                    readOnly={!!searchParams.get("token")}
-                    disabled={loading}
-                  />
-                  {searchParams.get("token") && (
-                    <p className="text-xs font-mono text-slate-500 mt-1">
-                      Token completado automáticamente desde el enlace
-                    </p>
-                  )}
-                </div>
 
                 {/* New Password Field */}
                 <div>
@@ -265,7 +244,7 @@ export default function ResetPasswordPage() {
             <div className="mt-6 text-center">
               <p className="text-xs font-mono text-slate-500">
                 ¿Recordaste tu contraseña?{" "}
-                <Link href="/auth/login" className="text-cyan-400 hover:text-cyan-300">
+                <Link href="/auth/ingresar" className="text-cyan-400 hover:text-cyan-300">
                   Inicia sesión
                 </Link>
               </p>
@@ -278,3 +257,5 @@ export default function ResetPasswordPage() {
     </div>
   )
 }
+
+

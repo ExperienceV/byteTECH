@@ -4,11 +4,15 @@ from fastapi import (
     File, 
     Depends, 
     HTTPException, 
-    Form
+    Form,
+    status
 )
 from app.models import Course, GiveCourseRequest
 from app.dependencies import get_cookies, get_db
-from app.services.services_google import upload_file, delete_file
+from app.utils.storage import save_file, get_unique_name, delete_file
+from app.utils.util_routers import get_video_duration_minutes, mkv_to_mp4_bytes
+from app.database.queries.preview import add_preview_file, get_preview_files_by_course, update_preview_file_by_course
+from pathlib import Path
 from fastapi.responses import JSONResponse
 from app.utils.util_routers import (
     get_all_drive_ids, 
@@ -19,7 +23,8 @@ from app.database.queries.courses import (
     delete_course, 
     update_course, 
     get_course_by_id,
-    save_purchase
+    save_purchase,
+    get_purchased_courses_by_user
 )
 from app.database.queries.lessons import (
     create_lesson, 
@@ -81,8 +86,19 @@ async def create_course(
         400: Missing required fields or invalid file
         500: Google Drive upload or database error
     """
-    print("user_info", user_info)
-    file_id, content_type, size = upload_file(file=file)
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    from pathlib import Path
+    file_extension = Path(file.filename).suffix
+    file_id = get_unique_name(extension=file_extension)
+
+    file_content = await file.read()
+    save_file(
+        content=file_content,
+        name=file_id
+    )
     
     sensei_id = user_info["user_id"]
     course_data = {
@@ -143,6 +159,9 @@ async def del_course(
         404: Course not found
         500: Google Drive deletion or database error
     """
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     course = get_course_by_id(db, course_id)
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
@@ -153,6 +172,11 @@ async def del_course(
     success = delete_course(db, course_id)
     if not success:
         raise HTTPException(status_code=500, detail="Error deleting course")
+
+    # Borrar video de preview
+    preview = course["preview"]
+    if preview:
+        delete_file(preview["file_id"])
 
     return JSONResponse(
         content={
@@ -191,6 +215,10 @@ async def create_section(
         404: Parent course not found
         500: Database error
     """
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        
     new_section_response = add_section(
         db=db, 
         section_data={
@@ -239,6 +267,10 @@ async def delete_section(
         404: Section not found
         500: Google Drive deletion or database error
     """
+
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
     file_ids = get_file_ids_by_section_id(db, section_id)
     delete_drive_files(file_ids=file_ids)
 
@@ -291,30 +323,66 @@ async def new_lesson(
         404: Parent section/course not found
         500: File upload or database error
     """
-    file_id, mime_type, file_size = upload_file(file=file)
+    try:
+        is_sensei = user_info.get("is_sensei")
+        if not is_sensei:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        file_extension = Path(file.filename).suffix.lower()
+        # 📌 Leer el archivo UNA SOLA VEZ
+        contents = await file.read()
 
-    create_response = create_lesson(
-        db=db, 
-        section_id=section_id, 
-        title=title, 
-        file_id=file_id, 
-        course_id=course_id,
-        mime_type=mime_type,
-        time_validator=time_validator
-    )
+        mime_type = file.content_type or ""
 
-    lesson = {
-        "id" : create_response.id,
-        "title" : create_response.title,
-        "file_id" : create_response.file_id,
-    }
+        # Soporte MKV: convertir a MP4 si es MKV
+        is_mkv = file_extension == ".mkv" or "matroska" in mime_type or mime_type == "video/x-matroska"
+        if is_mkv:
+            try:
+                mp4_bytes = await mkv_to_mp4_bytes(contents)
+                contents = mp4_bytes
+                file_extension = ".mp4"
+                mime_type = "video/mp4"
+            except Exception as e:
+                raise HTTPException(status_code=400, detail=f"No se pudo convertir el MKV a MP4: {e}")
 
-    response = {
-        "Message" : "Lesson created successfully",
-        "lesson" : lesson
-    }
+        file_id = get_unique_name(extension=file_extension)
 
-    return JSONResponse(content=response, status_code=200)
+        # Guardar en almacenamiento (MP4 si fue convertido)
+        save_file(
+            content=contents,
+            name=file_id
+        )
+
+        # Calcular duración solo para MP4
+        if mime_type == "video/mp4":
+            duration = await get_video_duration_minutes(contents)
+        else:
+            duration = 0
+
+        create_response = create_lesson(
+            db=db, 
+            section_id=section_id, 
+            title=title, 
+            file_id=file_id, 
+            course_id=course_id,
+            mime_type=mime_type,
+            time_validator=duration
+        )
+
+        lesson = {
+            "id" : create_response.id,
+            "title" : create_response.title,
+            "file_id" : create_response.file_id,
+        }
+
+        response = {
+            "Message" : "Lesson created successfully",
+            "lesson" : lesson
+        }
+
+        return JSONResponse(content=response, status_code=200)
+    except Exception as e:
+        print(str(e))
+        raise HTTPException(status_code=500, detail=f"Error creating lesson: {e}")
 
 
 @workbrench_router.post("/delete_lesson/{file_id}/{lesson_id}")
@@ -344,7 +412,12 @@ async def delete_lesson(
         404: Lesson or file not found
         500: File deletion or database error
     """
-    delete_file(file_id=file_id)
+
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+        
+    delete_file(name=file_id)
     delete_lesson_by_id(db, lesson_id)
     return JSONResponse(content="Lesson deleted successfully!", status_code=200)
 
@@ -403,15 +476,77 @@ async def give_course(
     user_info: dict = Depends(get_cookies),
     db=Depends(get_db)
 ):
+
+    is_sensei = user_info["is_sensei"]
+    if not is_sensei:
+        raise HTTPException(status_code=403, detail="User is not a sensei")
+    
     user_to_give = get_user_by_email(db, payload.user_email_to_give)
     if not user_to_give:
         raise HTTPException(status_code=404, detail="User not found")
 
-    user_id = user_to_give["id"]
+    # Validar contra los cursos del destinatario, no del sensei autenticado
+    recipient_id = user_to_give["id"]
+    purchased = get_purchased_courses_by_user(user_id=recipient_id, db=db) or []
+    # Algunos listados pueden usar 'id' o 'course_id' como llave
+    if any((c.get("id") == payload.course_id) or (c.get("course_id") == payload.course_id) for c in purchased):
+        return JSONResponse(
+            content={"message": "Ya posee este curso"},
+            status_code=status.HTTP_409_CONFLICT
+        )
 
-    save_response = save_purchase(db, user_id, payload.course_id)
+    save_response = save_purchase(db, recipient_id, payload.course_id)
 
     return JSONResponse(
-        content=f"El curso con el ID {payload.course_id} fue transferido correctamente",
+        content={"message": f"El curso con el ID {payload.course_id} fue transferido correctamente"},
         status_code=200
     )
+
+
+@workbrench_router.post("/upload_preview")
+async def upload_preview(
+    course_id: int,
+    file: UploadFile = File(...),
+    user_info: dict = Depends(get_cookies),
+    db=Depends(get_db)
+):
+
+    is_sensei = user_info.get("is_sensei")
+    if not is_sensei:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    
+    file_extension = Path(file.filename).suffix.lower()
+    file_content = await file.read()
+
+    mime_type = file.content_type or ""
+
+    # Soporte MKV para preview: convertir a MP4
+    is_mkv = file_extension == ".mkv" or "matroska" in mime_type or mime_type == "video/x-matroska"
+    if is_mkv:
+        try:
+            mp4_bytes = await mkv_to_mp4_bytes(file_content)
+            file_content = mp4_bytes
+            file_extension = ".mp4"
+            mime_type = "video/mp4"
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"No se pudo convertir el MKV a MP4: {e}")
+
+    file_id = get_unique_name(extension=file_extension)
+
+    save_file(
+        content=file_content,
+        name=file_id
+    )
+
+    file_preview = get_preview_files_by_course(db, course_id)
+    
+    if file_preview:
+        print("File already exists, updating...")
+        delete_file(file_preview["file_id"])
+        response = update_preview_file_by_course(db, course_id, file_id)
+    else:
+        print("File does not exist, adding...") 
+        response = add_preview_file(db, course_id, file_id)
+    
+
+    return JSONResponse(content=response, status_code=200)

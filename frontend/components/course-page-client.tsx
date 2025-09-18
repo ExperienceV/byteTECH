@@ -33,9 +33,10 @@ interface CoursePageClientProps {
 }
 
 export function CoursePageClient({ course, slug }: CoursePageClientProps) {
-  const { user, isLoggedIn, hasPurchasedCourse } = useAuth()
+  const { user, isLoggedIn } = useAuth()
 
-  const userHasPurchased = hasPurchasedCourse(slug)
+  // TODO: Integrar verificación real de compra cuando el backend/estado lo provea
+  const userHasPurchased = false
 
   // If user is logged in and has purchased the course, show the course content
   if (isLoggedIn && userHasPurchased) {
@@ -212,30 +213,47 @@ export function CoursePageClient({ course, slug }: CoursePageClientProps) {
                   <div className="bg-slate-900/80 backdrop-blur-sm border border-green-500 rounded-xl p-6">
                     <h3 className="text-xl font-bold text-green-400 font-mono mb-6">Acerca de</h3>
 
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-400 font-mono text-sm">PRICE:</span>
-                        <span className="text-green-400 font-mono font-bold">{course.price}$</span>
+                        <span className="text-slate-400 font-mono text-sm">PRECIO</span>
+                        <span className="text-green-400 font-mono font-bold">${course.price}</span>
                       </div>
 
                       <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-400 font-mono text-sm">LECCIONES:</span>
-                        <span className="text-green-400 font-mono font-bold">{course.lessons}</span>
+                        <span className="text-slate-400 font-mono text-sm">INSTRUCTOR</span>
+                        <span className="text-green-400 font-mono font-bold">{course.instructor}</span>
                       </div>
 
                       <div className="flex justify-between items-center py-2 border-b border-slate-800">
-                        <span className="text-slate-400 font-mono text-sm">HORAS:</span>
+                        <span className="text-slate-400 font-mono text-sm">HORAS</span>
                         <span className="text-green-400 font-mono font-bold">{course.hours}</span>
                       </div>
 
-                      <div className="flex justify-between items-center py-2">
-                        <span className="text-slate-400 font-mono text-sm">INSTRUCTOR:</span>
-                        <span className="text-green-400 font-mono font-bold">{course.instructor}</span>
+                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                        <span className="text-slate-400 font-mono text-sm">SECCIONES</span>
+                        <span className="text-green-400 font-mono font-bold">{course.sections.length}</span>
                       </div>
+
+                      <div className="flex justify-between items-center py-2 border-b border-slate-800">
+                        <span className="text-slate-400 font-mono text-sm">LECCIONES</span>
+                        <span className="text-green-400 font-mono font-bold">{course.lessons}</span>
+                      </div>
+
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-slate-400 font-mono text-sm">IDIOMA</span>
+                        <span className="text-green-400 font-mono font-bold">{course.language}</span>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between">
+                      <Badge className={`${difficultyColors[course.difficulty]} font-mono`}>{course.difficulty}</Badge>
+                      <Button className="bg-green-500 hover:bg-green-600 text-black font-semibold px-4 py-2 rounded-lg font-mono">
+                        COMPRAR - ${course.price}
+                      </Button>
                     </div>
                   </div>
 
-                  {/* Additional Info */}
+                  {/* Detalles y Métricas */}
                   <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6">
                     <h3 className="text-lg font-bold text-white font-mono mb-4">Detalles del Curso</h3>
 
@@ -251,6 +269,16 @@ export function CoursePageClient({ course, slug }: CoursePageClientProps) {
                       </div>
 
                       <div className="flex items-center gap-3">
+                        <Clock className="w-4 h-4 text-cyan-400" />
+                        <span className="text-slate-300 text-sm">Horas totales: {course.hours}</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <BookOpen className="w-4 h-4 text-green-400" />
+                        <span className="text-slate-300 text-sm">Lecciones totales: {course.lessons}</span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
                         <Clock className="w-4 h-4 text-green-400" />
                         <span className="text-slate-300 text-sm">{course.duration} de duración</span>
                       </div>
@@ -259,10 +287,6 @@ export function CoursePageClient({ course, slug }: CoursePageClientProps) {
                         <Terminal className="w-4 h-4 text-purple-400" />
                         <span className="text-slate-300 text-sm">Lenguaje: {course.language}</span>
                       </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <Badge className={`${difficultyColors[course.difficulty]} font-mono`}>{course.difficulty}</Badge>
                     </div>
                   </div>
 
@@ -277,5 +301,12 @@ export function CoursePageClient({ course, slug }: CoursePageClientProps) {
                       ))}
                     </div>
                   </div>
-
-                  { /*
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+    </>
+  )
+}

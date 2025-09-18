@@ -1,11 +1,12 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, useRef } from "react"
+import React, { useState, useEffect, useRef, useCallback } from "react"
 import { Badge } from "@/components/ui/badge"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { LessonCompletionNotification } from "./lesson-completion-notification"
 import {
   Play,
   FileText,
@@ -24,6 +25,18 @@ import {
 } from "lucide-react"
 import { forumsApi, type Thread, type Message, getApiBase, coursesApi } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
+import "../styles/video-player.css"
+
+// Helper: parse "Titulo : Descripcion" (split by first ":")
+const parseTopic = (raw?: string): { title: string; description?: string } => {
+  const text = (raw || "").trim()
+  if (!text) return { title: "" }
+  const idx = text.indexOf(":")
+  if (idx === -1) return { title: text }
+  const left = text.slice(0, idx).trim()
+  const right = text.slice(idx + 1).trim()
+  return { title: left, description: right || undefined }
+}
 
 interface Lesson {
   id: string
@@ -68,17 +81,25 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [sendingMessage, setSendingMessage] = useState(false)
   const [error, setError] = useState("")
+  // Control de expansión para mensajes largos del chat
+  const [expandedMessages, setExpandedMessages] = useState<Set<number>>(new Set())
   // Estado para previsualización de archivos de texto
   const [textPreview, setTextPreview] = useState<string>("")
   const [textLoading, setTextLoading] = useState<boolean>(false)
   const [textError, setTextError] = useState<string>("")
-  // Estado local para marcar lecciones completadas en UI
+  // Estado para mostrar el progreso de marcado
+  const [marking, setMarking] = useState(false)
+  // Estado local del progreso (para actualizaciones inmediatas)
+  const [localProgress, setLocalProgress] = useState<{ total_lessons: number; completed_lessons: number; progress_percentage: number } | null>(null)
+  // Estado para lecciones completadas localmente
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set())
-  const [marking, setMarking] = useState<boolean>(false)
+  // Referencia para el temporizador
   const timerRef = useRef<number | undefined>(undefined)
-  const messagesEndRef = useRef<HTMLDivElement | null>(null)
-  // Progreso local para la barra
-  const [localProgress, setLocalProgress] = useState(progress)
+  // Referencia para auto-scroll en mensajes
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  // Estado para la notificación de lección completada
+  const [showCompletionNotification, setShowCompletionNotification] = useState(false)
+  const [completedLessonTitle, setCompletedLessonTitle] = useState("")
 
   // Inicializar progreso local desde props o calculado por las lecciones
   useEffect(() => {
@@ -113,62 +134,51 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
     }
   }, [forumView, selectedThread?.id, threadMessages.length])
 
-  // Iniciar temporizador de progreso basado en time_validator
-  useEffect(() => {
-    // Limpiar temporizador previo si existe
-    if (timerRef.current) {
-      clearTimeout(timerRef.current)
-      timerRef.current = undefined
-    }
-
+  // Función para marcar lección como completada
+  const markLessonAsCompleted = useCallback(async () => {
     if (!selectedLesson) return
     const alreadyCompleted = Boolean(selectedLesson.completed) || completedLessons.has(String(selectedLesson.id))
-    const toSeconds = (val?: number): number => {
-      if (!val && val !== 0) return 0
-      // Interpretar formato M.S donde la parte decimal representa segundos
-      const asStr = String(val)
-      const [mStr, sStr] = asStr.split(".")
-      const minutes = parseInt(mStr || "0", 10)
-      const secondsPart = parseInt((sStr || "0").slice(0, 2), 10) || 0 // máx 2 dígitos
-      return minutes * 60 + secondsPart
+    if (alreadyCompleted) return
+
+    try {
+      setMarking(true)
+      await coursesApi.markProgress(Number(selectedLesson.id))
+      
+      // Mostrar notificación de completado
+      setCompletedLessonTitle(selectedLesson.title)
+      setShowCompletionNotification(true)
+      
+      // Actualizar estado local de completado
+      setCompletedLessons((prev) => new Set(prev).add(String(selectedLesson.id)))
+      setSelectedLesson((prev) => (prev ? { ...prev, completed: true } : prev))
+      // Actualizar progreso local
+      setLocalProgress((prev) => {
+        const total = prev?.total_lessons ?? sections.reduce((acc, s) => acc + s.lessons.length, 0)
+        const currentCompletedSet = new Set(completedLessons)
+        currentCompletedSet.add(String(selectedLesson.id))
+        // Calcular completados reales combinando props y estado local
+        const completedCountFromProps = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
+        const additional = currentCompletedSet.size - completedLessons.size // normalmente 1
+        const completed = Math.min(total, (prev?.completed_lessons ?? completedCountFromProps) + additional)
+        const pct = total > 0 ? (completed / total) * 100 : 0
+        return { total_lessons: total, completed_lessons: completed, progress_percentage: pct }
+      })
+    } catch (e) {
+      console.error('Error marking progress:', e)
+    } finally {
+      setMarking(false)
     }
-    const seconds = toSeconds(selectedLesson.time_validator)
-    if (alreadyCompleted || !seconds || seconds <= 0) return
+  }, [selectedLesson, completedLessons, sections])
 
-    // Programar marcado automático
-    timerRef.current = window.setTimeout(async () => {
-      try {
-        setMarking(true)
-        await coursesApi.markProgress(Number(selectedLesson.id))
-        // Actualizar estado local de completado
-        setCompletedLessons((prev) => new Set(prev).add(String(selectedLesson.id)))
-        setSelectedLesson((prev) => (prev ? { ...prev, completed: true } : prev))
-        // Actualizar progreso local
-        setLocalProgress((prev) => {
-          const total = prev?.total_lessons ?? sections.reduce((acc, s) => acc + s.lessons.length, 0)
-          const currentCompletedSet = new Set(completedLessons)
-          currentCompletedSet.add(String(selectedLesson.id))
-          // Calcular completados reales combinando props y estado local
-          const completedCountFromProps = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
-          const additional = currentCompletedSet.size - completedLessons.size // normalmente 1
-          const completed = Math.min(total, (prev?.completed_lessons ?? completedCountFromProps) + additional)
-          const pct = total > 0 ? (completed / total) * 100 : 0
-          return { total_lessons: total, completed_lessons: completed, progress_percentage: pct }
-        })
-      } catch (e) {
-        console.error('Error marking progress:', e)
-      } finally {
-        setMarking(false)
-      }
-    }, seconds * 1000)
-
+  // Limpiar temporizador cuando cambie la lección
+  useEffect(() => {
     return () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current)
         timerRef.current = undefined
       }
     }
-  }, [selectedLesson?.id, selectedLesson?.time_validator])
+  }, [selectedLesson?.id])
 
   // Cargar contenido de texto cuando la lección es de tipo text/*
   useEffect(() => {
@@ -416,39 +426,53 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         </div>
       ) : (
         <div className="space-y-3">
-          {threads.map((thread) => (
-            <div
-              key={thread.id}
-              className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:bg-slate-800/70 hover:border-green-400/30 transition-all"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1 cursor-pointer" onClick={() => handleThreadClick(thread)}>
-                  <h3 className="text-slate-300 font-mono text-sm font-semibold mb-2">
-                    {thread.title || thread.topic || `Hilo #${thread.id}`}
-                  </h3>
-                  <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                    <MessageCircle className="w-3 h-3" />
-                    <span>Hilo #{thread.id}</span>
-                    {thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}
+          {threads.map((thread) => {
+            const base = thread.title || thread.topic || `Hilo #${thread.id}`
+            const parsed = thread.title ? { title: thread.title } : parseTopic(thread.topic)
+            return (
+              <div
+                key={thread.id}
+                className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:bg-slate-800/70 hover:border-green-400/30 transition-all"
+              >
+                <div className="flex items-start justify-between">
+                  <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleThreadClick(thread)}>
+                    <div className="mb-1">
+                      <div className="text-slate-200 font-mono text-sm font-semibold truncate whitespace-nowrap overflow-hidden text-ellipsis">
+                        {parsed.title || base}
+                      </div>
+                      {parsed.description && (
+                        <div
+                          className="text-slate-400 font-mono text-xs mt-0.5 break-words"
+                          style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                        >
+                          {parsed.description}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
+                      <MessageCircle className="w-3 h-3" />
+                      <span>Hilo #{thread.id}</span>
+                      {thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}
+                    </div>
                   </div>
+                  {user?.is_sensei && (
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleDeleteThread(thread.id)
+                      }}
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-auto"
+                      disabled={loadingThreads}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  )}
                 </div>
-                {user?.is_sensei && (
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteThread(thread.id)
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-1 h-auto"
-                    disabled={loadingThreads}
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                )}
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </div>
@@ -549,10 +573,30 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
             <ArrowLeft className="w-3 h-3 mr-1" />
             VOLVER
           </Button>
-          <div>
-            <h2 className="text-lg font-bold text-green-400 font-mono">
-              {selectedThread?.title || selectedThread?.topic || `Hilo #${selectedThread?.id}`}
-            </h2>
+          <div className="min-w-0">
+            {(() => {
+              const parsed = selectedThread?.title
+                ? { title: selectedThread.title }
+                : parseTopic(selectedThread?.topic)
+              return (
+                <>
+                  <h2
+                    className="text-lg font-bold text-green-400 font-mono break-words"
+                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                  >
+                    {parsed.title || `Hilo #${selectedThread?.id}`}
+                  </h2>
+                  {parsed.description && (
+                    <p
+                      className="text-[13px] text-slate-400 font-mono mt-0.5 break-words"
+                      style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                    >
+                      {parsed.description}
+                    </p>
+                  )}
+                </>
+              )
+            })()}
             <p className="text-xs text-slate-500 font-mono">
               Hilo #{selectedThread?.id}
               {selectedThread?.lesson_id && ` • Lección ${selectedThread.lesson_id}`}
@@ -590,16 +634,36 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
             <p className="text-slate-500 font-mono text-sm mt-2">¡Sé el primero en participar!</p>
           </div>
         ) : (
-          threadMessages.map((message) => (
+          threadMessages.map((message) => {
+            const msgId = Number(message.id)
+            const isExpanded = expandedMessages.has(msgId)
+            const rawText = String(message.message || message.content || "")
+            const isLong = rawText.length > 220
+            const clampStyleCollapsed = {
+              display: '-webkit-box',
+              WebkitLineClamp: 6,
+              WebkitBoxOrient: 'vertical' as const,
+              overflow: 'hidden',
+            }
+            const toggleExpand = (e: React.MouseEvent) => {
+              e.stopPropagation()
+              setExpandedMessages(prev => {
+                const next = new Set(prev)
+                if (next.has(msgId)) next.delete(msgId)
+                else next.add(msgId)
+                return next
+              })
+            }
+            return (
             <div
               key={message.id}
-              className={`bg-slate-800/50 border border-slate-700 rounded-lg p-4 ${message.pending ? "opacity-60" : ""}`}
+              className={`bg-slate-800/50 border border-slate-700 rounded-lg p-4 overflow-hidden w-full max-w-full ${message.pending ? "opacity-60" : ""}`}
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3 w-full max-w-full" style={{ overflowWrap: 'anywhere' }}>
                 <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-4 h-4 text-white" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 break-words overflow-hidden" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="font-mono text-sm font-semibold text-cyan-400">
                       {message.username || `Usuario #${message.user_id}`}
@@ -609,13 +673,33 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       <span className="font-mono text-[11px] text-yellow-400">Enviando...</span>
                     )}
                   </div>
-                  <p className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
-                    {message.message}
+                  <p
+                    className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap w-full max-w-full overflow-hidden"
+                    style={{
+                      overflowWrap: 'anywhere',
+                      wordBreak: 'break-word',
+                      ...(isExpanded ? {} : clampStyleCollapsed),
+                    }}
+                  >
+                    {rawText}
                   </p>
+                  {isLong && (
+                    <div className="mt-2">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleExpand}
+                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 font-mono h-auto px-2 py-1 text-xs"
+                      >
+                        {isExpanded ? 'Ver menos' : 'Ver más'}
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
-          ))
+          )})
         )}
         {/* Sentinel to autoscroll */}
         <div ref={messagesEndRef} />
@@ -701,59 +785,105 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/content/index.js</span>
+                  <span className="text-xs font-mono text-slate-400">~CONTENIDO</span>
                 </div>
                 <Code className="w-4 h-4 text-green-400" />
               </div>
 
               <div className="p-6">
-                <h2 className="text-xl font-bold text-green-400 font-mono mb-6">CONTENIDO</h2>
-
-                {/* Section Tabs */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {sections.map((section, index) => (
-                    <Badge
-                      key={section.id}
-                      onClick={() => setActiveSection(index)}
-                      className={`cursor-pointer font-mono transition-colors ${
-                        activeSection === index
-                          ? "bg-green-500 text-black hover:bg-green-600"
-                          : "bg-slate-800/50 text-green-400 border-green-400/30 hover:bg-green-400/10"
-                      }`}
-                    >
-                      {section.title}
-                    </Badge>
-                  ))}
-                </div>
-
-                {/* Lessons List */}
-                <div className="space-y-2">
-                  {sections[activeSection]?.lessons.map((lesson) => {
-                    const isCompleted = Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
+                <h2 className="text-xl font-bold text-green-400 font-mono mb-4">CONTENIDO</h2>
+                <Accordion type="multiple" className="w-full">
+                  {sections.map((section, sidx) => {
+                    const sectionCompleted = section.lessons.every(lesson => 
+                      Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
+                    )
+                    
                     return (
-                    <div
-                      key={lesson.id}
-                      onClick={() => handleLessonClick(lesson)}
-                      className={`flex items-center gap-3 p-3 rounded-lg border border-slate-700 transition-colors cursor-pointer hover:bg-slate-800/50 hover:border-green-400/30 ${
-                        selectedLesson?.id === lesson.id ? "bg-green-400/10 border-green-400/50" : ""
-                      }`}
-                    >
-                      <div className="flex-shrink-0">
-                        {isCompleted ? (
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                        ) : lesson.type === "video" ? (
-                          <Play className="w-4 h-4 text-cyan-400" />
-                        ) : (
-                          <FileText className="w-4 h-4 text-blue-400" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-mono text-slate-300 block truncate">{lesson.title}</span>
-                        {lesson.duration && <span className="text-xs text-slate-500 font-mono">{lesson.duration}</span>}
-                      </div>
-                    </div>
-                  )})}
-                </div>
+                      <AccordionItem value={`section-${section.id}`} key={section.id} className="border-slate-800">
+                        <AccordionTrigger className="text-left px-2">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex items-center gap-3">
+                              {sectionCompleted ? (
+                                <div className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center">
+                                  <CheckCircle className="w-3 h-3 text-slate-900" />
+                                </div>
+                              ) : (
+                                <div className="w-5 h-5 border-2 border-slate-600 rounded-full"></div>
+                              )}
+                              <span className="font-mono text-slate-300 font-semibold truncate mr-2">{section.title}</span>
+                            </div>
+                            <span className="text-xs text-slate-500 font-mono">{section.lessons.length} lecciones</span>
+                          </div>
+                        </AccordionTrigger>
+                      <AccordionContent className="px-2">
+                        <div className="relative">
+                          {section.lessons.map((lesson, lessonIndex) => {
+                            const isCompleted = Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
+                            const isVideo = lesson.type === 'video'
+                            const nextLesson = section.lessons[lessonIndex + 1]
+                            const nextIsCompleted = nextLesson ? (Boolean(nextLesson.completed) || completedLessons.has(String(nextLesson.id))) : false
+                            const showConnectingLine = isCompleted && nextIsCompleted
+                            
+                            return (
+                              <div key={lesson.id} className="relative mb-6">
+                                <div className="relative flex items-center">
+                                  {/* Lesson Icon with connecting line */}
+                                  <div className="relative flex flex-col items-center mr-4">
+                                    {/* Connecting Line from previous lesson (arrives at circle) */}
+                                    {isCompleted && lessonIndex > 0 && (
+                                      <div className="w-0.5 h-12 bg-green-400 absolute -top-12"></div>
+                                    )}
+                                    
+                                    <div className="w-6 h-6 flex items-center justify-center z-20 relative">
+                                      {isCompleted ? (
+                                        <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+                                          <CheckCircle className="w-4 h-4 text-slate-900" />
+                                        </div>
+                                      ) : isVideo ? (
+                                        <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
+                                          <Play className="w-3 h-3 text-cyan-400" />
+                                        </div>
+                                      ) : (
+                                        <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
+                                          <FileText className="w-3 h-3 text-blue-400" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    
+                                    {/* Connecting Line to next lesson (leaves from circle) */}
+                                    {showConnectingLine && lessonIndex < section.lessons.length - 1 && (
+                                      <div className="w-0.5 h-12 bg-green-400 absolute top-3"></div>
+                                    )}
+                                  </div>
+                                  
+                                  {/* Lesson Content */}
+                                  <div
+                                    onClick={() => handleLessonClick(lesson)}
+                                    className={`flex-1 p-3 border-t border-b border-slate-800 bg-slate-900/60 hover:bg-slate-800/70 cursor-pointer transition-colors ${
+                                      selectedLesson?.id === lesson.id ? 'border-t-green-400/50 border-b-green-400/50 bg-green-400/10' : ''
+                                    }`}
+                                  >
+                                    <div className="min-w-0">
+                                      <div className="text-sm font-mono text-slate-300 truncate">{lesson.title}</div>
+                                      <div className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-2">
+                                        {lesson.duration && <span>{lesson.duration}</span>}
+                                        <span> {isVideo ? 'VIDEO' : 'TEXTO'} •</span>
+                                        {typeof lesson.time_validator !== 'undefined' && (
+                                          <span> {String(lesson.time_validator)} MIN</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </AccordionContent>
+                      </AccordionItem>
+                    )
+                  })}
+                </Accordion>
               </div>
             </div>
 
@@ -767,7 +897,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/forum/threads.js</span>
+                  <span className="text-xs font-mono text-slate-400">~FORO</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Hash className="w-4 h-4 text-orange-400" />
@@ -792,7 +922,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
                     <div className="w-3 h-3 bg-green-500 rounded-full" />
                   </div>
-                  <span className="text-xs font-mono text-slate-400">~/player/main.js</span>
+                  <span className="text-xs font-mono text-slate-400">~ARCHIVO</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   {selectedLesson?.type === "video" ? (
@@ -839,14 +969,25 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       }
                       if (mime.startsWith("video/")) {
                         return (
-                          <video
-                            key={src}
-                            controls
-                            className="w-full max-h-[70vh] rounded-lg border border-slate-700 bg-black"
-                          >
-                            <source src={src} type={mime} />
-                            Tu navegador no soporta la reproducción de video.
-                          </video>
+                          <div className="custom-video-player w-full max-h-[70vh]">
+                            <video
+                              key={src}
+                              controls
+                              className="w-full h-full"
+                              onEnded={() => {
+                                // Marcar como completada 3 segundos después de que termine el video
+                                if (timerRef.current) {
+                                  clearTimeout(timerRef.current)
+                                }
+                                timerRef.current = window.setTimeout(() => {
+                                  markLessonAsCompleted()
+                                }, 3000) // 3 segundos
+                              }}
+                            >
+                              <source src={src} type={mime} />
+                              Tu navegador no soporta la reproducción de video.
+                            </video>
+                          </div>
                         )
                       }
                       if (mime === "application/pdf") {
@@ -910,6 +1051,13 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
           </div>
         </div>
       </div>
+
+      {/* Lesson Completion Notification */}
+      <LessonCompletionNotification
+        show={showCompletionNotification}
+        lessonTitle={completedLessonTitle}
+        onComplete={() => setShowCompletionNotification(false)}
+      />
     </div>
   )
 }

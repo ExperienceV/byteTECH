@@ -9,6 +9,7 @@ from app.database.queries.courses import (
     purchase_exists
 )
 from app.database.queries.sections import get_sections_by_course_id
+from app.database.queries.preview import get_preview_files_by_course
 from app.utils.util_routers import include_threads
 from app.database.queries.progress import unmark_lesson_as_complete, get_course_progress, mark_lesson_as_complete
 from app.database.queries.lessons import get_lessons_by_section_id
@@ -140,6 +141,10 @@ async def get_course_content(
     course_data["content"] = sections_data
     print("Contenido del curso:", course_data)
 
+    # Agregar preview
+    preview = get_preview_files_by_course(db, course_id)
+    course_data["preview"] = preview or None
+
     return JSONResponse(
         content={"is_paid": is_paid, "course_content": course_data},
         status_code=200
@@ -209,7 +214,6 @@ async def buy_course(
         409: Usuario ya posee el curso
         500: Error en Stripe Checkout
     """
-    print("Eta e la userinfo ", user_info)
     get_response = get_purchased_courses_by_user(user_id=user_info["user_id"], db=db)
     # get_response es una lista de diccionarios de cursos; validar por id
     if any(c.get("id") == course_id for c in get_response):
