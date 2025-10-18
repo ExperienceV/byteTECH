@@ -1,5 +1,5 @@
 from app.database.queries.threads import get_threads_by_lesson_id
-from app.database.config import SessionLocal
+from app.database.session import retry_db_operation
 from app.database.base import Course
 from app.utils.storage import delete_file
 from app.parameters import settings
@@ -13,16 +13,29 @@ import tempfile
 import math
 import os
 
-def include_threads(lessons: list) -> list:
+@retry_db_operation(max_retries=2, delay=0.3)
+def include_threads(lessons: list, db_session=None) -> list:
+    """
+    Include threads for lessons using the provided database session
+    to avoid creating multiple connections
+    """
+    if not db_session:
+        raise ValueError("Database session is required")
+    
     new_list = []
     for lesson in lessons:
         lesson_id = lesson["id"]
-        get_threads = get_threads_by_lesson_id(
-            db=SessionLocal(),
-            lesson_id=lesson_id
-        )
-    
-        lesson["threads"] = get_threads
+        try:
+            get_threads = get_threads_by_lesson_id(
+                db=db_session,
+                lesson_id=lesson_id
+            )
+            lesson["threads"] = get_threads
+        except Exception as e:
+            # Log the error but don't fail the entire operation
+            print(f"Warning: Failed to get threads for lesson {lesson_id}: {e}")
+            lesson["threads"] = []
+        
         new_list.append(lesson)
 
     return new_list

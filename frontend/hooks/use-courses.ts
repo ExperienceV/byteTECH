@@ -63,6 +63,8 @@ export interface CourseData {
   name: string;
   title?: string;
   description: string;
+  preludio?: string;
+  requirements?: string;
   sensei_name?: string;
   instructor?: string;
   price: number;

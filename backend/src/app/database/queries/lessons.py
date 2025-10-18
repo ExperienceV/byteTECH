@@ -1,6 +1,8 @@
 from sqlalchemy.orm import Session
 from app.database.base import Lesson
 from sqlalchemy import func
+from app.database.queries.progress import is_lesson_completed
+from app.database.queries.marks import get_mark_by_lesson_and_user
 
 
 def create_lesson(db: Session, section_id: int, title: str, file_id: str, course_id: int, mime_type: str, time_validator: float) -> Lesson:
@@ -39,10 +41,25 @@ def get_lessons_by_section_id(db: Session, sections_id: list, user_id: int = Non
         lessons = db.query(Lesson).filter(Lesson.section_id == id).all()
         if lessons:
             for lesson in lessons:
-                # Aquí podrías agregar lógica para verificar si el usuario ha completado la lección
-                from app.database.queries.progress import is_lesson_completed
-                is_completed = is_lesson_completed(db, user_id, lesson.id)
-
+                # Solo verificar progreso si hay un usuario autenticado
+                if user_id is not None:
+                    is_completed = is_lesson_completed(db, user_id, lesson.id)
+                    mark_time = get_mark_by_lesson_and_user(
+                        db=db, 
+                        lesson_id=lesson.id, 
+                        user_id=user_id
+                    )
+                    mark_time_info = {
+                        "id": mark_time.id if mark_time else None,
+                        "time": mark_time.mark_time if mark_time else 0
+                    }
+                else:
+                    # Usuario no autenticado - valores por defecto
+                    is_completed = False
+                    mark_time_info = {
+                        "id": None,
+                        "time": 0
+                    }
 
                 lesson_info = {
                     "id": lesson.id,
@@ -51,7 +68,8 @@ def get_lessons_by_section_id(db: Session, sections_id: list, user_id: int = Non
                     "file_id": lesson.file_id,
                     "mime_type": lesson.mime_type,
                     "time_validator": lesson.time_validator,
-                    "is_completed": is_completed
+                    "is_completed": is_completed,
+                    "mark_time": mark_time_info
                 }
                 lessons_data.append(lesson_info)
     return lessons_data

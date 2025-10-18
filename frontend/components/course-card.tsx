@@ -145,7 +145,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         <img
           src={`https://api.bytetechedu.com/api/media/get_file?file_id=${course.miniature_id}`}
           alt={course.name}
-          className="w-full h-48 object-cover rounded-t-lg"
+          className="w-full h-64 object-cover rounded-t-lg"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             target.src = '/api/placeholder/400/300';
@@ -155,7 +155,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({
     }
 
     return (
-      <div className="w-full h-48 bg-gradient-to-br from-slate-700 to-slate-900 rounded-t-lg flex items-center justify-center">
+      <div className="w-full h-64 bg-gradient-to-br from-slate-700 to-slate-900 rounded-t-lg flex items-center justify-center">
         <BookOpen className="w-16 h-16 text-slate-500" />
       </div>
     );
@@ -213,40 +213,31 @@ export const CourseCard: React.FC<CourseCardProps> = ({
         
         {/* Descripción */}
         <p className="text-slate-400 text-sm line-clamp-2 leading-relaxed">
-          {course.description}
+          {course.preludio || course.description}
         </p>
       </CardHeader>
 
       <CardContent className="space-y-4">
         {/* Información del curso */}
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center gap-2 text-slate-300">
-            <User className="w-4 h-4 text-cyan-400" />
-            <span className="font-mono">
+        <div className="grid grid-cols-2 gap-2 text-sm">
+          <div className="flex items-center gap-1.5 text-slate-300">
+            <User className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-mono text-xs truncate">
               {course.sensei_name || course.instructor || 'Instructor'}
             </span>
           </div>
           
-          <div className="flex items-center gap-2 text-slate-300">
-            <Clock className="w-4 h-4 text-purple-400" />
-            <span className="font-mono">
-              {formatDuration(course.hours)}
+          <div className="flex items-center gap-1.5 text-slate-300">
+            <BookOpen className="w-3.5 h-3.5 text-green-400" />
+            <span className="font-mono text-xs">
+              {course.lessons_count || 0} lecciones
             </span>
           </div>
           
-          {course.lessons_count && (
-            <div className="flex items-center gap-2 text-slate-300">
-              <BookOpen className="w-4 h-4 text-green-400" />
-              <span className="font-mono">
-                {course.lessons_count} lecciones
-              </span>
-            </div>
-          )}
-          
           {course.students_count && (
-            <div className="flex items-center gap-2 text-slate-300">
-              <Users className="w-4 h-4 text-blue-400" />
-              <span className="font-mono">
+            <div className="flex items-center gap-1.5 text-slate-300">
+              <Users className="w-3.5 h-3.5 text-blue-400" />
+              <span className="font-mono text-xs">
                 {course.students_count} estudiantes
               </span>
             </div>

@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.dependencies import get_cookies, get_db
 from fastapi.responses import JSONResponse
 from app.database.queries.threads import get_threads_by_lesson_id, create_thread, delete_thread_by_id
 from app.database.queries.messages import create_message, get_messages_by_thread_id
+from app.database.queries.user import get_user_by_id
 from app.models import Message, Thread
+from datetime import datetime, timezone
 
 forums_router = APIRouter(tags=["forums"], prefix="/forums")
 
@@ -37,12 +39,28 @@ async def create_new_thread(
         lesson_id=thread.lesson_id,
         user_id=user_info["user_id"],
         topic=thread.topic,
+        description=thread.description,
         db=db
     )
-
+    
     if not new_thread_response:
         return JSONResponse(status_code=400, content={"message": "Error creating thread"})
-    
+    from icecream import ic
+
+    message = thread.message
+
+    if message:
+        current_date = datetime.now(timezone.utc)
+        formatted_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
+        # Agregar el mensaje inicial al hilo
+        create_response = create_message(
+            thread_id=new_thread_response.id,
+            user_id=user_info["user_id"],
+            message=thread.message,
+            date_created=formatted_date,
+            db=db
+        )
+
     new_thread = {
         "id": new_thread_response.id,
         "title": new_thread_response.topic,
@@ -114,13 +132,24 @@ async def mtd_threads(
         db=db
     )
 
-    return JSONResponse(
-        status_code=200,
-        content={   
+    user = get_user_by_id(db, user_info["user_id"])
+    
+    if user:
+        name = user.username
+        
+    content_body = {   
             "threads": threads,
             "lesson_id": lesson_id,
-            "user_id": user_info["user_id"]
+            "user_id": user_info["user_id"],
+            "username": name
         }
+
+    from icecream import ic
+    ic(content_body)
+
+    return JSONResponse(
+        status_code=200,
+        content=content_body
     )
 
 
@@ -157,10 +186,16 @@ async def send_message(
     if not message or not thread_id:
         return JSONResponse(status_code=400, content={"message": "Message and thread ID are required"})
     
+
+    
+    current_date = datetime.now(timezone.utc)
+    formatted_date = current_date.strftime("%Y-%m-%d %H:%M:%S")
+
     create_response = create_message(
         thread_id=thread_id,
         user_id=user_id,
         message=message,
+        date_created=formatted_date,
         db=db
     )
 

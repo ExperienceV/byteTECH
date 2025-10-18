@@ -9,6 +9,8 @@ class User(BaseModel):
 class Thread(BaseModel):
     lesson_id: int
     topic: str
+    description: Optional[str] = None
+    message: Optional[str] = None
 
 class Message(BaseModel):
     thread_id: int
@@ -19,6 +21,8 @@ class Course(BaseModel):
     course_id: Optional[int]
     name: Optional[str]
     description: Optional[str]
+    preludio: Optional[str]
+    requirements: Optional[str]
     price: Optional[float]
     hours: Optional[float] 
     

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app.database.base import Course, Purchase
 from app.utils.util_database import course_to_dict
 from app.utils.util_routers import delete_file
-from app.database.queries.lessons import get_lessons_by_section_id
+from app.database.queries.lessons import get_lessons_by_section_id, get_total_lessons_by_course
 from app.database.queries.sections import get_sections_by_course_id
 from app.database.queries.user import get_user_by_id
 
@@ -29,15 +29,22 @@ def get_all_courses(db: Session) -> list[Course]:
     if not courses:
         return []
 
+    # Obtener lecciones totales de cada curso
+    for course in courses:
+        lessons = get_total_lessons_by_course(course_id=course.id, db=db)
+
     return [
         {
             "id": course.id,
             "sensei_id": course.sensei_id,
             "name": course.name,
             "description": course.description,
+            "preludio": course.preludio,
+            "requirements": course.requirements,
             "hours": course.hours,
             "miniature_id": course.miniature_id,
-            "price": course.price
+            "price": course.price,
+            "lessons_count": lessons
         }
         for course in courses
     ]
@@ -53,6 +60,8 @@ def get_course_by_id(db: Session, course_id: int) -> dict | None:
         "sensei_id": course.sensei_id,
         "name": course.name,
         "description": course.description,
+        "preludio": course.preludio,
+        "requirements": course.requirements,
         "hours": course.hours,
         "miniature_id": course.miniature_id,
         "video_id": course.video_id,
@@ -74,6 +83,8 @@ def get_course_by_name(db: Session, name: str) -> dict | None:
         "sensei_id": course.sensei_id,
         "name": course.name,
         "description": course.description,
+        "preludio": course.preludio,
+        "requirements": course.requirements,
         "hours": course.hours,
         "miniature_id": course.miniature_id,
         "video_id": course.video_id,

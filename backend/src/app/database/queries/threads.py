@@ -3,8 +3,8 @@ from app.database.base import Thread
 from app.database.queries.user import get_user_by_id
 
 
-def create_thread(db: Session, lesson_id: int, user_id: str, topic: str):
-    thread = Thread(lesson_id=lesson_id, user_id=user_id, topic=topic)
+def create_thread(db: Session, lesson_id: int, user_id: str, topic: str, description: str = None):
+    thread = Thread(lesson_id=lesson_id, user_id=user_id, topic=topic, description=description)
     db.add(thread)
     db.commit()
     db.refresh(thread)
@@ -30,7 +30,8 @@ def get_threads_by_lesson_id(db: Session, lesson_id: int):
             "id": thread.id,
             "lesson_id": thread.lesson_id,
             "username": user_data.username if user_data else None,
-            "topic": thread.topic
+            "topic": thread.topic,
+            "description": thread.description
         }
         thread_list.append(thread_data)
     return thread_list

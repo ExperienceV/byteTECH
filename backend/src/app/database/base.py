@@ -19,6 +19,8 @@ class User(Base):
 
     purchases = relationship("Purchase", back_populates="user", cascade="all, delete")
     uploads = relationship("UploadedCourse", back_populates="user", cascade="all, delete")
+    marks = relationship("LessonMarkTime", back_populates="user", cascade="all, delete-orphan")
+
 
 
 class VerifyUser(Base):
@@ -46,6 +48,8 @@ class Course(Base):
     sensei_id = Column(Integer)
     name = Column(String)
     description = Column(String)
+    preludio = Column(String)
+    requirements = Column(String)
     hours = Column(Float)
     miniature_id = Column(String)
     video_id = Column(String)
@@ -80,6 +84,8 @@ class Lesson(Base):
     section = relationship("Section", back_populates="lessons")
     course = relationship("Course", back_populates="lessons")
     threads = relationship("Thread", back_populates="lesson", cascade="all, delete")
+    marks = relationship("LessonMarkTime", back_populates="lesson", cascade="all, delete-orphan")
+
 
 
 class Thread(Base):
@@ -88,6 +94,7 @@ class Thread(Base):
     lesson_id = Column(Integer, ForeignKey("lessons.id", ondelete="CASCADE"))
     user_id = Column(Integer)
     topic = Column(String)
+    description = Column(String)
 
     lesson = relationship("Lesson", back_populates="threads")
     messages = relationship("Message", back_populates="thread", cascade="all, delete")
@@ -99,6 +106,7 @@ class Message(Base):
     thread_id = Column(Integer, ForeignKey("threads.id", ondelete="CASCADE"))
     user_id = Column(Integer)
     message = Column(String)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
     thread = relationship("Thread", back_populates="messages")
 
@@ -145,3 +153,16 @@ class PreviewFile(Base):
 
     def __repr__(self):
         return f"<PreviewFile(id={self.id}, course_id={self.course_id}, file_id={self.file_id})>"
+
+
+class LessonMarkTime(Base):
+    __tablename__ = "lesson_mark_time"
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    lesson_id = Column(Integer, ForeignKey("lessons.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=True)
+    mark_time = Column(Integer, nullable=True)
+
+    # Opcional: relaciones
+    lesson = relationship("Lesson", back_populates="marks")
+    user = relationship("User", back_populates="marks")

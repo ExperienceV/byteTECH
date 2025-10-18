@@ -38,6 +38,7 @@ import { coursesApi, workbrenchApi, getUsers, getApiBase } from "@/lib/api"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import React, { useEffect, useState } from "react"
+import { formatTextForHTML } from "@/lib/text-formatter"
 
 interface Lesson {
   id: number
@@ -56,6 +57,8 @@ interface Section {
 interface CourseContent {
   content: Record<string, Section> | {}
   description: string
+  preludio?: string
+  requirements?: string
   hours: number
   id: number
   miniature_id: string
@@ -103,6 +106,8 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
   const [editForm, setEditForm] = useState({
     name: "",
     description: "",
+    preludio: "",
+    requirements: "",
     price: "",
     hours: ""
   })
@@ -251,6 +256,8 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
         setEditForm({
           name: courseContent.name,
           description: courseContent.description,
+          preludio: courseContent.preludio || "",
+          requirements: courseContent.requirements || "",
           price: courseContent.price.toString(),
           hours: courseContent.hours?.toString() || "0"
         })
@@ -277,6 +284,8 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
         course_id: course.id,
         name: editForm.name,
         description: editForm.description,
+        preludio: editForm.preludio,
+        requirements: editForm.requirements,
         price: editForm.price,
         hours: editForm.hours
       })
@@ -286,6 +295,8 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
         ...prev,
         name: editForm.name,
         description: editForm.description,
+        preludio: editForm.preludio,
+        requirements: editForm.requirements,
         price: parseFloat(editForm.price),
         hours: parseFloat(editForm.hours)
       } : null)
@@ -568,12 +579,13 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-8 text-center">
-          <p className="text-slate-400 font-mono">Curso no encontrado</p>
-          <Link href="/home">
-            <Button className="mt-4 px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
-              Volver al Dashboard
-            </Button>
-          </Link>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-cyan-400 font-mono mb-4">Cargando curso...</p>
+          <div className="flex space-x-1 justify-center">
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
+            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+          </div>
         </div>
       </div>
     )
@@ -750,11 +762,32 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                       />
                     </div>
                     <div>
-                      <label className="block text-cyan-400 font-mono text-sm mb-2">DESCRIPCIÓN</label>
+                      <label className="block text-cyan-400 font-mono text-sm mb-2">PRELUDIO (Descripción breve)</label>
+                      <Textarea
+                        value={editForm.preludio}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, preludio: e.target.value }))}
+                        rows={2}
+                        placeholder="Descripción breve que se mostrará en las cards de cursos..."
+                        className="bg-slate-800/50 border-slate-700 text-white font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-cyan-400 font-mono text-sm mb-2">DESCRIPCIÓN COMPLETA</label>
                       <Textarea
                         value={editForm.description}
                         onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                        rows={4}
+                        placeholder="Descripción completa del curso. Usa '- texto.' para crear listas con tabulación..."
+                        className="bg-slate-800/50 border-slate-700 text-white font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-cyan-400 font-mono text-sm mb-2">REQUISITOS</label>
+                      <Textarea
+                        value={editForm.requirements}
+                        onChange={(e) => setEditForm(prev => ({ ...prev, requirements: e.target.value }))}
                         rows={3}
+                        placeholder="Requisitos para tomar el curso. Usa '- texto.' para crear listas..."
                         className="bg-slate-800/50 border-slate-700 text-white font-mono"
                       />
                     </div>
@@ -781,7 +814,60 @@ export default function EditorPage({ params }: { params: Promise<{ courseId: str
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <p className="text-slate-300 leading-relaxed">{course.description}</p>
+                    {(course as any).preludio && (
+                      <div>
+                        <h4 className="text-cyan-400 font-mono text-sm font-semibold mb-2">PRELUDIO</h4>
+                        <p className="text-slate-300 leading-relaxed text-sm bg-slate-800/30 p-3 rounded border-l-2 border-cyan-400">
+                          {(course as any).preludio}
+                        </p>
+                      </div>
+                    )}
+                    <div>
+                      <h4 className="text-cyan-400 font-mono text-sm font-semibold mb-2">DESCRIPCIÓN COMPLETA</h4>
+                      <div className="text-slate-300 leading-relaxed">
+                        {formatTextForHTML(course.description).map((element) => {
+                          if (element.type === 'list') {
+                            return (
+                              <div key={element.key} className="ml-4 mb-1">
+                                {element.content}
+                              </div>
+                            );
+                          } else if (element.type === 'normal') {
+                            return (
+                              <p key={element.key} className="mb-2">
+                                {element.content}
+                              </p>
+                            );
+                          } else {
+                            return <div key={element.key} className="h-2" />;
+                          }
+                        })}
+                      </div>
+                    </div>
+                    {(course as any).requirements && (
+                      <div>
+                        <h4 className="text-orange-400 font-mono text-sm font-semibold mb-2">REQUISITOS</h4>
+                        <div className="text-slate-300 leading-relaxed text-sm bg-slate-800/30 p-3 rounded border-l-2 border-orange-400">
+                          {formatTextForHTML((course as any).requirements).map((element) => {
+                            if (element.type === 'list') {
+                              return (
+                                <div key={element.key} className="ml-4 mb-1">
+                                  {element.content}
+                                </div>
+                              );
+                            } else if (element.type === 'normal') {
+                              return (
+                                <p key={element.key} className="mb-2">
+                                  {element.content}
+                                </p>
+                              );
+                            } else {
+                              return <div key={element.key} className="h-2" />;
+                            }
+                          })}
+                        </div>
+                      </div>
+                    )}
                     <div className="flex gap-4">
                       <div className="flex items-center gap-2">
                         <DollarSign className="w-4 h-4 text-green-400" />

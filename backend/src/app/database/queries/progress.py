@@ -39,7 +39,11 @@ def is_lesson_completed(db: Session, user_id: int, lesson_id: int) -> bool:
     """
     Verifica si una lección está completada por un usuario.
     Retorna True si está completada, False si no.
+    Si user_id es None, retorna False (usuario no autenticado).
     """
+    if user_id is None:
+        return False
+        
     return (
         db.query(LessonComplete)
         .filter(

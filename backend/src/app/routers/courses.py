@@ -10,12 +10,14 @@ from app.database.queries.courses import (
 )
 from app.database.queries.sections import get_sections_by_course_id
 from app.database.queries.preview import get_preview_files_by_course
+from app.database.queries.marks import update_mark_time
 from app.utils.util_routers import include_threads
 from app.database.queries.progress import unmark_lesson_as_complete, get_course_progress, mark_lesson_as_complete
 from app.database.queries.lessons import get_lessons_by_section_id
 from app.database.queries.user import get_user_by_id
 from fastapi.responses import JSONResponse
-from app.dependencies import get_cookies, get_db
+from app.dependencies import get_cookies, get_cookies_optional, get_db
+from app.database.session import get_db_session, retry_db_operation
 from app.database.base import Course
 from app.parameters import settings
 import stripe
@@ -28,6 +30,7 @@ courses_router = APIRouter(tags=["courses"], prefix="/courses")
 
 
 @courses_router.get("/mtd_courses")
+@retry_db_operation(max_retries=3, delay=0.5)
 async def get_mtd_courses(
     db: Session = Depends(get_db)
 ):
@@ -65,10 +68,11 @@ async def get_mtd_courses(
 
 
 @courses_router.get("/course_content")
+@retry_db_operation(max_retries=3, delay=0.5)
 async def get_course_content(
     course_name: Optional[str] = None,
     course_id: Optional[int] = None, 
-    user_info: dict = Depends(get_cookies),
+    user_info: Optional[dict] = Depends(get_cookies_optional),
     db: Session = Depends(get_db)
 ):
     """
@@ -76,19 +80,25 @@ async def get_course_content(
     
     Entry:
         course_id: int (query parameter)
-        user_info: dict (obtenido de cookies JWT)
+        course_name: str (query parameter, opcional)
+        user_info: dict (obtenido de cookies JWT, opcional)
     
     Return:
         status_code: 200 o 404
         content: json con:
-            - is_paid: bool (si el usuario ha comprado el curso)
+            - is_paid: bool (si el usuario ha comprado el curso, false si no está autenticado)
             - course_content: objeto con:
                 - datos del curso
                 - lecciones organizadas por secciones
                 - hilos de discusión incluídos
+                - progreso del curso (null si no está autenticado)
     
     Errors:
         404: Curso no encontrado o sin secciones
+        
+    Notas:
+        - Este endpoint permite acceso sin autenticación para vista previa
+        - Si no hay autenticación, is_paid será false y progress será null
     """
     if course_name:
         course = get_course_by_name(name=course_name, db=db)
@@ -100,24 +110,30 @@ async def get_course_content(
     is_paid = False
     print(user_info)
 
-    if user_info["is_sensei"]:
-        is_paid = True
-    elif user_info:
-        exist_response = purchase_exists(user_id=user_info["user_id"], course_id=course_id, db=db)
-        if exist_response:
+    # Solo verificar si el usuario está autenticado
+    if user_info:
+        if user_info["is_sensei"]:
             is_paid = True
+        else:
+            exist_response = purchase_exists(user_id=user_info["user_id"], course_id=course_id, db=db)
+            if exist_response:
+                is_paid = True
 
     
     course_data = course["course_data"]
     sensei_name = get_user_by_id(user_id=course_data["sensei_id"], db=db)
     course_data["sensei_name"] = sensei_name.username if sensei_name else "Unknown Sensei"
-    # Añadir progreso del curso
-    progress = get_course_progress(
-        db=db, 
-        user_id=user_info["user_id"], 
-        course_id=course_id
-        )
-    course_data["progress"] = progress
+    
+    # Añadir progreso del curso solo si el usuario está autenticado
+    if user_info:
+        progress = get_course_progress(
+            db=db, 
+            user_id=user_info["user_id"], 
+            course_id=course_id
+            )
+        course_data["progress"] = progress
+    else:
+        course_data["progress"] = None
 
     sections = get_sections_by_course_id(course_id=course_id, db=db)
 
@@ -125,11 +141,18 @@ async def get_course_content(
     count = 0
     for section in sections:
         id = section["id"]
-        lessons = get_lessons_by_section_id(
-            sections_id=[id], 
-            db=db,
-            user_id=user_info["user_id"])
-        lessons_with_threads = include_threads(lessons=lessons)
+        # Solo obtener lecciones con información de usuario si está autenticado
+        if user_info:
+            lessons = get_lessons_by_section_id(
+                sections_id=[id], 
+                db=db,
+                user_id=user_info["user_id"])
+        else:
+            lessons = get_lessons_by_section_id(
+                sections_id=[id], 
+                db=db,
+                user_id=None)
+        lessons_with_threads = include_threads(lessons=lessons, db_session=db)
         section_info = {
             "id": id,
             "title": section["title"],
@@ -152,6 +175,7 @@ async def get_course_content(
 
 
 @courses_router.get("/my_courses")
+@retry_db_operation(max_retries=3, delay=0.5)
 async def my_courses(
     user_info: dict = Depends(get_cookies),
     db: Session = Depends(get_db)
@@ -199,17 +223,19 @@ async def buy_course(
     
     Entry:
         course_id: int (ID del curso a comprar)
-        user_info: dict (obtenido de cookies JWT)
+        user_info: dict (obtenido de cookies JWT - REQUERIDO)
     
     Return:
-        status_code: 200, 404 o 409
+        status_code: 200, 401, 404 o 409
         content: 
             - 200: URL de checkout de Stripe
+            - 401: Usuario no autenticado
             - 404: Curso no encontrado
             - 409: Usuario ya posee el curso
             - 500: Error de Stripe
     
     Errors:
+        401: Usuario no autenticado (debe iniciar sesión)
         404: Curso no encontrado
         409: Usuario ya posee el curso
         500: Error en Stripe Checkout
@@ -361,4 +387,23 @@ async def unmark_progress(
     
 
     return JSONResponse(status_code=200, content={"message": "Lesson progress unmarked successfully"})
+
+
+@courses_router.post("/update_mark_time")
+async def mark_time(
+    mark_id: int = Form(),
+    mark_time: int = Form(),
+    user_info: dict = Depends(get_cookies),
+    db: Session = Depends(get_db)
+):
+    response = update_mark_time(
+        db=db,
+        mark_id=mark_id,
+        new_time=mark_time
+    )
+    
+    if not response:
+        return JSONResponse(status_code=404, content={"message": "Mark not found"})
+    
+    return JSONResponse(status_code=200, content={"message": "Lesson time marked successfully"})
 

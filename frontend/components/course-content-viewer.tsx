@@ -1,6 +1,28 @@
 "use client"
 
 import React, { useState, useEffect, useRef, useCallback } from "react"
+
+// Función de utilidad para formatear fechas en formato relativo
+const formatRelativeDate = (date: string | Date) => {
+  const now = new Date()
+  const messageDate = new Date(date)
+  const diffTime = Math.abs(now.getTime() - messageDate.getTime())
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) {
+    return `Hoy ${messageDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
+  } else if (diffDays === 1) {
+    return `Ayer ${messageDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
+  } else {
+    return messageDate.toLocaleDateString('es-ES', { 
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+}
 import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
@@ -48,6 +70,10 @@ interface Lesson {
   file_id?: string
   mime_type?: string
   time_validator?: number
+  mark_time?: {
+    id: number
+    time: number
+  }
 }
 
 interface Section {
@@ -73,7 +99,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null)
   const [forumView, setForumView] = useState<"threads" | "create" | "thread">("threads")
   const [selectedThread, setSelectedThread] = useState<Thread | null>(null)
-  const [newThreadData, setNewThreadData] = useState({ title: "", description: "" })
+  const [newThreadData, setNewThreadData] = useState({ title: "", message: "" })
   const [newMessage, setNewMessage] = useState("")
   const [threads, setThreads] = useState<Thread[]>([])
   const [threadMessages, setThreadMessages] = useState<(Message & { pending?: boolean })[]>([])
@@ -97,9 +123,17 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   const timerRef = useRef<number | undefined>(undefined)
   // Referencia para auto-scroll en mensajes
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  // Referencia para el video player
+  const videoRef = useRef<HTMLVideoElement>(null)
+  // Referencia para el temporizador de actualización de mark_time
+  const markTimeIntervalRef = useRef<NodeJS.Timeout | undefined>(undefined)
   // Estado para la notificación de lección completada
   const [showCompletionNotification, setShowCompletionNotification] = useState(false)
   const [completedLessonTitle, setCompletedLessonTitle] = useState("")
+  // Estado para el popup de continuación a la siguiente lección
+  const [showNextLessonPopup, setShowNextLessonPopup] = useState(false)
+  const [nextLessonTimer, setNextLessonTimer] = useState(10)
+  const [nextLesson, setNextLesson] = useState<Lesson | null>(null)
 
   // Inicializar progreso local desde props o calculado por las lecciones
   useEffect(() => {
@@ -110,15 +144,32 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sections])
 
-  // Auto-select first lesson on mount
+  // Auto-select next incomplete lesson on mount
   useEffect(() => {
-    if (sections.length > 0 && sections[0].lessons.length > 0 && !selectedLesson) {
-      const firstLesson = sections[0].lessons[0]
-      if (!firstLesson.locked) {
-        setSelectedLesson(firstLesson)
+    if (sections.length > 0 && !selectedLesson) {
+      // Find the first incomplete lesson
+      let nextIncompleteLesson: Lesson | null = null
+      
+      for (const section of sections) {
+        for (const lesson of section.lessons) {
+          if (!Boolean(lesson.completed) && !completedLessons.has(String(lesson.id))) {
+            nextIncompleteLesson = lesson
+            break
+          }
+        }
+        if (nextIncompleteLesson) break
+      }
+      
+      // If no incomplete lesson found, select the first lesson
+      if (!nextIncompleteLesson && sections[0].lessons.length > 0) {
+        nextIncompleteLesson = sections[0].lessons[0]
+      }
+      
+      if (nextIncompleteLesson && !nextIncompleteLesson.locked) {
+        setSelectedLesson(nextIncompleteLesson)
       }
     }
-  }, [sections, selectedLesson])
+  }, [sections, selectedLesson, completedLessons])
 
   // Cargar threads cuando se selecciona una lección
   useEffect(() => {
@@ -134,6 +185,27 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
     }
   }, [forumView, selectedThread?.id, threadMessages.length])
 
+  // Función para encontrar la siguiente lección
+  const findNextLesson = useCallback((currentLesson: Lesson): Lesson | null => {
+    for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+      const section = sections[sectionIndex]
+      const lessonIndex = section.lessons.findIndex(l => l.id === currentLesson.id)
+      
+      if (lessonIndex !== -1) {
+        // Encontramos la lección actual, buscar la siguiente
+        if (lessonIndex + 1 < section.lessons.length) {
+          // Siguiente lección en la misma sección
+          return section.lessons[lessonIndex + 1]
+        } else if (sectionIndex + 1 < sections.length) {
+          // Primera lección de la siguiente sección
+          const nextSection = sections[sectionIndex + 1]
+          return nextSection.lessons.length > 0 ? nextSection.lessons[0] : null
+        }
+      }
+    }
+    return null
+  }, [sections])
+
   // Función para marcar lección como completada
   const markLessonAsCompleted = useCallback(async () => {
     if (!selectedLesson) return
@@ -147,6 +219,14 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       // Mostrar notificación de completado
       setCompletedLessonTitle(selectedLesson.title)
       setShowCompletionNotification(true)
+      
+      // Buscar la siguiente lección
+      const next = findNextLesson(selectedLesson)
+      if (next) {
+        setNextLesson(next)
+        setNextLessonTimer(10)
+        setShowNextLessonPopup(true)
+      }
       
       // Actualizar estado local de completado
       setCompletedLessons((prev) => new Set(prev).add(String(selectedLesson.id)))
@@ -168,7 +248,71 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
     } finally {
       setMarking(false)
     }
-  }, [selectedLesson, completedLessons, sections])
+  }, [selectedLesson, completedLessons, sections, findNextLesson])
+
+  // Efecto para el temporizador del popup de siguiente lección
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | undefined
+
+    if (showNextLessonPopup && nextLessonTimer > 0) {
+      intervalId = setInterval(() => {
+        setNextLessonTimer(prev => {
+          if (prev <= 1) {
+            // Tiempo agotado, ir a la siguiente lección automáticamente
+            if (nextLesson) {
+              setSelectedLesson(nextLesson)
+              setForumView("threads")
+              setSelectedThread(null)
+              setThreadMessages([])
+            }
+            setShowNextLessonPopup(false)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId)
+      }
+    }
+  }, [showNextLessonPopup, nextLessonTimer, nextLesson])
+
+  // Función para actualizar mark_time en el backend
+  const updateMarkTime = useCallback(async () => {
+    if (!selectedLesson?.mark_time || !videoRef.current) return
+    
+    const currentTime = Math.floor(videoRef.current.currentTime)
+    if (currentTime > 0) {
+      try {
+        await coursesApi.updateMarkTime(selectedLesson.mark_time.id, currentTime)
+      } catch (error) {
+        console.error('Error updating mark time:', error)
+      }
+    }
+  }, [selectedLesson])
+
+  // Efecto para manejar el temporizador de mark_time cuando se reproduce un video
+  useEffect(() => {
+    if (selectedLesson?.mime_type?.startsWith("video/") && selectedLesson.mark_time) {
+      // Limpiar temporizador anterior
+      if (markTimeIntervalRef.current) {
+        clearInterval(markTimeIntervalRef.current)
+      }
+      
+      // Iniciar nuevo temporizador cada 15 segundos
+      markTimeIntervalRef.current = setInterval(updateMarkTime, 15000)
+      
+      return () => {
+        if (markTimeIntervalRef.current) {
+          clearInterval(markTimeIntervalRef.current)
+          markTimeIntervalRef.current = undefined
+        }
+      }
+    }
+  }, [selectedLesson?.id, selectedLesson?.mime_type, updateMarkTime])
 
   // Limpiar temporizador cuando cambie la lección
   useEffect(() => {
@@ -176,6 +320,10 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       if (timerRef.current) {
         clearTimeout(timerRef.current)
         timerRef.current = undefined
+      }
+      if (markTimeIntervalRef.current) {
+        clearInterval(markTimeIntervalRef.current)
+        markTimeIntervalRef.current = undefined
       }
     }
   }, [selectedLesson?.id])
@@ -269,24 +417,22 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
   const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newThreadData.title.trim() || !newThreadData.description.trim() || !selectedLesson) return
+    if (!newThreadData.title.trim() || !newThreadData.message.trim() || !selectedLesson) return
 
     try {
       setLoadingThreads(true)
       setError("")
 
-      // Crear el topic combinando título y descripción
-      const topic = `${newThreadData.title}: ${newThreadData.description}`
-
       await forumsApi.createThread({
         lesson_id: Number(selectedLesson.id),
-        topic: topic,
+        topic: newThreadData.title,
+        message: newThreadData.message
       })
 
       // Recargar threads
       await loadThreadsForLesson(Number(selectedLesson.id))
 
-      setNewThreadData({ title: "", description: "" })
+      setNewThreadData({ title: "", message: "" })
       setForumView("threads")
     } catch (err: any) {
       console.error("Error creating thread:", err)
@@ -451,8 +597,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     </div>
                     <div className="flex items-center gap-2 text-[11px] text-slate-500 font-mono">
                       <MessageCircle className="w-3 h-3" />
-                      <span>Hilo #{thread.id}</span>
-                      {thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}
+                      <span>{thread.username}</span>
+                      {/*{thread.lesson_id && <span>• Lección {thread.lesson_id}</span>}*/}
                     </div>
                   </div>
                   {user?.is_sensei && (
@@ -511,8 +657,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       <form onSubmit={handleCreateThread} className="space-y-4">
         <div>
           <label className="block text-sm font-mono text-slate-300 mb-2">
-            <span className="text-cyan-400">const</span> tema =<span className="text-yellow-400">"</span>
-            <span className="text-red-400">TEMA</span>
+            <span className="text-cyan-400">const</span> titulo =<span className="text-yellow-400">"</span>
+            <span className="text-red-400">TÍTULO</span>
             <span className="text-yellow-400">"</span>
           </label>
           <Input
@@ -527,16 +673,16 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
         <div>
           <label className="block text-sm font-mono text-slate-300 mb-2">
-            <span className="text-cyan-400">const</span> argumento =<span className="text-yellow-400">"</span>
-            <span className="text-red-400">ARGUMENTO</span>
+            <span className="text-cyan-400">const</span> mensaje =<span className="text-yellow-400">"</span>
+            <span className="text-red-400">MENSAJE</span>
             <span className="text-yellow-400">"</span>
           </label>
           <Textarea
-            placeholder="Describe tu pregunta o tema de discusión..."
-            value={newThreadData.description}
-            onChange={(e) => setNewThreadData((prev) => ({ ...prev, description: e.target.value }))}
+            placeholder="Escribe el primer mensaje del hilo..."
+            value={newThreadData.message}
+            onChange={(e) => setNewThreadData((prev) => ({ ...prev, message: e.target.value }))}
             className="bg-slate-800/50 border-slate-700 text-slate-300 placeholder:text-slate-500 font-mono text-sm resize-none"
-            rows={4}
+            rows={5}
             disabled={loadingThreads}
             required
           />
@@ -545,7 +691,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         <Button
           type="submit"
           className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-6 py-2"
-          disabled={loadingThreads || !newThreadData.title.trim() || !newThreadData.description.trim()}
+          disabled={loadingThreads || !newThreadData.title.trim() || !newThreadData.message.trim()}
         >
           {loadingThreads ? (
             <>
@@ -668,7 +814,9 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     <span className="font-mono text-sm font-semibold text-cyan-400">
                       {message.username || `Usuario #${message.user_id}`}
                     </span>
-                    {/* Eliminado: enumeración de mensajes */}
+                    <span className="font-mono text-[11px] text-slate-500">
+                      {message.created_at ? formatRelativeDate(message.created_at) : ''}
+                    </span>
                     {message.pending && (
                       <span className="font-mono text-[11px] text-yellow-400">Enviando...</span>
                     )}
@@ -971,9 +1119,16 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                         return (
                           <div className="custom-video-player w-full max-h-[70vh]">
                             <video
+                              ref={videoRef}
                               key={src}
                               controls
                               className="w-full h-full"
+                              onLoadedData={() => {
+                                // Buscar el tiempo guardado y posicionar el video
+                                if (selectedLesson?.mark_time?.time && videoRef.current) {
+                                  videoRef.current.currentTime = selectedLesson.mark_time.time
+                                }
+                              }}
                               onEnded={() => {
                                 // Marcar como completada 3 segundos después de que termine el video
                                 if (timerRef.current) {
@@ -1058,6 +1213,56 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         lessonTitle={completedLessonTitle}
         onComplete={() => setShowCompletionNotification(false)}
       />
+
+      {/* Next Lesson Popup */}
+      {showNextLessonPopup && nextLesson && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-sm">
+          <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-xl p-4 shadow-2xl">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Play className="w-5 h-5 text-green-400" />
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-green-400 font-mono mb-1">
+                  ¡Lección Completada!
+                </h3>
+                
+                <p className="text-slate-300 font-mono text-xs mb-2">
+                  Continuando en: <span className="text-cyan-400 font-bold">{nextLessonTimer}s</span>
+                </p>
+                
+                <p className="text-slate-400 font-mono text-xs mb-3 truncate">
+                  Siguiente: <span className="text-cyan-400">{nextLesson.title}</span>
+                </p>
+                
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => {
+                      setSelectedLesson(nextLesson)
+                      setForumView("threads")
+                      setSelectedThread(null)
+                      setThreadMessages([])
+                      setShowNextLessonPopup(false)
+                    }}
+                    size="sm"
+                    className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-3 py-1 h-auto"
+                  >
+                    Continuar
+                  </Button>
+                  <Button
+                    onClick={() => setShowNextLessonPopup(false)}
+                    size="sm"
+                    className="bg-white hover:bg-gray-100 text-black font-mono text-xs px-3 py-1 h-auto"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

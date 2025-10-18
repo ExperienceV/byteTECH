@@ -11,3 +11,4 @@ backend/src/app/credentials.json
 backend/src/app/.env
 localhost.crt
 localhost.key
+backend/uploads

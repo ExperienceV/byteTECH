@@ -436,6 +436,8 @@ async def edit_metadata(
             - course_id: int (required)
             - name: str (optional)
             - description: str (optional)
+            - preludio: str (optional)
+            - requirements: str (optional)
             - price: float (optional)
             - hours: int (optional)
         user_info: dict (User info from JWT cookies)
@@ -464,6 +466,8 @@ async def edit_metadata(
             "id": updated.id,
             "name": updated.name,
             "description": updated.description,
+            "preludio": updated.preludio,
+            "requirements": updated.requirements,
             "price": updated.price,
             "duration": updated.hours
         }

@@ -2,13 +2,13 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { User, Menu, X, LogOut, UserIcon, Home, ChevronDown, Search } from "lucide-react"
+import { User, Menu, X, LogOut, UserIcon, Home, ChevronDown, Search, Key, Folder } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { useState, useRef, useEffect } from "react"
 import { useAuth } from "@/lib/auth-context"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { coursesApi, type CourseData } from "@/lib/api"
 
 export function NormalHeader() {
@@ -16,6 +16,7 @@ export function NormalHeader() {
   const [showUserMenu, setShowUserMenu] = useState(false)
   const { user, isLoggedIn, logout } = useAuth()
   const router = useRouter()
+  const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const searchBoxRef = useRef<HTMLDivElement>(null)
   const mobileSearchBoxRef = useRef<HTMLDivElement>(null)
@@ -30,6 +31,8 @@ export function NormalHeader() {
   const [isTopSearchOpen, setIsTopSearchOpen] = useState(false)
   const hoverCloseTimer = useRef<number | null>(null)
   const [isClosing, setIsClosing] = useState(false)
+  const [myCourses, setMyCourses] = useState<CourseData[]>([])
+  const [loadingMyCourses, setLoadingMyCourses] = useState(false)
 
   const cancelHoverClose = () => {
     if (hoverCloseTimer.current) {
@@ -61,6 +64,33 @@ export function NormalHeader() {
       timestamp: new Date().toLocaleTimeString(),
     })
   }, [user, isLoggedIn])
+
+  // Fetch user's courses when logged in
+  useEffect(() => {
+    const fetchMyCourses = async () => {
+      if (!isLoggedIn || !user) {
+        setMyCourses([])
+        return
+      }
+      
+      try {
+        setLoadingMyCourses(true)
+        const res = await coursesApi.getMyCourses()
+        if (res.ok) {
+          // Extract courses from the response structure
+          const courses = Array.isArray(res.data?.courses) ? res.data.courses : []
+          setMyCourses(courses)
+        }
+      } catch (error) {
+        console.error('Error fetching my courses:', error)
+        setMyCourses([]) // Set empty array on error
+      } finally {
+        setLoadingMyCourses(false)
+      }
+    }
+
+    fetchMyCourses()
+  }, [isLoggedIn, user])
 
   // Close dropdown when clicking outside (user menu)
   useEffect(() => {
@@ -144,7 +174,7 @@ export function NormalHeader() {
 
   const navigateToCourseByName = (name: string) => {
     const slug = slugify(name)
-    router.push(`/cursos/${slug}`)
+    router.push(`/prevista/${slug}`)
     setShowSuggestions(false)
     setActiveIndex(-1)
   }
@@ -193,6 +223,9 @@ export function NormalHeader() {
     }
   }
 
+  // Check if we should show search (only on /cursos page)
+  const shouldShowSearch = pathname === '/cursos'
+
   return (
     <header className="bg-slate-950/90 backdrop-blur-sm border-b border-slate-800 sticky top-0 z-50">
 
@@ -221,14 +254,6 @@ export function NormalHeader() {
           {/* Center: buttons remain clickable; search expands left over them on hover */}
           <div className="relative hidden lg:flex items-center justify-center gap-3 col-span-6 lg:col-span-8">
             <div className="bg-slate-900/80 backdrop-blur-sm rounded-lg p-1 flex items-center space-x-1 border border-slate-800">
-              {isLoggedIn && (
-                <Link
-                  href="/perfil"
-                  className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-green-400 rounded-md hover:bg-green-400/10 transition-all"
-                >
-                  PERFIL
-                </Link>
-              )}
               <Link
                 href="/cursos"
                 className="px-3 xl:px-4 py-2 text-sm font-raleway text-slate-400 hover:text-orange-400 rounded-md hover:bg-orange-400/10 transition-all"
@@ -247,65 +272,6 @@ export function NormalHeader() {
               >
                 SOPORTE
               </Link>
-              {/* Hover search trigger area */}
-              <div
-                className="relative"
-                onMouseEnter={() => { cancelHoverClose(); setIsTopSearchOpen(true); if (!allCourses) ensureCoursesLoaded(); }}
-                onMouseLeave={scheduleHoverClose}
-              >
-                {!isTopSearchOpen ? (
-                  <div className="px-2 py-2 text-slate-400/70 cursor-pointer"><Search className="w-4 h-4" /></div>
-                ) : (
-                  <div className={`absolute right-0 top-1/2 -translate-y-1/2 w-[28rem] max-w-[50vw] z-[80] ${isClosing ? 'animate-out fade-out slide-out-to-top-1 duration-200' : 'animate-in fade-in slide-in-from-top-1 duration-200'}`}
-                       onMouseEnter={cancelHoverClose}
-                       onMouseLeave={scheduleHoverClose}
-                  >
-                    <div className="relative w-full" ref={searchBoxRef}>
-                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4"/>
-                      <Input
-                        type="text"
-                        autoFocus
-                        value={searchQuery}
-                        onChange={(e) => handleSearchChange(e.target.value)}
-                        onFocus={() => {
-                          ensureCoursesLoaded()
-                          if (searchQuery.trim()) setShowSuggestions(true)
-                        }}
-                        onKeyDown={(e) => {
-                          handleKeyDown(e)
-                          if (e.key === 'Escape') { setIsTopSearchOpen(false); setShowSuggestions(false) }
-                        }}
-                        placeholder="Buscar cursos..."
-                        className="w-full pl-10 pr-4 py-2 bg-slate-900/80 border-slate-700 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400 font-raleway animate-in fade-in slide-in-from-top-1 duration-200"
-                      />
-                      {showSuggestions && (
-                        <div className="absolute mt-1 w-full bg-slate-900/95 backdrop-blur-sm border border-slate-800 rounded-lg shadow-xl z-[70] overflow-hidden">
-                          {isSearching && (
-                            <div className="px-3 py-2 text-xs text-slate-400 font-raleway">Cargando cursos...</div>
-                          )}
-                          {!isSearching && suggestions.length === 0 && (
-                            <div className="px-3 py-2 text-xs text-slate-400 font-raleway">No hay resultados</div>
-                          )}
-                          {!isSearching && suggestions.map((s, idx) => (
-                            <button
-                              key={s.id}
-                              onMouseDown={(e) => { e.preventDefault(); navigateToCourseByName(s.name); }}
-                              className={`w-full text-left px-3 py-2 font-raleway text-sm ${idx === activeIndex ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70'}`}
-                            >
-                              <div className="flex flex-col">
-                                <span className="text-white">{s.name}</span>
-                                {s.sensei_name && (
-                                  <span className="text-xs text-slate-400">por {s.sensei_name}</span>
-                                )}
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
 
@@ -342,13 +308,22 @@ export function NormalHeader() {
                     <div className="absolute right-0 top-full mt-2 w-48 bg-slate-900/95 backdrop-blur-sm border border-slate-800 rounded-xl shadow-2xl z-[60] animate-in slide-in-from-top-2 duration-200">
                       <div className="p-2">
                         <Link
-                          href="/credenciales"
+                          href="/mis-cursos"
                           onClick={() => setShowUserMenu(false)}
                           className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors font-raleway text-sm"
                         >
                           <UserIcon className="w-4 h-4" />
-                          <span>Credenciales</span>
+                          <span>Mis Cursos</span>
                         </Link>
+                        <Link
+                          href="/mi-cuenta"
+                          onClick={() => setShowUserMenu(false)}
+                          className="w-full flex items-center space-x-2 px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800/50 rounded-lg transition-colors font-raleway text-sm"
+                        >
+                          <Key className="w-4 h-4" />
+                          <span>Mi Cuenta</span>
+                        </Link>
+                        
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center space-x-2 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors font-raleway text-sm"
@@ -383,59 +358,52 @@ export function NormalHeader() {
         {/* Mobile menu */}
         {isMenuOpen && (
           <div className="lg:hidden mt-4 pb-4 border-t border-slate-800">
-            <div className="mt-4 mb-4">
-              <div className="relative" ref={mobileSearchBoxRef}>
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearchChange(e.target.value)}
-                  onFocus={() => {
-                    ensureCoursesLoaded()
-                    if (searchQuery.trim()) setShowSuggestions(true)
-                  }}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Buscar cursos..."
-                  className="w-full pl-10 pr-4 py-2 bg-slate-900/80 border-slate-700 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400 font-raleway"
-                />
-                {showSuggestions && (
-                  <div className="absolute mt-1 w-full bg-slate-900/95 backdrop-blur-sm border border-slate-800 rounded-lg shadow-xl z-50 overflow-hidden">
-                    {isSearching && (
-                      <div className="px-3 py-2 text-xs text-slate-400 font-raleway">Cargando cursos...</div>
-                    )}
-                    {!isSearching && suggestions.length === 0 && (
-                      <div className="px-3 py-2 text-xs text-slate-400 font-raleway">No hay resultados</div>
-                    )}
-                    {!isSearching && suggestions.map((s, idx) => (
-                      <button
-                        key={s.id}
-                        onMouseDown={(e) => { e.preventDefault(); setIsMenuOpen(false); navigateToCourseByName(s.name) }}
-                        className={`w-full text-left px-3 py-2 font-raleway text-sm ${idx === activeIndex ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70'}`}
-                      >
-                        <div className="flex flex-col">
-                          <span className="text-white">{s.name}</span>
-                          {s.sensei_name && (
-                            <span className="text-xs text-slate-400">por {s.sensei_name}</span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                )}
+            {/* Mobile search - only show on /cursos page */}
+            {shouldShowSearch && (
+              <div className="mt-4 mb-4">
+                <div className="relative" ref={mobileSearchBoxRef}>
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearchChange(e.target.value)}
+                    onFocus={() => {
+                      ensureCoursesLoaded()
+                      if (searchQuery.trim()) setShowSuggestions(true)
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Buscar cursos..."
+                    className="w-full pl-10 pr-4 py-2 bg-slate-900/80 border-slate-700 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400 font-raleway"
+                  />
+                  {showSuggestions && (
+                    <div className="absolute mt-1 w-full bg-slate-900/95 backdrop-blur-sm border border-slate-800 rounded-lg shadow-xl z-50 overflow-hidden">
+                      {isSearching && (
+                        <div className="px-3 py-2 text-xs text-slate-400 font-raleway">Cargando cursos...</div>
+                      )}
+                      {!isSearching && suggestions.length === 0 && (
+                        <div className="px-3 py-2 text-xs text-slate-400 font-raleway">No hay resultados</div>
+                      )}
+                      {!isSearching && suggestions.map((s, idx) => (
+                        <button
+                          key={s.id}
+                          onMouseDown={(e) => { e.preventDefault(); setIsMenuOpen(false); navigateToCourseByName(s.name) }}
+                          className={`w-full text-left px-3 py-2 font-raleway text-sm ${idx === activeIndex ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70'}`}
+                        >
+                          <div className="flex flex-col">
+                            <span className="text-white">{s.name}</span>
+                            {s.sensei_name && (
+                              <span className="text-xs text-slate-400">por {s.sensei_name}</span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="flex flex-col space-y-2">
-              {isLoggedIn && (
-                <Link
-                  href="/perfil"
-                  className="px-4 py-3 text-sm font-raleway text-slate-400 hover:text-green-400 hover:bg-green-400/10 rounded-md transition-all flex items-center gap-2"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Home className="w-4 h-4" />
-                  ./perfil
-                </Link>
-              )}
               <Link
                 href="/cursos"
                 className="px-4 py-3 text-sm font-raleway text-slate-400 hover:text-orange-400 hover:bg-orange-400/10 rounded-md transition-all"

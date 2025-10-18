@@ -3,15 +3,23 @@
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
 import { TerminalCourseCard } from "@/components/terminal-course-card"
-import { Terminal, BookOpen } from "lucide-react"
-import { useEffect, useState } from "react"
+import { Terminal, BookOpen, Search } from "lucide-react"
+import { useEffect, useState, useRef } from "react"
 import { coursesApi, CourseData, getApiBase } from "@/lib/api"
+import { Input } from "@/components/ui/input"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 
 export default function CursosPage() {
   const [cursos, setCursos] = useState<CourseData[]>([])
+  const [filteredCursos, setFilteredCursos] = useState<CourseData[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [searchQuery, setSearchQuery] = useState("")
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [activeIndex, setActiveIndex] = useState<number>(-1)
+  const router = useRouter()
+  const searchBoxRef = useRef<HTMLDivElement>(null)
 
   const slugify = (value: string) =>
     value
@@ -38,7 +46,9 @@ export default function CursosPage() {
         if (!res.ok) {
           throw new Error(res.message || "Error al cargar los cursos")
         }
-        setCursos(res.data?.mtd_courses || [])
+        const courses = res.data?.mtd_courses || []
+        setCursos(courses)
+        setFilteredCursos(courses)
       } catch (e) {
         setError("No se pudieron cargar los cursos")
       } finally {
@@ -46,6 +56,67 @@ export default function CursosPage() {
       }
     }
     fetchCourses()
+  }, [])
+
+  // Search functionality
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
+    if (!value.trim()) {
+      setFilteredCursos(cursos)
+      setShowSuggestions(false)
+      setActiveIndex(-1)
+      return
+    }
+    
+    const q = value.trim().toLowerCase()
+    const filtered = cursos.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      (c.sensei_name?.toLowerCase() || "").includes(q) ||
+      (c.description?.toLowerCase() || "").includes(q) ||
+      (c.tags || []).some(tag => tag.toLowerCase().includes(q))
+    )
+    setFilteredCursos(filtered)
+    setShowSuggestions(true)
+  }
+
+  const navigateToCourseByName = (name: string) => {
+    const slug = slugify(name)
+    router.push(`/prevista/${slug}`)
+    setShowSuggestions(false)
+    setActiveIndex(-1)
+  }
+
+  const handleKeyDown: React.KeyboardEventHandler<HTMLInputElement> = (e) => {
+    if (!showSuggestions || filteredCursos.length === 0) return
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      setActiveIndex(prev => (prev + 1) % filteredCursos.length)
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      setActiveIndex(prev => (prev - 1 + filteredCursos.length) % filteredCursos.length)
+    } else if (e.key === "Enter") {
+      e.preventDefault()
+      const selected = activeIndex >= 0 ? filteredCursos[activeIndex] : filteredCursos[0]
+      if (selected) {
+        navigateToCourseByName(selected.name)
+      }
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false)
+      setActiveIndex(-1)
+    }
+  }
+
+  // Close search when clicking outside
+  useEffect(() => {
+    function handleOutside(event: MouseEvent) {
+      const target = event.target as Node
+      if (searchBoxRef.current && !searchBoxRef.current.contains(target)) {
+        setShowSuggestions(false)
+        setActiveIndex(-1)
+      }
+    }
+    document.addEventListener("mousedown", handleOutside)
+    return () => document.removeEventListener("mousedown", handleOutside)
   }, [])
 
   if (loading) {
@@ -126,7 +197,47 @@ export default function CursosPage() {
               </p>
             </div>
             <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-lg px-3 py-2">
-              <span className="text-cyan-400 font-mono text-sm">{cursos.length} cursos</span>
+              <span className="text-cyan-400 font-mono text-sm">{filteredCursos.length} cursos</span>
+            </div>
+          </div>
+
+          {/* Search Section */}
+          <div className="mb-8 sm:mb-12">
+            <div className="relative max-w-md mx-auto" ref={searchBoxRef}>
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-5 h-5" />
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                onFocus={() => {
+                  if (searchQuery.trim()) setShowSuggestions(true)
+                }}
+                onKeyDown={handleKeyDown}
+                placeholder="Buscar cursos por nombre, instructor o tecnología..."
+                className="w-full pl-12 pr-4 py-3 bg-slate-900/80 border-slate-700 text-white placeholder-slate-400 focus:border-cyan-400 focus:ring-cyan-400 font-mono text-sm rounded-xl"
+              />
+              {showSuggestions && searchQuery.trim() && (
+                <div className="absolute mt-2 w-full bg-slate-900/95 backdrop-blur-sm border border-slate-800 rounded-xl shadow-xl z-50 overflow-hidden">
+                  {filteredCursos.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-slate-400 font-mono">No se encontraron cursos</div>
+                  ) : (
+                    filteredCursos.slice(0, 5).map((curso, idx) => (
+                      <button
+                        key={curso.id}
+                        onMouseDown={(e) => { e.preventDefault(); navigateToCourseByName(curso.name); }}
+                        className={`w-full text-left px-4 py-3 font-mono text-sm border-b border-slate-800 last:border-b-0 ${idx === activeIndex ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800/70'}`}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-white font-semibold">{curso.name}</span>
+                          <span className="text-xs text-slate-400">
+                            por {curso.sensei_name || 'Instructor'} • ${curso.price || 0}
+                          </span>
+                        </div>
+                      </button>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -159,13 +270,15 @@ export default function CursosPage() {
           </div>
 
           {/* Courses Grid */}
-          {cursos.length === 0 ? (
+          {filteredCursos.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-slate-400 font-mono text-lg">No hay cursos disponibles.</p>
+              <p className="text-slate-400 font-mono text-lg">
+                {searchQuery.trim() ? "No se encontraron cursos que coincidan con tu búsqueda." : "No hay cursos disponibles."}
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-              {cursos.map((curso, index) => {
+              {filteredCursos.map((curso, index) => {
                 const base = getApiBase()
                 const imageUrl = curso.miniature_id
                   ? `${base}/media/get_file?file_id=${encodeURIComponent(curso.miniature_id)}`
@@ -177,9 +290,9 @@ export default function CursosPage() {
                     id={curso.id}
                     title={curso.name}
                     description={
-                      curso.description || `Curso impartido por ${curso.sensei_name ?? "Sensei"}`
+                      curso.preludio || `Curso impartido por ${curso.sensei_name ?? "Sensei"}`
                     }
-                    instructor={curso.sensei_name || "Sensei"}
+                    instructor={`Instructor: ${curso.sensei_name || "Sensei"}`}
                     price={curso.price || 0}
                     duration={curso.hours ? `${curso.hours}h` : "Por definir"}
                     students={curso.students || 0}
@@ -187,7 +300,8 @@ export default function CursosPage() {
                     tags={curso.tags || []}
                     language={curso.language || ""}
                     difficulty={normalizeDifficulty(curso.difficulty)}
-                    href={`/cursos/${slugify(curso.name)}`}
+                    href={`/prevista/${slugify(curso.name)}`}
+                    lessons_count={`Lecciones: ${curso.lessons_count || 0}`}
                     imageUrl={imageUrl}
                   />
                 )

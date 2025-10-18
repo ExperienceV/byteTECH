@@ -230,6 +230,7 @@ export interface PurchaseResponse {
 export interface CreateThreadRequest {
   lesson_id: number;
   topic: string;
+  message: string;
 }
 
 export interface ThreadResponse {
@@ -770,6 +771,8 @@ export interface WorkbrenchMetadataRequest {
   course_id: number
   name?: string
   description?: string
+  preludio?: string
+  requirements?: string
   price?: string
   hours?: string
 }
@@ -1020,7 +1023,9 @@ export const workbrenchApi = {
         ...(courseData.name && { name: courseData.name }),
         ...(courseData.description && { description: courseData.description }),
         ...(courseData.price && { price: courseData.price }),
-        ...(courseData.hours && { hours: courseData.hours })
+        ...(courseData.hours && { hours: courseData.hours }),
+        ...(courseData.preludio && { preludio: courseData.preludio }),
+        ...(courseData.requirements && { requirements: courseData.requirements })
       };
   
       const response = await fetch(`${API_BASE}/workbrench/edit_metadata`, {
@@ -1215,7 +1220,7 @@ export const coursesApi = {
     }
   },
 
-  async getMyCourses(): Promise<ApiResponse<CourseData[]>> {
+  async getMyCourses(): Promise<ApiResponse<{ is_sensei: boolean; courses: CourseData[] }>> {
     try {
       const response = await fetch(`${API_BASE}/courses/my_courses`, {
         method: "GET",
@@ -1274,21 +1279,53 @@ export const coursesApi = {
       const response = await fetch(`${API_BASE}/courses/unmark_progress?lesson_id=${lessonId}`, {
         method: "DELETE",
         credentials: "include",
-        headers: { "Accept": "application/json" },
       });
+
       const data = await response.json();
       return {
         ok: response.ok,
         status: response.status,
         data,
-        message: data.message,
+        message: data.message || "Progress unmarked successfully"
       };
     } catch (error) {
+      console.error("Error unmarking progress:", error);
       return {
         ok: false,
-        status: 500,
+        status: 0,
         data: null as any,
-        message: error instanceof Error ? error.message : "Unknown error",
+        message: error instanceof Error ? error.message : "Network error"
+      };
+    }
+  },
+
+  // Actualiza el tiempo de marca de una lección
+  async updateMarkTime(markId: number, markTime: number): Promise<ApiResponse<{ message: string }>> {
+    try {
+      const formData = new FormData();
+      formData.append("mark_id", String(markId));
+      formData.append("mark_time", String(markTime));
+
+      const response = await fetch(`${API_BASE}/courses/update_mark_time`, {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      return {
+        ok: response.ok,
+        status: response.status,
+        data,
+        message: data.message || "Mark time updated successfully"
+      };
+    } catch (error) {
+      console.error("Error updating mark time:", error);
+      return {
+        ok: false,
+        status: 0,
+        data: null as any,
+        message: error instanceof Error ? error.message : "Network error"
       };
     }
   },
@@ -1357,12 +1394,12 @@ export const forumsApi = {
     }
   },
 
-  async createThread(payload: { lesson_id: number; topic: string }): Promise<{ message?: string; thread?: { id: number; title: string } }> {
+  async createThread(payload: { lesson_id: number; topic: string; message: string }): Promise<{ message?: string; thread?: { id: number; title: string } }> {
     const response = await fetch(`${API_BASE}/forums/create_thread`, {
       method: "POST",
       credentials: "include",
       headers: { "Accept": "application/json", "Content-Type": "application/json" },
-      body: JSON.stringify({ lesson_id: payload.lesson_id, topic: payload.topic }),
+      body: JSON.stringify({ lesson_id: payload.lesson_id, topic: payload.topic, message: payload.message }),
     })
     const data = await response.json().catch(() => ({}))
     return data

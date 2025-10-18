@@ -215,11 +215,12 @@ export default function index() {
                   key={course.id}
                   id={course.id}
                   title={course.name}
-                  description={course.description}
+                  description={course.preludio}
                   price={course.price}
                   duration={`${course.hours} horas`}
-                  instructor={course.sensei_name}
+                  instructor={`Instructor: ${course.sensei_name}`}
                   imageUrl={`${API_BASE}/media/get_file?file_id=${course.miniature_id}`}
+                  lessons_count={`Lecciones: ${course.lessons_count}`}
                   //language="Python"
                   //difficulty="Intermediate"
                   //tags={["Programación", "Backend"]}

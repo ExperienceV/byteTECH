@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # API STATUS
     VERSION: str = "v1.0.0"
-    DEBUG: bool = False
+    DEBUG: bool = True
 
     # COOKIE SETTINGS
     # In development with HTTPS certificates, use SameSite=None and Secure=True
