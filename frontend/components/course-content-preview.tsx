@@ -31,7 +31,7 @@ export function CourseContentPreview({ courseData }: CourseContentPreviewProps) 
 
   const sections = Object.values((courseData as any).content || {})
   const totalLessons = sections.reduce((acc: number, section: any) => acc + (section.lessons || []).length, 0)
-  const totalDuration = courseData.hours || "TBD"
+  const totalDuration = courseData.hours || "Duración no especificada"
 
   return (
     <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl overflow-hidden">
@@ -48,7 +48,7 @@ export function CourseContentPreview({ courseData }: CourseContentPreviewProps) 
         <BookOpen className="w-4 h-4 text-green-400" />
       </div>
 
-      <div className="p-6">
+      <div className="max-h-[600px] overflow-y-auto custom-scrollbar p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-bold text-green-400 font-mono">CONTENIDO DEL CURSO</h3>
           <div className="flex items-center gap-4 text-sm font-mono">
@@ -77,7 +77,7 @@ export function CourseContentPreview({ courseData }: CourseContentPreviewProps) 
             {sections.map((section: any, idx: number) => {
               const isExpanded = expandedSections.has(idx)
               const sectionLessons = section.lessons || []
-              const sectionDuration = "TBD"
+              const sectionDuration = "Duración no especificada"
 
               return (
                 <div key={section.id || idx} className="border border-slate-700 rounded-lg overflow-hidden bg-slate-800/30">

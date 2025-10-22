@@ -226,7 +226,7 @@ export default function PrevistaPage() {
                 <div className="flex flex-wrap gap-4 mb-6">
                   <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
                     <Clock className="w-4 h-4 text-cyan-400" />
-                    <span className="text-slate-300 font-mono text-sm">{courseData.hours || "TBD"}</span>
+                    <span className="text-slate-300 font-mono text-sm">{courseData.hours || "-"} horas</span>
                   </div>
                   <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
                     <BookOpen className="w-4 h-4 text-green-400" />
@@ -409,12 +409,12 @@ export default function PrevistaPage() {
                     <div className="flex items-center gap-4 mb-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-cyan-400 rounded-full flex items-center justify-center">
                         <span className="text-black font-mono font-bold text-xl">
-                          {((courseData as any).sensei_name || "TBD").charAt(0)}
+                          {((courseData as any).sensei_name || "").charAt(0)}
                         </span>
                       </div>
                       <div>
                         <div className="text-slate-200 font-mono font-semibold text-lg">
-                          {(courseData as any).sensei_name || "Por definir"}
+                          {(courseData as any).sensei_name || ""}
                         </div>
                         <div className="text-slate-400 font-mono text-sm">Instructor Principal</div>
                       </div>

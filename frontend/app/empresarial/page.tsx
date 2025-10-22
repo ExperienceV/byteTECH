@@ -1,130 +1,114 @@
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
-import { Terminal, Code, Users, Zap, Heart, Coffee, Rocket } from "lucide-react"
+import { Code, Users, Zap, Heart, Rocket } from "lucide-react"
 
 export default function NosotrosPage() {
   return (
-    <div className="min-h-screen bg-dynamic-gradient">
+    <div className="min-h-screen bg-slate-950">
       <NormalHeader />
 
-      {/* Hero Section */}
-      <section className="bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-8">
-              <span className="text-cyan-400 text-sm font-mono">./empresa</span>
-            </div>
-
-            <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
-            Conoce a byte<span className="text-cyan-400">TECH</span>
+      <section className="bg-slate-950 border-b border-slate-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+          <div className="text-center max-w-3xl mx-auto">
+            <h1 className="font-mono font-bold leading-tight text-white text-4xl sm:text-5xl md:text-6xl mb-4">
+              Conoce a byte<span className="text-cyan-400">TECH</span>
             </h1>
-
           </div>
         </div>
       </section>
 
-      {/* Transición suave */}
-      <div className="section-transition-up"></div>
-
-      {/* ¿Quiénes Somos? Section */}
-      <section className="bg-slate-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/3 via-transparent to-blue-900/3" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Texto */}
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 sm:p-8">
+      <section className="bg-slate-900 border-b border-slate-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="mb-12">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center">
-                  <Users className="w-5 h-5 text-black" />
+                <div className="w-10 h-10 bg-green-500 rounded-md flex items-center justify-center">
+                  <Users className="w-6 h-6 text-slate-950" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono">¿Quiénes somos?</h2>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white font-mono">¿Quiénes somos?</h2>
               </div>
 
-              <div className="space-y-4 text-slate-300 leading-relaxed">
-                <p>
-                  Somos un equipo de <span className="text-cyan-400 font-mono">desarrolladores</span> y{" "}
-                  <span className="text-green-400 font-mono">educadores</span> apasionados por democratizar el acceso a
-                  la educación tecnológica de calidad.
-                </p>
-                <p>
-                  Creemos que el conocimiento debe ser accesible para todos, sin importar tu ubicación geográfica o
-                  situación económica. Por eso creamos byteTECH: una plataforma donde puedes aprender las tecnologías
-                  más demandadas del mercado.
-                </p>
-                <p>
-                  Nuestro enfoque combina la <span className="text-purple-400 font-mono">teoría sólida</span> con{" "}
-                  <span className="text-orange-400 font-mono">proyectos prácticos</span>, preparándote para los desafíos
-                  reales del desarrollo de software.
-                </p>
-              </div>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8">
+                <div className="space-y-6 text-slate-300 leading-relaxed text-lg">
+                  <p>
+                    Somos un equipo de <span className="text-cyan-400 font-mono">desarrolladores</span> y{" "}
+                    <span className="text-green-400 font-mono">educadores</span> apasionados por democratizar el acceso
+                    a la educación tecnológica de calidad.
+                  </p>
+                  <p>
+                    Creemos que el conocimiento debe ser accesible para todos, sin importar tu ubicación geográfica o
+                    situación económica. Por eso creamos byteTECH: una plataforma donde puedes aprender las tecnologías
+                    más demandadas del mercado.
+                  </p>
+                  <p>
+                    Nuestro enfoque combina la <span className="text-purple-400 font-mono">teoría sólida</span> con{" "}
+                    <span className="text-orange-400 font-mono">proyectos prácticos</span>, preparándote para los
+                    desafíos reales del desarrollo de software.
+                  </p>
+                </div>
 
-              <div className="mt-6 flex flex-wrap gap-3">
-                <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-2 rounded-lg">
-                  <Heart className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-mono text-slate-300">Pasión por enseñar</span>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-2 rounded-lg">
-                  <Code className="w-4 h-4 text-cyan-400" />
-                  <span className="text-sm font-mono text-slate-300">Experiencia real</span>
-                </div>
-                <div className="flex items-center gap-2 bg-slate-800/50 px-3 py-2 rounded-lg">
-                  <Coffee className="w-4 h-4 text-yellow-400" />
-                  <span className="text-sm font-mono text-slate-300">Mucho café</span>
+                <div className="mt-8 pt-8 border-t border-slate-700 flex flex-wrap gap-4">
+                  <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-4 py-2 rounded-md">
+                    <Heart className="w-4 h-4 text-red-400" />
+                    <span className="text-sm font-mono text-slate-300">Pasión por enseñar</span>
+                  </div>
+                  <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 px-4 py-2 rounded-md">
+                    <Code className="w-4 h-4 text-cyan-400" />
+                    <span className="text-sm font-mono text-slate-300">Experiencia real</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Misión - Tarjeta corporativa */}
-            <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 sm:p-8">
+            <div>
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
-                  <Rocket className="w-5 h-5 text-black" />
+                <div className="w-10 h-10 bg-cyan-500 rounded-md flex items-center justify-center">
+                  <Rocket className="w-6 h-6 text-slate-950" />
                 </div>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono">Nuestra misión</h2>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white font-mono">Nuestra misión</h2>
               </div>
 
-              <p className="text-slate-300 leading-relaxed mb-6">
-                Impulsar el crecimiento profesional de cada estudiante mediante formación tecnológica accesible,
-                práctica y actualizada, conectándolos con oportunidades reales en la industria.
-              </p>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8">
+                <p className="text-slate-300 leading-relaxed text-lg mb-8">
+                  Impulsar el crecimiento profesional de cada estudiante mediante formación tecnológica accesible,
+                  práctica y actualizada, conectándolos con oportunidades reales en la industria.
+                </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-green-400"></div>
-                    <span className="text-white font-mono text-sm">Aprendizaje práctico</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-green-400"></div>
+                      <span className="text-white font-mono font-semibold">Aprendizaje práctico</span>
+                    </div>
+                    <p className="text-slate-400">
+                      Cursos orientados a proyectos reales para construir un portafolio sólido.
+                    </p>
                   </div>
-                  <p className="text-slate-400 text-sm">
-                    Cursos orientados a proyectos reales para construir un portafolio sólido.
-                  </p>
-                </div>
-                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
-                    <span className="text-white font-mono text-sm">Acompañamiento humano</span>
+                  <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-cyan-400"></div>
+                      <span className="text-white font-mono font-semibold">Acompañamiento humano</span>
+                    </div>
+                    <p className="text-slate-400">
+                      Comunidad y mentores que guían cada paso del proceso de aprendizaje.
+                    </p>
                   </div>
-                  <p className="text-slate-400 text-sm">
-                    Comunidad y mentores que guían cada paso del proceso de aprendizaje.
-                  </p>
-                </div>
-                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-purple-400"></div>
-                    <span className="text-white font-mono text-sm">Contenido actualizado</span>
+                  <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-purple-400"></div>
+                      <span className="text-white font-mono font-semibold">Contenido actualizado</span>
+                    </div>
+                    <p className="text-slate-400">
+                      Planes de estudio alineados con las tecnologías y prácticas del mercado.
+                    </p>
                   </div>
-                  <p className="text-slate-400 text-sm">
-                    Planes de estudio alineados con las tecnologías y prácticas del mercado.
-                  </p>
-                </div>
-                <div className="bg-slate-800/40 border border-slate-800 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 rounded-full bg-orange-400"></div>
-                    <span className="text-white font-mono text-sm">Enfoque en empleabilidad</span>
+                  <div className="bg-slate-900 border border-slate-700 rounded-lg p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                      <span className="text-white font-mono font-semibold">Enfoque en empleabilidad</span>
+                    </div>
+                    <p className="text-slate-400">Habilidades demandadas y preparación para procesos de selección.</p>
                   </div>
-                  <p className="text-slate-400 text-sm">
-                    Habilidades demandadas y preparación para procesos de selección.
-                  </p>
                 </div>
               </div>
             </div>
@@ -132,76 +116,63 @@ export default function NosotrosPage() {
         </div>
       </section>
 
-      {/* Transición suave */}
-      <div className="section-transition-down"></div>
-
-      {/* Lo que hacemos Section */}
-      <section className="bg-slate-950 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/5 via-transparent to-purple-900/5" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 mb-8 justify-center">
-              <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-black" />
+      <section className="bg-slate-950 border-b border-slate-800">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-3 mb-12">
+              <div className="w-10 h-10 bg-cyan-500 rounded-md flex items-center justify-center">
+                <Rocket className="w-6 h-6 text-slate-950" />
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono text-center">Lo que hacemos</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold text-white font-mono">Lo que hacemos</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* Cursos Especializados */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-cyan-400/50 transition-all">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
-                  <Code className="w-6 h-6 text-white" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 hover:border-cyan-400/50 transition-colors">
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-md flex items-center justify-center mb-6">
+                  <Code className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3 font-mono">Cursos Especializados</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4 font-mono">Cursos Especializados</h3>
+                <p className="text-slate-400 leading-relaxed">
                   Desarrollamos contenido actualizado en las tecnologías más demandadas: React, Python, Node.js, y más.
                 </p>
               </div>
 
-              {/* Proyectos Reales */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-green-400/50 transition-all">
-                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center mb-4">
-                  <Zap className="w-6 h-6 text-white" />
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 hover:border-green-400/50 transition-colors">
+                <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-teal-600 rounded-md flex items-center justify-center mb-6">
+                  <Zap className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3 font-mono">Proyectos Reales</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4 font-mono">Proyectos Reales</h3>
+                <p className="text-slate-400 leading-relaxed">
                   Cada curso incluye proyectos que simulas situaciones reales de desarrollo, preparándote para el
                   mercado laboral.
                 </p>
               </div>
 
-              {/* Comunidad Activa */}
-              <div className="bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 hover:border-purple-400/50 transition-all md:col-span-2 lg:col-span-1">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-white" />
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 hover:border-purple-400/50 transition-colors">
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-md flex items-center justify-center mb-6">
+                  <Users className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3 font-mono">Comunidad Activa</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4 font-mono">Comunidad Activa</h3>
+                <p className="text-slate-400 leading-relaxed">
                   Únete a nuestra comunidad de desarrolladores donde puedes hacer preguntas, compartir proyectos y
                   crecer juntos.
                 </p>
               </div>
             </div>
 
-            {/* Stats */}
-            <div className="mt-12 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-xl p-6 sm:p-8">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-cyan-400 font-mono">100+</div>
-                  <div className="text-slate-400 text-sm font-mono">Estudiantes</div>
+            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 sm:p-12">
+              <div className="grid grid-cols-3 gap-8">
+                <div className="text-center border-r border-slate-700 last:border-r-0">
+                  <div className="text-4xl sm:text-5xl font-bold text-cyan-400 font-mono mb-2">100+</div>
+                  <div className="text-slate-400 font-mono uppercase text-sm tracking-wider">Estudiantes</div>
                 </div>
-                {/*<div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-green-400 font-mono">50+</div>
-                  <div className="text-slate-400 text-sm font-mono">Cursos</div>
-                </div>*/}
-                <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-purple-400 font-mono">98%</div>
-                  <div className="text-slate-400 text-sm font-mono">Satisfacción</div>
+                <div className="text-center border-r border-slate-700 last:border-r-0">
+                  <div className="text-4xl sm:text-5xl font-bold text-purple-400 font-mono mb-2">98%</div>
+                  <div className="text-slate-400 font-mono uppercase text-sm tracking-wider">Satisfacción</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl sm:text-3xl font-bold text-orange-400 font-mono">24/7</div>
-                  <div className="text-slate-400 text-sm font-mono">Soporte</div>
+                  <div className="text-4xl sm:text-5xl font-bold text-orange-400 font-mono mb-2">24/7</div>
+                  <div className="text-slate-400 font-mono uppercase text-sm tracking-wider">Soporte</div>
                 </div>
               </div>
             </div>

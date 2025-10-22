@@ -2,6 +2,7 @@ pyproject.toml
 setup.py
 src/app/__init__.py
 src/app/dependencies.py
+src/app/logging_config.py
 src/app/main.py
 src/app/middlewares.py
 src/app/models.py

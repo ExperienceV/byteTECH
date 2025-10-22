@@ -940,7 +940,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
               <div className="p-6">
                 <h2 className="text-xl font-bold text-green-400 font-mono mb-4">CONTENIDO</h2>
-                <Accordion type="multiple" className="w-full">
+                <div className="h-[500px] overflow-y-auto custom-scrollbar pr-2">
+                  <Accordion type="multiple" className="w-full">
                   {sections.map((section, sidx) => {
                     const sectionCompleted = section.lessons.every(lesson => 
                       Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
@@ -1032,6 +1033,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                     )
                   })}
                 </Accordion>
+                </div>
               </div>
             </div>
 

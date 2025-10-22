@@ -12,3 +12,6 @@ backend/src/app/.env
 localhost.crt
 localhost.key
 backend/uploads
+backend/*
+ActualizacionDeEndpoints.md
+backend/src/app/parameters.py

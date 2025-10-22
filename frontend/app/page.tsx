@@ -99,12 +99,12 @@ export default function index() {
               <h1 className="font-sans font-bold leading-tight text-white text-4xl sm:text-5xl md:text-6xl mb-4">
                 ¡Desbloquea
                 <br />
-                <span className="gradient-text-blue">tu potencial</span>
+                <span className="gradient-text-blue">tu potencial!</span>
               </h1>
               <p className="text-slate-300 text-lg sm:text-xl mb-8 font-sans">
                 Conviértete en el desarrollador
                 <br />
-                que el mundo necesita!
+                que el mundo necesita
               </p>
 
               <Link href="/cursos">
