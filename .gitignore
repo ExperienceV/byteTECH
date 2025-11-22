@@ -15,3 +15,5 @@ backend/uploads
 backend/*
 ActualizacionDeEndpoints.md
 backend/src/app/parameters.py
+frontend/node_modules
+frontend/build

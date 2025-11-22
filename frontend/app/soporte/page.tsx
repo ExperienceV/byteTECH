@@ -3,19 +3,9 @@
 import { NormalHeader } from "@/components/normal-header"
 import { NormalFooter } from "@/components/normal-footer"
 import { SupportForm } from "@/components/support-form"
-import {
-  Terminal,
-  Mail,
-  MessageCircle,
-  HelpCircle,
-  Book,
-  Video,
-  Users,
-  Clock,
-} from "lucide-react"
+import { Mail, MessageCircle, HelpCircle, Book, Video, Users, Clock } from "lucide-react"
 
 export default function SoportePage() {
-
   return (
     <div className="min-h-screen bg-dynamic-gradient">
       <NormalHeader />
@@ -25,10 +15,12 @@ export default function SoportePage() {
         <div className="absolute inset-0 bg-gradient-to-br from-blue-900/5 via-transparent to-cyan-900/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="text-center mb-12">
-
             <h1 className="font-mono font-bold leading-tight text-white text-3xl sm:text-4xl md:text-6xl mb-6">
               Centro de <span className="text-cyan-400">Soporte</span>
             </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Para tus proyectos de software development y tus cursos de formación
+            </p>
           </div>
         </div>
       </section>
@@ -56,7 +48,7 @@ export default function SoportePage() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-3 font-mono">Preguntas Frecuentes</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                  Encuentra respuestas rápidas a las preguntas más comunes sobre nuestros cursos y plataforma.
+                  Encuentra respuestas a preguntas sobre nuestros servicios de software development y cursos.
                 </p>
               </div>
 
@@ -67,7 +59,7 @@ export default function SoportePage() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-3 font-mono">Documentación</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                  Guías detalladas, tutoriales y recursos para aprovechar al máximo tu experiencia de aprendizaje.
+                  Guías técnicas para proyectos de software y recursos de aprendizaje para nuestros cursos.
                 </p>
               </div>
 
@@ -78,7 +70,7 @@ export default function SoportePage() {
                 </div>
                 <h3 className="text-lg font-bold text-white mb-3 font-mono">Video Tutoriales</h3>
                 <p className="text-slate-400 text-sm leading-relaxed mb-4">
-                  Aprende visualmente con nuestros tutoriales en video sobre cómo usar la plataforma.
+                  Aprende visualmente sobre cómo usar nuestros servicios y plataforma de cursos.
                 </p>
               </div>
             </div>
@@ -101,7 +93,7 @@ export default function SoportePage() {
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-white font-mono">Contáctanos Directamente</h2>
               </div>
-              <p className="text-slate-400 font-mono">¿No encontraste lo que buscabas? ¡Escríbenos!</p>
+              <p className="text-slate-400 font-mono">¿Necesitas ayuda con un proyecto o curso? ¡Escríbenos!</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -127,18 +119,9 @@ export default function SoportePage() {
                       </div>
                     </div>
 
-                    {/*<div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                        <MessageCircle className="w-5 h-5 text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-mono text-sm">Telegram</div>
-                        <div className="text-slate-400 text-sm">@byteTECH_support</div>
-                      </div>
-                    </div>*/}
-                    <a 
-                      href="https://discord.gg/DCva2DSauG" 
-                      target="_blank" 
+                    <a
+                      href="https://discord.gg/DCva2DSauG"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 rounded-lg hover:bg-green-500/10 transition-colors"
                     >
@@ -150,15 +133,6 @@ export default function SoportePage() {
                         <div className="text-slate-400 text-sm">Discord byteTECH</div>
                       </div>
                     </a>
-                    <div className="flex items-center gap-3">
-                      {/*<div className="w-10 h-10 bg-gray-500/20 rounded-lg flex items-center justify-center">
-                        <Github className="w-5 h-5 text-gray-400" />
-                      </div>
-                      <div>
-                        <div className="text-white font-mono text-sm">GitHub Issues</div>
-                        <div className="text-slate-400 text-sm">github.com/byteTECH</div>
-                      </div>*/}
-                    </div>
                   </div>
                 </div>
 
@@ -196,8 +170,8 @@ export default function SoportePage() {
 
                   <div className="mt-4 p-3 bg-slate-800/50 rounded-lg">
                     <div className="text-xs font-mono text-slate-400">
-                      <span className="text-green-400">Nota:</span> Para problemas urgentes, usa Discord para
-                      respuesta más rápida
+                      <span className="text-green-400">Nota:</span> Para problemas urgentes, usa Discord para respuesta
+                      más rápida
                     </div>
                   </div>
                 </div>

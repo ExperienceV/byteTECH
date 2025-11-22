@@ -67,14 +67,6 @@ export const TechnologyCarousel: React.FC = () => {
 
   return (
     <div className="relative overflow-hidden bg-slate-900/50 backdrop-blur-sm border border-slate-800 rounded-xl p-8">
-      <div className="text-center mb-8">
-        <h3 className="text-2xl font-bold text-white font-mono mb-2">
-          {">"} Tecnologías que <span className="text-green-400">Dominarás</span>
-        </h3>
-        <p className="text-slate-400 font-mono text-sm">
-          Aprende las herramientas más demandadas del mercado
-        </p>
-      </div>
 
       {/* Scrolling Banner Container */}
       <div className="relative overflow-hidden h-32">

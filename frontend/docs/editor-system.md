@@ -24,7 +24,7 @@ El sistema de editor es una herramienta completa para que los profesores (sensei
 
 ### Estructura de Archivos
 
-```
+\`\`\`
 lib/
 ├── api.ts                    # Funciones del API para el editor
 ├── editor-config.ts          # Configuración del sistema
@@ -39,7 +39,7 @@ app/editor/[courseId]/
 ├── page.tsx                  # Página principal del editor
 docs/
 ├── editor-system.md          # Esta documentación
-```
+\`\`\`
 
 ## 🚀 Funcionalidades
 
@@ -108,17 +108,17 @@ docs/
 
 ### Tipos de Archivo Soportados
 
-```typescript
+\`\`\`typescript
 export const SUPPORTED_FILE_TYPES = {
   VIDEO: ['video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov'],
   DOCUMENT: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
   IMAGE: ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
 }
-```
+\`\`\`
 
 ### Límites de Tamaño
 
-```typescript
+\`\`\`typescript
 export const FILE_VALIDATION = {
   MAX_SIZE: {
     VIDEO: 500 * 1024 * 1024, // 500MB
@@ -127,11 +127,11 @@ export const FILE_VALIDATION = {
   },
   MIN_SIZE: 1024 // 1KB
 }
-```
+\`\`\`
 
 ### Validaciones de Formularios
 
-```typescript
+\`\`\`typescript
 export const FORM_VALIDATION = {
   COURSE: {
     NAME: { MIN_LENGTH: 3, MAX_LENGTH: 100 },
@@ -143,7 +143,7 @@ export const FORM_VALIDATION = {
     TITLE: { MIN_LENGTH: 3, MAX_LENGTH: 200 }
   }
 }
-```
+\`\`\`
 
 ## 📡 API Endpoints
 
@@ -223,7 +223,7 @@ export const FORM_VALIDATION = {
 
 ### Cálculos Automáticos
 
-```typescript
+\`\`\`typescript
 const getCourseStats = () => {
   return {
     sections: course.content?.length || 0,
@@ -232,7 +232,7 @@ const getCourseStats = () => {
     documents: totalDocuments
   };
 };
-```
+\`\`\`
 
 ## 🚀 Optimizaciones
 

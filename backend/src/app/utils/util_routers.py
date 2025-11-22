@@ -99,8 +99,10 @@ def resend_mail(message, issue, client_mail, username, is_restore_or_verify:bool
             build_message = f"El usuario @{username} con el correo {client_mail} envio un mensaje con el asunto {issue}.\n{ident_message}"
 
         # Prepare the email parameters
+        sender_mail = settings.SENDER_MAIL if settings.SENDER_MAIL else "noreply <emails.bytetechedu.com>"
+        print(f"Sender mail: {settings.SENDER_MAIL}")
         params: resend.Emails.SendParams = {
-            "from": settings.SENDER_MAIL,
+            "from": sender_mail,
             "to": client_mail if client_mail else settings.RECEIVER_MAIL ,
             "subject": issue,
             "text": build_message

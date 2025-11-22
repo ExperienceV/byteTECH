@@ -17,15 +17,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copiar dependencias
 COPY requirements.txt pyproject.toml setup.py ./
 
-# Declarar ARG para el token
-ARG GITHUB_TOKEN
-
 # Instalar pip y dependencias
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir "git+https://ExperienceV:${GITHUB_TOKEN}@github.com/ExperienceV/byteTECH.git@405f17aa7718bd98bfe3264e61e71e4a31207fde#egg=bttech_backend&subdirectory=backend" \
     && pip install --no-cache-dir -r requirements.txt
 
-# Copiar código fuente
+# Copiar código fuente directamente (evita el git clone)
 COPY src/ ./src/
 
 # Variables de entorno
@@ -37,12 +33,11 @@ ENV PYTHONPATH="/app/src:${PYTHONPATH}" \
 
 EXPOSE 8000
 
-# Crear usuario no root Y directorio con permisos
+# Crear usuario no root y carpeta uploads
 RUN useradd -ms /bin/bash appuser && \
     mkdir -p /app/uploads && \
     chown -R appuser:appuser /app
 
 USER appuser
 
-# Ejecutar Uvicorn con workers
 CMD ["bash", "-lc", "python -m uvicorn app.main:app --host ${UVICORN_HOST} --port ${UVICORN_PORT} --workers ${UVICORN_WORKERS} $( [ \"$UVICORN_RELOAD\" = \"true\" ] && echo --reload )"]

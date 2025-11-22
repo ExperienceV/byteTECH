@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # API STATUS
     VERSION: str = "v1.0.0"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
     # COOKIE SETTINGS
     # In development with HTTPS certificates, use SameSite=None and Secure=True
@@ -58,7 +58,7 @@ class Settings(BaseSettings):
 
     # SIGNATURE SETTINGS
     DEFAULT_PASSWORD: str = "如果我能说人和天使的语言，却没有爱，我就像一个响亮的锣或一个响亮的钹一样。 2我若有预言的恩赐，也明白一切神圣的秘密和一切知识，并且有全备的信，能够移山，却没有爱，我就算不得什么。"
-    SECRET_KEY: str = "secret-key"
+    SECRET_KEY: str = "却没有爱"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_DAYS: int = 1  # 1 Days
     REFRESH_TOKEN_EXPIRE_DAYS: int = 15  # 15 Days
@@ -76,12 +76,19 @@ class Settings(BaseSettings):
 
     # RESEND API
     RESEND_API_KEY: str 
-    SENDER_MAIL: str = "ByteTECH <noreply@a1devhub.tech>"
-    RECEIVER_MAIL: str = "couriers.dev@gmail.com"
+    SENDER_MAIL: str
+    RECEIVER_MAIL: str
 
     # PAYMENT SETTINGS
     STRIPE_API_KEY: str
     STRIPE_WEBHOOK: str
+
+    # Cloudflare R2
+    R2_ACCESS_KEY_ID: str
+    R2_SECRET_ACCESS_KEY: str
+    R2_BUCKET: str
+    R2_ENDPOINT: str
+
 
     model_config = ConfigDict(env_file=env_path)
 

@@ -6,7 +6,7 @@ El sistema de cursos de ByteTechEdu está diseñado con una arquitectura modular
 
 ### **Estructura de Archivos**
 
-```
+\`\`\`
 📁 Sistema de Cursos
 ├── 📄 lib/courses-config.ts          # Configuración centralizada
 ├── 🪝 hooks/use-courses.ts           # Hook personalizado principal
@@ -14,15 +14,15 @@ El sistema de cursos de ByteTechEdu está diseñado con una arquitectura modular
 ├── 🔍 components/courses-filters.tsx # Sistema de filtros y búsqueda
 ├── 📱 app/cursos/page.tsx            # Página principal del catálogo
 └── 📚 docs/courses-system.md         # Esta documentación
-```
+\`\`\`
 
 ### **Flujo de Datos**
 
-```
+\`\`\`
 Usuario → Componentes UI → Hook useCourses → API Backend → Base de Datos
    ↑                                                              ↓
    ←────────────── Estado React ←── Respuesta API ←───────────────
-```
+\`\`\`
 
 ## 🎯 **Funcionalidades Principales**
 
@@ -64,7 +64,7 @@ Usuario → Componentes UI → Hook useCourses → API Backend → Base de Datos
 El hook principal que centraliza toda la lógica del sistema de cursos.
 
 #### **Estado Gestionado**
-```typescript
+\`\`\`typescript
 interface CoursesState {
   availableCourses: CourseData[];      // Cursos disponibles
   myCourses: CourseData[];            // Mis cursos
@@ -85,7 +85,7 @@ interface CoursesState {
   selectedCategory: string | null;    // Categoría seleccionada
   userType: 'student' | 'sensei' | 'guest'; // Tipo de usuario
 }
-```
+\`\`\`
 
 #### **Funciones Principales**
 - `loadAvailableCourses()`: Carga el catálogo público
@@ -102,7 +102,7 @@ interface CoursesState {
 Tarjeta reutilizable para mostrar información de cursos.
 
 #### **Props**
-```typescript
+\`\`\`typescript
 interface CourseCardProps {
   course: CourseData;                    // Datos del curso
   userType?: 'student' | 'sensei' | 'guest'; // Tipo de usuario
@@ -113,7 +113,7 @@ interface CourseCardProps {
   onPurchaseCourse?: (courseId: number) => void; // Callback comprar
   className?: string;                    // Clases CSS adicionales
 }
-```
+\`\`\`
 
 #### **Características**
 - **Imagen adaptativa**: Soporte para miniaturas con fallback
@@ -136,7 +136,7 @@ Sistema completo de filtros y búsqueda.
 - **Limpieza de filtros**: Botón para resetear todos los filtros
 
 #### **Tipos de Filtros**
-```typescript
+\`\`\`typescript
 interface CourseFilters {
   priceRange: { min: number; max: number } | null;    // Rango de precio
   durationRange: { min: number; max: number } | null; // Rango de duración
@@ -145,7 +145,7 @@ interface CourseFilters {
   isFree: boolean | null;                             // Solo cursos gratis
   hasProgress: boolean | null;                        // Con progreso guardado
 }
-```
+\`\`\`
 
 ### **4. Página `CursosPage`**
 
@@ -166,7 +166,7 @@ Página principal que integra todos los componentes.
 Configuración centralizada para todo el sistema de cursos.
 
 #### **Estados de Cursos**
-```typescript
+\`\`\`typescript
 export const COURSE_STATES = {
   AVAILABLE: 'available',      // Disponible para compra
   PURCHASED: 'purchased',      // Comprado por el usuario
@@ -175,10 +175,10 @@ export const COURSE_STATES = {
   DRAFT: 'draft',              // Borrador (senseis)
   PUBLISHED: 'published'       // Publicado (senseis)
 } as const;
-```
+\`\`\`
 
 #### **Configuración de Filtros**
-```typescript
+\`\`\`typescript
 export const FILTER_CONFIG = {
   PRICE_RANGES: [
     { label: 'Gratis', min: 0, max: 0 },
@@ -200,10 +200,10 @@ export const FILTER_CONFIG = {
     { label: 'Experto', value: 'expert' }
   ]
 } as const;
-```
+\`\`\`
 
 #### **Configuración de UI**
-```typescript
+\`\`\`typescript
 export const UI_CONFIG = {
   ANIMATIONS: {
     CARD_HOVER_DURATION: 200,    // Duración de hover
@@ -221,40 +221,40 @@ export const UI_CONFIG = {
     MIN_CARD_HEIGHT: 320        // Altura mínima de tarjetas
   }
 } as const;
-```
+\`\`\`
 
 ## 🔌 **Integración con Backend**
 
 ### **Endpoints Utilizados**
 
 #### **Cursos Disponibles**
-```typescript
+\`\`\`typescript
 GET /api/courses/mtd_courses
 // Obtiene todos los cursos disponibles con información del sensei
-```
+\`\`\`
 
 #### **Mis Cursos**
-```typescript
+\`\`\`typescript
 GET /api/courses/my_courses
 // Obtiene los cursos del usuario (comprados o creados)
-```
+\`\`\`
 
 #### **Contenido del Curso**
-```typescript
+\`\`\`typescript
 GET /api/courses/course_content?course_id={id}
 // Obtiene el contenido completo de un curso específico
-```
+\`\`\`
 
 #### **Marcar Progreso**
-```typescript
+\`\`\`typescript
 POST /api/courses/mark_progress
 // Marca una lección como completada
-```
+\`\`\`
 
 ### **Estructura de Respuestas**
 
 #### **Curso Básico**
-```typescript
+\`\`\`typescript
 interface CourseData {
   id: number;
   name: string;
@@ -272,10 +272,10 @@ interface CourseData {
   created_at?: string;
   updated_at?: string;
 }
-```
+\`\`\`
 
 #### **Contenido Completo del Curso**
-```typescript
+\`\`\`typescript
 interface CourseContent {
   id: number;
   sensei_id: number;
@@ -299,7 +299,7 @@ interface CourseContent {
     };
   };
 }
-```
+\`\`\`
 
 ## 🎨 **Sistema de Diseño**
 

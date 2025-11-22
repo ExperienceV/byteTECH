@@ -2,7 +2,9 @@ from fastapi import APIRouter, Response, Request, HTTPException
 from fastapi.responses import StreamingResponse
 from pathlib import Path
 import re
+import io
 import magic
+from app.utils import storage
 
 
 media_router = APIRouter(tags=["media"], prefix="/media")
@@ -25,29 +27,29 @@ async def options_get_file(request: Request):
     return response
 
 
-def _iter_file(path: Path, start: int, end: int, chunk_size: int = 1024 * 1024):
-    with path.open("rb") as f:
-        f.seek(start)
-        remaining = end - start + 1
-        while remaining > 0:
-            read_size = min(chunk_size, remaining)
-            data = f.read(read_size)
-            if not data:
-                break
-            yield data
-            remaining -= len(data)
+def _iter_bytes(content: bytes, start: int, end: int, chunk_size: int = 1024 * 1024):
+    """Iterate over a byte string respecting start/end (inclusive)."""
+    total = end - start + 1
+    stream = io.BytesIO(content[start:end + 1])
+    sent = 0
+    while sent < total:
+        chunk = stream.read(min(chunk_size, total - sent))
+        if not chunk:
+            break
+        sent += len(chunk)
+        yield chunk
 
 
 @media_router.get("/get_file")
 @media_router.head("/get_file", include_in_schema=False)
 async def get_files_gd(file_id: str, request: Request):
-    # Local storage path (aligned with save_file default)
-    file_path = Path("./uploads") / file_id
-    if not file_path.exists() or not file_path.is_file():
+    # Try to get file from storage (R2 or local)
+    result = storage.get_file_by_name(file_id)
+    if not result:
         raise HTTPException(status_code=404, detail="File not found")
 
-    file_size = file_path.stat().st_size
-    mime_type = magic.from_file(str(file_path), mime=True) or "application/octet-stream"
+    file_content, mime_type = result
+    file_size = len(file_content)
 
     range_header = request.headers.get("range") or request.headers.get("Range")
     headers = {
@@ -75,7 +77,7 @@ async def get_files_gd(file_id: str, request: Request):
         })
 
         response = StreamingResponse(
-            _iter_file(file_path, start, end),
+            _iter_bytes(file_content, start, end),
             status_code=206,
             media_type=mime_type,
             headers=headers,
@@ -84,7 +86,7 @@ async def get_files_gd(file_id: str, request: Request):
         # Full content
         headers["Content-Length"] = str(file_size)
         response = StreamingResponse(
-            file_path.open("rb"),
+            io.BytesIO(file_content),
             media_type=mime_type,
             headers=headers,
         )

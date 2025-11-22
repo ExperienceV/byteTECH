@@ -51,22 +51,22 @@ El sistema de perfil de ByteTechEdu es una solución completa para gestionar la 
 ## 🎯 Tipos de Usuario y Roles
 
 ### Roles Disponibles
-```typescript
+\`\`\`typescript
 USER_ROLES = {
   STUDENT: "Estudiante",
   SENSEI: "Sensei", 
   ADMIN: "Administrador"
 }
-```
+\`\`\`
 
 ### Estados de Verificación
-```typescript
+\`\`\`typescript
 VERIFICATION_STATUS = {
   PENDING: "Pendiente",
   VERIFIED: "Verificado",
   REJECTED: "Rechazado"
 }
-```
+\`\`\`
 
 ## 🔒 Sistema de Seguridad
 
@@ -80,18 +80,18 @@ VERIFICATION_STATUS = {
   - Al menos un carácter especial
 
 ### Configuración de Privacidad
-```typescript
+\`\`\`typescript
 PRIVACY_SETTINGS = {
   PROFILE_VISIBILITY: ["Público", "Amigos", "Privado"],
   EMAIL_VISIBILITY: ["Público", "Amigos", "Privado"],
   STATS_VISIBILITY: ["Público", "Amigos", "Privado"]
 }
-```
+\`\`\`
 
 ## 📊 Sistema de Logros y Rangos
 
 ### Rangos del Usuario
-```typescript
+\`\`\`typescript
 USER_RANKS = {
   BEGINNER: { name: "Principiante", min_points: 0, icon: "🌱" },
   INTERMEDIATE: { name: "Intermedio", min_points: 100, icon: "🚀" },
@@ -99,7 +99,7 @@ USER_RANKS = {
   EXPERT: { name: "Experto", min_points: 1000, icon: "👑" },
   MASTER: { name: "Maestro", min_points: 2500, icon: "🏆" }
 }
-```
+\`\`\`
 
 ### Logros Disponibles
 - **Primer Curso**: Completar el primer curso
@@ -124,7 +124,7 @@ USER_RANKS = {
 ### Para Desarrolladores
 
 #### Importar el hook de perfil
-```typescript
+\`\`\`typescript
 import { useProfile } from '@/hooks/use-profile';
 
 const MyComponent = () => {
@@ -140,10 +140,10 @@ const MyComponent = () => {
   
   // Usar las funciones según sea necesario
 };
-```
+\`\`\`
 
 #### Usar los componentes de formulario
-```typescript
+\`\`\`typescript
 import { ProfileForm } from '@/components/profile-form';
 import { PasswordForm } from '@/components/password-form';
 
@@ -156,10 +156,10 @@ const ProfilePage = () => {
     </div>
   );
 };
-```
+\`\`\`
 
 #### Llamar directamente a la API
-```typescript
+\`\`\`typescript
 import { 
   getUserProfile, 
   updateUserCredentials, 
@@ -176,7 +176,7 @@ const handleProfileUpdate = async (data: ProfileFormState) => {
     console.error('Error al actualizar perfil:', error);
   }
 };
-```
+\`\`\`
 
 ## 📱 Responsividad y UX
 

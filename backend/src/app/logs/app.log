@@ -30299,3 +30299,1260 @@ WHERE courses.sensei_id = %(sensei_id_1)s
 2025-10-22 20:48:41,493 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 188.5s ago] {'sensei_id_1': 4}
 2025-10-22 20:48:41,557 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
 2025-10-22 20:48:41,589 - app.database.config - DEBUG - receive_checkin:71 - Connection checked in: 133656413214080
+2025-10-26 11:41:20,925 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:41:20,926 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:41:23,754 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:41:23,754 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:41:24,332 - main - ERROR - initialize_database_with_retry:105 - Non-retryable database error: (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (3.139.14.59), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-10-26 11:41:24,333 - main - ERROR - <module>:118 - Failed to initialize database after all retries: (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (3.139.14.59), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-10-26 11:41:24,333 - main - WARNING - <module>:119 - ⚠️  SUPABASE SSL PROTECTION ACTIVE - Starting in degraded mode
+2025-10-26 11:41:24,333 - main - INFO - <module>:120 - 💡 App will start without DB initialization. Use /api/health/db/reset once Supabase recovers
+2025-10-26 11:41:24,333 - main - INFO - <module>:121 - 🕐 Expected recovery time: 15-30 minutes after stress test
+2025-10-26 11:41:24,334 - main - INFO - <module>:126 - Engine disposed - ready for later reconnection
+2025-10-26 11:42:13,664 - database - ERROR - log_db_error:92 - [CONNECTION_ERROR] (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) | Context: {'context': 'session_creation'}
+2025-10-26 11:43:06,655 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:43:06,655 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:43:08,503 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:43:08,504 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:43:09,092 - main - ERROR - initialize_database_with_retry:105 - Non-retryable database error: (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-10-26 11:43:09,093 - main - ERROR - <module>:118 - Failed to initialize database after all retries: (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2025-10-26 11:43:09,093 - main - WARNING - <module>:119 - ⚠️  SUPABASE SSL PROTECTION ACTIVE - Starting in degraded mode
+2025-10-26 11:43:09,093 - main - INFO - <module>:120 - 💡 App will start without DB initialization. Use /api/health/db/reset once Supabase recovers
+2025-10-26 11:43:09,093 - main - INFO - <module>:121 - 🕐 Expected recovery time: 15-30 minutes after stress test
+2025-10-26 11:43:09,094 - main - INFO - <module>:126 - Engine disposed - ready for later reconnection
+2025-10-26 11:43:13,153 - database - ERROR - log_db_error:92 - [CONNECTION_ERROR] (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) | Context: {'context': 'session_creation'}
+2025-10-26 11:46:31,900 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:46:31,921 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:46:32,256 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:46:32,256 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:46:32,563 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:46:32,564 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:46:32,972 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:46:32,972 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:46:32,973 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:46:32,973 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00016s] {}
+2025-10-26 11:46:33,382 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:46:33,587 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:46:33,997 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:46:33,997 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:46:33,999 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT courses.id AS courses_id, courses.sensei_id AS courses_sensei_id, courses.name AS courses_name, courses.description AS courses_description, courses.preludio AS courses_preludio, courses.requirements AS courses_requirements, courses.hours AS courses_hours, courses.miniature_id AS courses_miniature_id, courses.video_id AS courses_video_id, courses.price AS courses_price 
+FROM courses
+2025-10-26 11:46:33,999 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00017s] {}
+2025-10-26 11:46:34,408 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT count(lessons.id) AS count_1 
+FROM lessons 
+WHERE lessons.course_id = %(course_id_1)s
+2025-10-26 11:46:34,408 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00018s] {'course_id_1': 20}
+2025-10-26 11:46:34,613 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:46:34,614 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00070s] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:46:34,816 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
+2025-10-26 11:46:35,020 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:46:59,699 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:46:59,738 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:46:59,739 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:46:59,739 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 26.77s ago] {}
+2025-10-26 11:47:00,109 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:47:00,314 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:47:00,825 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:47:00,826 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:47:00,827 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT courses.id AS courses_id, courses.sensei_id AS courses_sensei_id, courses.name AS courses_name, courses.description AS courses_description, courses.preludio AS courses_preludio, courses.requirements AS courses_requirements, courses.hours AS courses_hours, courses.miniature_id AS courses_miniature_id, courses.video_id AS courses_video_id, courses.price AS courses_price 
+FROM courses 
+WHERE courses.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:00,827 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00020s] {'id_1': 20, 'param_1': 1}
+2025-10-26 11:47:01,235 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:01,236 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 26.62s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:01,441 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT sections.id AS sections_id, sections.course_id AS sections_course_id, sections.title AS sections_title 
+FROM sections 
+WHERE sections.course_id = %(course_id_1)s
+2025-10-26 11:47:01,441 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00024s] {'course_id_1': 20}
+2025-10-26 11:47:01,648 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons.id AS lessons_id, lessons.section_id AS lessons_section_id, lessons.course_id AS lessons_course_id, lessons.title AS lessons_title, lessons.file_id AS lessons_file_id, lessons.mime_type AS lessons_mime_type, lessons.time_validator AS lessons_time_validator 
+FROM lessons 
+WHERE lessons.section_id = %(section_id_1)s
+2025-10-26 11:47:01,648 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00035s] {'section_id_1': 38}
+2025-10-26 11:47:01,858 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:01,858 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00023s] {'lesson_id_1': 47}
+2025-10-26 11:47:02,054 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:02,055 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.1969s ago] {'lesson_id_1': 48}
+2025-10-26 11:47:02,260 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:02,260 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.65s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:02,464 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:02,464 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.85s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:02,510 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352951417648
+2025-10-26 11:47:02,512 - app.database.session - ERROR - get_db_session:162 - Database session error: Can't reconnect until invalid transaction is rolled back.  Please rollback() fully before proceeding (Background on this error at: https://sqlalche.me/e/20/8s2b)
+2025-10-26 11:47:27,859 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:47:27,860 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:47:27,860 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:47:27,860 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 54.89s ago] {}
+2025-10-26 11:47:28,270 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:47:28,398 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:47:28,781 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:47:28,781 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:47:28,782 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT courses.id AS courses_id, courses.sensei_id AS courses_sensei_id, courses.name AS courses_name, courses.description AS courses_description, courses.preludio AS courses_preludio, courses.requirements AS courses_requirements, courses.hours AS courses_hours, courses.miniature_id AS courses_miniature_id, courses.video_id AS courses_video_id, courses.price AS courses_price 
+FROM courses 
+WHERE courses.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:28,782 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.96s ago] {'id_1': 20, 'param_1': 1}
+2025-10-26 11:47:29,191 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:29,191 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 54.58s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:29,396 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT sections.id AS sections_id, sections.course_id AS sections_course_id, sections.title AS sections_title 
+FROM sections 
+WHERE sections.course_id = %(course_id_1)s
+2025-10-26 11:47:29,397 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.96s ago] {'course_id_1': 20}
+2025-10-26 11:47:29,601 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons.id AS lessons_id, lessons.section_id AS lessons_section_id, lessons.course_id AS lessons_course_id, lessons.title AS lessons_title, lessons.file_id AS lessons_file_id, lessons.mime_type AS lessons_mime_type, lessons.time_validator AS lessons_time_validator 
+FROM lessons 
+WHERE lessons.section_id = %(section_id_1)s
+2025-10-26 11:47:29,601 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.95s ago] {'section_id_1': 38}
+2025-10-26 11:47:29,806 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:29,807 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 27.95s ago] {'lesson_id_1': 47}
+2025-10-26 11:47:30,011 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:30,011 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 28.15s ago] {'lesson_id_1': 48}
+2025-10-26 11:47:30,216 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:30,216 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 55.6s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:30,420 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:30,420 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 55.81s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:30,515 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:30,515 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 55.9s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:30,625 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:30,625 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 56.01s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:30,829 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:30,830 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 56.22s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:31,036 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:47:31,036 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 56.42s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:47:31,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:31,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 29.38s ago] {'lesson_id_1': 49}
+2025-10-26 11:47:31,444 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:47:31,445 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 29.59s ago] {'lesson_id_1': 50}
+2025-10-26 11:47:31,649 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT preview_files.id, preview_files.course_id, preview_files.file_id 
+FROM preview_files 
+WHERE preview_files.course_id = %(course_id_1)s
+2025-10-26 11:47:31,649 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 29.14s ago] {'course_id_1': 20}
+2025-10-26 11:47:31,853 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
+2025-10-26 11:47:32,061 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:49:56,946 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[42:61]
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[63:91]
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[95:97]
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[141:160]
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[162:189]
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,947 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[193:195]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[239:258]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[260:283]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[287:312]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[356:375]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[377:449]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[451:463]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[465:474]
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,948 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:49:56,949 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[478:16384]
+2025-10-26 11:49:56,949 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:49152]
+2025-10-26 11:49:56,950 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:131072]
+2025-10-26 11:49:56,950 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:116736]
+2025-10-26 11:49:56,951 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:116736]
+2025-10-26 11:49:56,951 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:256000]
+2025-10-26 11:49:56,952 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:211915]
+2025-10-26 11:49:56,952 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:232501]
+2025-10-26 11:49:56,953 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:233472]
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:216379]
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[216423:216442]
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[216444:216476]
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[216480:216481]
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:49:56,954 - python_multipart.multipart - DEBUG - callback:628 - Calling on_end with no data
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:628 - Calling on_field_start with no data
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:625 - Calling on_field_name with data[0:5]
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:625 - Calling on_field_data with data[6:33]
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:628 - Calling on_field_end with no data
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:628 - Calling on_field_start with no data
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:625 - Calling on_field_name with data[34:42]
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:625 - Calling on_field_data with data[43:46]
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:628 - Calling on_field_end with no data
+2025-10-26 11:50:20,554 - python_multipart.multipart - DEBUG - callback:628 - Calling on_end with no data
+2025-10-26 11:50:20,921 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:50:20,922 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:50:20,922 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:50:20,923 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 227.9s ago] {}
+2025-10-26 11:50:21,327 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:50:21,548 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:50:21,941 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:50:21,941 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:50:21,942 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.email = %(email_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:50:21,942 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00023s] {'email_1': 'experiencev.dev@gmail.com', 'param_1': 1}
+2025-10-26 11:50:22,657 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
+2025-10-26 11:50:22,862 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[42:61]
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[63:91]
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[95:97]
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[141:160]
+2025-10-26 11:50:32,423 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[162:189]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[193:195]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[239:258]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[260:283]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[287:312]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[356:375]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[377:449]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[451:463]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[465:474]
+2025-10-26 11:50:32,424 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,425 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:50:32,425 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[478:16384]
+2025-10-26 11:50:32,425 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:49152]
+2025-10-26 11:50:32,426 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:114688]
+2025-10-26 11:50:32,426 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:107520]
+2025-10-26 11:50:32,427 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:107520]
+2025-10-26 11:50:32,427 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:256000]
+2025-10-26 11:50:32,427 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:175051]
+2025-10-26 11:50:32,427 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:256000]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:173003]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:256000]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[0:69029]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_begin with no data
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_field with data[69073:69092]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_header_value with data[69094:69126]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_header_end with no data
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_headers_finished with no data
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:625 - Calling on_part_data with data[69130:69131]
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_part_end with no data
+2025-10-26 11:50:32,429 - python_multipart.multipart - DEBUG - callback:628 - Calling on_end with no data
+2025-10-26 11:50:32,795 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:50:32,795 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:50:32,796 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:50:32,796 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 239.8s ago] {}
+2025-10-26 11:50:33,205 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:50:33,410 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:50:33,616 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+2025-10-26 11:50:33,617 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-call.apigateway to before-call.api-gateway
+2025-10-26 11:50:33,618 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+2025-10-26 11:50:33,619 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+2025-10-26 11:50:33,619 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+2025-10-26 11:50:33,619 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+2025-10-26 11:50:33,620 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+2025-10-26 11:50:33,622 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+2025-10-26 11:50:33,622 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+2025-10-26 11:50:33,622 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+2025-10-26 11:50:33,622 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+2025-10-26 11:50:33,626 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/endpoints.json
+2025-10-26 11:50:33,643 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/sdk-default-configuration.json
+2025-10-26 11:50:33,643 - botocore.hooks - DEBUG - _emit:238 - Event choose-service-name: calling handler <function handle_service_name_alias at 0x7fa65f541c60>
+2025-10-26 11:50:33,671 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.json.gz
+2025-10-26 11:50:33,685 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.sdk-extras.json
+2025-10-26 11:50:33,693 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/endpoint-rule-set-1.json.gz
+2025-10-26 11:50:33,696 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/partitions.json
+2025-10-26 11:50:33,697 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_post at 0x7fa65f6e2340>
+2025-10-26 11:50:33,697 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function lazy_call.<locals>._handler at 0x7fa65f9c3f60>
+2025-10-26 11:50:33,714 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_url at 0x7fa65f6e20c0>
+2025-10-26 11:50:33,716 - botocore.endpoint - DEBUG - create_endpoint:414 - Setting s3 timeout as (60, 60)
+2025-10-26 11:50:33,717 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/_retry.json
+2025-10-26 11:50:33,718 - botocore.client - DEBUG - _register_legacy_retries:286 - Registering retry handlers for service: s3
+2025-10-26 11:50:33,718 - botocore.utils - DEBUG - register:1747 - Registering S3 region redirector handler
+2025-10-26 11:50:33,718 - botocore.utils - DEBUG - register:1695 - Registering S3Express Identity Resolver
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function validate_ascii_metadata at 0x7fa65f543ec0>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function sse_md5 at 0x7fa65f5431a0>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function convert_body_to_file_like_object at 0x7fa65f574900>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function validate_bucket_name at 0x7fa65f543100>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function remove_bucket_from_url_paths_from_model at 0x7fa65f575440>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <bound method S3RegionRedirectorv2.annotate_request_context of <botocore.utils.S3RegionRedirectorv2 object at 0x7fa65e8dd6a0>>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <bound method ClientCreator._inject_s3_input_parameters of <botocore.client.ClientCreator object at 0x7fa65f41cad0>>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function generate_idempotent_uuid at 0x7fa65f542f20>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.PutObject: calling handler <function _handle_request_validation_mode_member at 0x7fa65f575b20>
+2025-10-26 11:50:33,718 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <function customize_endpoint_resolver_builtins at 0x7fa65f575620>
+2025-10-26 11:50:33,719 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <bound method S3RegionRedirectorv2.redirect_from_cache of <botocore.utils.S3RegionRedirectorv2 object at 0x7fa65e8dd6a0>>
+2025-10-26 11:50:33,719 - botocore.regions - DEBUG - construct_endpoint:506 - Calling endpoint provider with parameters: {'Bucket': 'bytetech-test', 'Region': 'us-east-1', 'UseFIPS': False, 'UseDualStack': False, 'Endpoint': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com', 'ForcePathStyle': True, 'Accelerate': False, 'UseGlobalEndpoint': True, 'Key': 'af412ef6.mp4', 'DisableMultiRegionAccessPoints': False, 'UseArnRegion': True}
+2025-10-26 11:50:33,719 - botocore.regions - DEBUG - construct_endpoint:521 - Endpoint provider result: https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test
+2025-10-26 11:50:33,719 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:691 - Selecting from endpoint provider's list of auth schemes: "sigv4". User selected auth scheme is: "s3v4"
+2025-10-26 11:50:33,719 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:766 - Selected auth type "v4" as "s3v4" with signing context params: {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}
+2025-10-26 11:50:33,719 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.PutObject: calling handler <function add_expect_header at 0x7fa65f5434c0>
+2025-10-26 11:50:33,719 - botocore.handlers - DEBUG - add_expect_header:392 - Adding expect 100 continue header to request.
+2025-10-26 11:50:33,719 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.PutObject: calling handler <bound method S3ExpressIdentityResolver.apply_signing_cache_key of <botocore.utils.S3ExpressIdentityResolver object at 0x7fa65e8dd7f0>>
+2025-10-26 11:50:33,719 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.PutObject: calling handler <function add_recursion_detection_header at 0x7fa65f542a20>
+2025-10-26 11:50:33,719 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.PutObject: calling handler <function inject_api_version_header_if_needed at 0x7fa65f574a40>
+2025-10-26 11:50:33,719 - botocore.endpoint - DEBUG - make_request:114 - Making request for OperationModel(name=PutObject) with params: {'url_path': '/af412ef6.mp4', 'query_string': {}, 'method': 'PUT', 'headers': {'User-Agent': 'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/N,Z,D,e,b cfg/retry-mode#legacy Botocore/1.40.59', 'Expect': '100-continue', 'Transfer-Encoding': 'chunked', 'Content-Encoding': 'aws-chunked', 'X-Amz-Trailer': 'x-amz-checksum-crc32', 'X-Amz-Decoded-Content-Length': '1579869', 'x-amz-sdk-checksum-algorithm': 'CRC32'}, 'body': <botocore.httpchecksum.AwsChunkedWrapper object at 0x7fa65e8ddbe0>, 'auth_path': '/bytetech-test/af412ef6.mp4', 'url': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7fa65ea7f250>, 'has_streaming_input': True, 'auth_type': 's3v4', 'unsigned_payload': None, 'auth_options': ['aws.auth#sigv4'], 's3_redirect': {'redirected': False, 'bucket': 'bytetech-test', 'params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4', 'Body': <_io.BytesIO object at 0x7fa65fba5300>}}, 'input_params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4'}, 'signing': {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}, 'endpoint_properties': {'authSchemes': [{'disableDoubleEncoding': True, 'name': 'sigv4', 'signingName': 's3', 'signingRegion': 'us-east-1'}]}, 'checksum': {'request_algorithm_header': {'name': 'x-amz-sdk-checksum-algorithm', 'value': 'CRC32'}, 'request_algorithm': {'algorithm': 'crc32', 'in': 'trailer', 'name': 'x-amz-checksum-crc32'}}}}
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.PutObject: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7fa65ec674d0>>
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.PutObject: calling handler <function set_operation_specific_signer at 0x7fa65f542ca0>
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.PutObject: calling handler <function _set_auth_scheme_preference_signer at 0x7fa65f575c60>
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.PutObject: calling handler <function remove_arn_from_signing_path at 0x7fa65f575580>
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.PutObject: calling handler <function _set_extra_headers_for_unsigned_request at 0x7fa65f575bc0>
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.PutObject: calling handler <bound method S3ExpressIdentityResolver.resolve_s3express_identity of <botocore.utils.S3ExpressIdentityResolver object at 0x7fa65e8dd7f0>>
+2025-10-26 11:50:33,720 - botocore.auth - DEBUG - add_auth:429 - Calculating signature using v4 auth.
+2025-10-26 11:50:33,720 - botocore.auth - DEBUG - add_auth:430 - CanonicalRequest:
+PUT
+/bytetech-test/af412ef6.mp4
+
+content-encoding:aws-chunked
+host:c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com
+x-amz-content-sha256:STREAMING-UNSIGNED-PAYLOAD-TRAILER
+x-amz-date:20251026T165033Z
+x-amz-decoded-content-length:1579869
+x-amz-sdk-checksum-algorithm:CRC32
+x-amz-trailer:x-amz-checksum-crc32
+
+content-encoding;host;x-amz-content-sha256;x-amz-date;x-amz-decoded-content-length;x-amz-sdk-checksum-algorithm;x-amz-trailer
+STREAMING-UNSIGNED-PAYLOAD-TRAILER
+2025-10-26 11:50:33,720 - botocore.auth - DEBUG - add_auth:432 - StringToSign:
+AWS4-HMAC-SHA256
+20251026T165033Z
+20251026/us-east-1/s3/aws4_request
+76ff247f2d1d5fe4429cc1a03826d3ade66aac1e9589c0993b1dfd0abf25ce77
+2025-10-26 11:50:33,720 - botocore.auth - DEBUG - add_auth:434 - Signature:
+d851ab014d2fa38ff39b8125bd9d5bcb6d22adbadc3c6b9f81aec533c95f82c1
+2025-10-26 11:50:33,720 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.PutObject: calling handler <bound method UserAgentString.rebuild_and_replace_user_agent_handler of <botocore.useragent.UserAgentString object at 0x7fa65e8f4050>>
+2025-10-26 11:50:33,721 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.PutObject: calling handler <function add_retry_headers at 0x7fa65f5753a0>
+2025-10-26 11:50:33,721 - botocore.endpoint - DEBUG - _do_get_response:263 - Sending http request: <AWSPreparedRequest stream_output=False, method=PUT, url=https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4, headers={'User-Agent': b'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/N,Z,D,e,U,b cfg/retry-mode#legacy Botocore/1.40.59', 'Expect': b'100-continue', 'Transfer-Encoding': b'chunked', 'Content-Encoding': b'aws-chunked', 'X-Amz-Trailer': b'x-amz-checksum-crc32', 'X-Amz-Decoded-Content-Length': b'1579869', 'x-amz-sdk-checksum-algorithm': b'CRC32', 'X-Amz-Date': b'20251026T165033Z', 'X-Amz-Content-SHA256': b'STREAMING-UNSIGNED-PAYLOAD-TRAILER', 'Authorization': b'AWS4-HMAC-SHA256 Credential=6044dc580b31e4db00cfbadfbdb162d1/20251026/us-east-1/s3/aws4_request, SignedHeaders=content-encoding;host;x-amz-content-sha256;x-amz-date;x-amz-decoded-content-length;x-amz-sdk-checksum-algorithm;x-amz-trailer, Signature=d851ab014d2fa38ff39b8125bd9d5bcb6d22adbadc3c6b9f81aec533c95f82c1', 'amz-sdk-invocation-id': b'8972cd6e-3081-4b73-9f33-f07c81d12b36', 'amz-sdk-request': b'attempt=1'}>
+2025-10-26 11:50:33,722 - botocore.httpsession - DEBUG - get_cert_path:98 - Certificate path: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/certifi/cacert.pem
+2025-10-26 11:50:33,722 - urllib3.connectionpool - DEBUG - _new_conn:1049 - Starting new HTTPS connection (1): c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443
+2025-10-26 11:50:33,823 - botocore.awsrequest - DEBUG - _send_output:127 - Waiting for 100 Continue response.
+2025-10-26 11:50:33,828 - botocore.awsrequest - DEBUG - _handle_expect_response:173 - 100 Continue response seen, now sending request body.
+2025-10-26 11:50:34,662 - urllib3.connectionpool - DEBUG - _make_request:544 - https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443 "PUT /bytetech-test/af412ef6.mp4 HTTP/1.1" 200 0
+2025-10-26 11:50:34,662 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.PutObject: calling handler <function _handle_200_error at 0x7fa65f575940>
+2025-10-26 11:50:34,662 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.PutObject: calling handler <function handle_expires_header at 0x7fa65f575760>
+2025-10-26 11:50:34,662 - botocore.parsers - DEBUG - parse:255 - Response headers: {'Date': 'Sun, 26 Oct 2025 16:50:34 GMT', 'Content-Type': 'text/plain;charset=UTF-8', 'Content-Length': '0', 'Connection': 'keep-alive', 'ETag': '"867268a1450092af45a813d43a791105"', 'x-amz-checksum-crc32': 'I87baQ==', 'x-amz-version-id': '7e65de923773d839dc552e4bd7e2db7b', 'Vary': 'Accept-Encoding', 'Server': 'cloudflare', 'CF-RAY': '994b741169bc7efb-GYE'}
+2025-10-26 11:50:34,662 - botocore.parsers - DEBUG - parse:256 - Response body:
+b''
+2025-10-26 11:50:34,663 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.PutObject: calling handler <function _update_status_code at 0x7fa65f575a80>
+2025-10-26 11:50:34,663 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.PutObject: calling handler <botocore.retryhandler.RetryHandler object at 0x7fa65e8dd550>
+2025-10-26 11:50:34,663 - botocore.retryhandler - DEBUG - __call__:211 - No retry needed.
+2025-10-26 11:50:34,663 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.PutObject: calling handler <bound method S3RegionRedirectorv2.redirect_from_error of <botocore.utils.S3RegionRedirectorv2 object at 0x7fa65e8dd6a0>>
+2025-10-26 11:50:37,506 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:50:37,506 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:50:37,508 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - INSERT INTO lessons (section_id, course_id, title, file_id, mime_type, time_validator) VALUES (%(section_id)s, %(course_id)s, %(title)s, %(file_id)s, %(mime_type)s, %(time_validator)s) RETURNING lessons.id
+2025-10-26 11:50:37,509 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00040s] {'section_id': 38, 'course_id': 20, 'title': 'Cloudflare R2 Upload Test', 'file_id': 'af412ef6.mp4', 'mime_type': 'video/mp4', 'time_validator': 0}
+2025-10-26 11:50:37,916 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:50:38,120 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:50:38,530 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:50:38,530 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:50:38,531 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons.id, lessons.section_id, lessons.course_id, lessons.title, lessons.file_id, lessons.mime_type, lessons.time_validator 
+FROM lessons 
+WHERE lessons.id = %(pk_1)s
+2025-10-26 11:50:38,531 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00019s] {'pk_1': 51}
+2025-10-26 11:50:38,738 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
+2025-10-26 11:50:38,838 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:51:16,214 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:51:16,214 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:51:16,214 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT 1
+2025-10-26 11:51:16,214 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 283.2s ago] {}
+2025-10-26 11:51:16,623 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:51:16,828 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:51:17,238 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:51:17,238 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:51:17,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT courses.id AS courses_id, courses.sensei_id AS courses_sensei_id, courses.name AS courses_name, courses.description AS courses_description, courses.preludio AS courses_preludio, courses.requirements AS courses_requirements, courses.hours AS courses_hours, courses.miniature_id AS courses_miniature_id, courses.video_id AS courses_video_id, courses.price AS courses_price 
+FROM courses 
+WHERE courses.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:17,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 256.4s ago] {'id_1': 20, 'param_1': 1}
+2025-10-26 11:51:17,647 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:17,648 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 283s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:17,852 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT count(lessons.id) AS count_1 
+FROM lessons 
+WHERE lessons.course_id = %(course_id_1)s
+2025-10-26 11:51:17,852 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 283.4s ago] {'course_id_1': 20}
+2025-10-26 11:51:18,058 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT count(lessons_complete.id) AS count_1 
+FROM lessons_complete JOIN lessons ON lessons_complete.lesson_id = lessons.id 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons.course_id = %(course_id_1)s
+2025-10-26 11:51:18,059 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00044s] {'user_id_1': 35, 'course_id_1': 20}
+2025-10-26 11:51:18,262 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT sections.id AS sections_id, sections.course_id AS sections_course_id, sections.title AS sections_title 
+FROM sections 
+WHERE sections.course_id = %(course_id_1)s
+2025-10-26 11:51:18,262 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 256.8s ago] {'course_id_1': 20}
+2025-10-26 11:51:18,471 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons.id AS lessons_id, lessons.section_id AS lessons_section_id, lessons.course_id AS lessons_course_id, lessons.title AS lessons_title, lessons.file_id AS lessons_file_id, lessons.mime_type AS lessons_mime_type, lessons.time_validator AS lessons_time_validator 
+FROM lessons 
+WHERE lessons.section_id = %(section_id_1)s
+2025-10-26 11:51:18,471 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 256.8s ago] {'section_id_1': 38}
+2025-10-26 11:51:18,673 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons_complete.id AS lessons_complete_id, lessons_complete.user_id AS lessons_complete_user_id, lessons_complete.lesson_id AS lessons_complete_lesson_id 
+FROM lessons_complete 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons_complete.lesson_id = %(lesson_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:18,673 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00053s] {'user_id_1': 35, 'lesson_id_1': 47, 'param_1': 1}
+2025-10-26 11:51:18,878 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id AS lesson_mark_time_id, lesson_mark_time.lesson_id AS lesson_mark_time_lesson_id, lesson_mark_time.user_id AS lesson_mark_time_user_id, lesson_mark_time.mark_time AS lesson_mark_time_mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.lesson_id = %(lesson_id_1)s AND lesson_mark_time.user_id = %(user_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:18,878 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00027s] {'lesson_id_1': 47, 'user_id_1': 35, 'param_1': 1}
+2025-10-26 11:51:19,081 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons_complete.id AS lessons_complete_id, lessons_complete.user_id AS lessons_complete_user_id, lessons_complete.lesson_id AS lessons_complete_lesson_id 
+FROM lessons_complete 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons_complete.lesson_id = %(lesson_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:19,081 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4081s ago] {'user_id_1': 35, 'lesson_id_1': 48, 'param_1': 1}
+2025-10-26 11:51:19,290 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id AS lesson_mark_time_id, lesson_mark_time.lesson_id AS lesson_mark_time_lesson_id, lesson_mark_time.user_id AS lesson_mark_time_user_id, lesson_mark_time.mark_time AS lesson_mark_time_mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.lesson_id = %(lesson_id_1)s AND lesson_mark_time.user_id = %(user_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:19,290 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.412s ago] {'lesson_id_1': 48, 'user_id_1': 35, 'param_1': 1}
+2025-10-26 11:51:19,493 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons_complete.id AS lessons_complete_id, lessons_complete.user_id AS lessons_complete_user_id, lessons_complete.lesson_id AS lessons_complete_lesson_id 
+FROM lessons_complete 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons_complete.lesson_id = %(lesson_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:19,493 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8201s ago] {'user_id_1': 35, 'lesson_id_1': 49, 'param_1': 1}
+2025-10-26 11:51:19,694 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id AS lesson_mark_time_id, lesson_mark_time.lesson_id AS lesson_mark_time_lesson_id, lesson_mark_time.user_id AS lesson_mark_time_user_id, lesson_mark_time.mark_time AS lesson_mark_time_mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.lesson_id = %(lesson_id_1)s AND lesson_mark_time.user_id = %(user_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:19,694 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8165s ago] {'lesson_id_1': 49, 'user_id_1': 35, 'param_1': 1}
+2025-10-26 11:51:19,887 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons_complete.id AS lessons_complete_id, lessons_complete.user_id AS lessons_complete_user_id, lessons_complete.lesson_id AS lessons_complete_lesson_id 
+FROM lessons_complete 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons_complete.lesson_id = %(lesson_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:19,887 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.215s ago] {'user_id_1': 35, 'lesson_id_1': 50, 'param_1': 1}
+2025-10-26 11:51:20,003 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id AS lesson_mark_time_id, lesson_mark_time.lesson_id AS lesson_mark_time_lesson_id, lesson_mark_time.user_id AS lesson_mark_time_user_id, lesson_mark_time.mark_time AS lesson_mark_time_mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.lesson_id = %(lesson_id_1)s AND lesson_mark_time.user_id = %(user_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:20,003 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.125s ago] {'lesson_id_1': 50, 'user_id_1': 35, 'param_1': 1}
+2025-10-26 11:51:20,208 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons_complete.id AS lessons_complete_id, lessons_complete.user_id AS lessons_complete_user_id, lessons_complete.lesson_id AS lessons_complete_lesson_id 
+FROM lessons_complete 
+WHERE lessons_complete.user_id = %(user_id_1)s AND lessons_complete.lesson_id = %(lesson_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:20,208 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.535s ago] {'user_id_1': 35, 'lesson_id_1': 51, 'param_1': 1}
+2025-10-26 11:51:20,413 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id AS lesson_mark_time_id, lesson_mark_time.lesson_id AS lesson_mark_time_lesson_id, lesson_mark_time.user_id AS lesson_mark_time_user_id, lesson_mark_time.mark_time AS lesson_mark_time_mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.lesson_id = %(lesson_id_1)s AND lesson_mark_time.user_id = %(user_id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:20,413 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.535s ago] {'lesson_id_1': 51, 'user_id_1': 35, 'param_1': 1}
+2025-10-26 11:51:20,618 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - INSERT INTO lesson_mark_time (lesson_id, user_id, mark_time) VALUES (%(lesson_id)s, %(user_id)s, %(mark_time)s) RETURNING lesson_mark_time.id
+2025-10-26 11:51:20,618 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00022s] {'lesson_id': 51, 'user_id': 35, 'mark_time': 0}
+2025-10-26 11:51:20,722 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:51:20,924 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:51:21,333 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140352660396032
+2025-10-26 11:51:21,334 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:51:21,334 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lesson_mark_time.id, lesson_mark_time.lesson_id, lesson_mark_time.user_id, lesson_mark_time.mark_time 
+FROM lesson_mark_time 
+WHERE lesson_mark_time.id = %(pk_1)s
+2025-10-26 11:51:21,335 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00016s] {'pk_1': 8}
+2025-10-26 11:51:21,744 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT lessons.id AS lessons_id, lessons.section_id AS lessons_section_id, lessons.course_id AS lessons_course_id, lessons.title AS lessons_title, lessons.file_id AS lessons_file_id, lessons.mime_type AS lessons_mime_type, lessons.time_validator AS lessons_time_validator 
+FROM lessons 
+WHERE lessons.id = %(pk_1)s
+2025-10-26 11:51:21,744 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00027s] {'pk_1': 51}
+2025-10-26 11:51:21,933 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:51:21,934 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 260.1s ago] {'lesson_id_1': 47}
+2025-10-26 11:51:22,036 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:51:22,037 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 260.2s ago] {'lesson_id_1': 48}
+2025-10-26 11:51:22,154 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,154 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 287.5s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,359 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,359 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 287.7s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,455 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,455 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 287.8s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,552 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,552 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 287.9s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,648 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,648 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 288s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,742 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT users.id AS users_id, users.username AS users_username, users.email AS users_email, users.password AS users_password, users.is_sensei AS users_is_sensei, users.is_verify AS users_is_verify 
+FROM users 
+WHERE users.id = %(id_1)s 
+ LIMIT %(param_1)s
+2025-10-26 11:51:22,742 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 288.1s ago] {'id_1': 35, 'param_1': 1}
+2025-10-26 11:51:22,839 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:51:22,839 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 261s ago] {'lesson_id_1': 49}
+2025-10-26 11:51:22,943 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:51:22,944 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 261.1s ago] {'lesson_id_1': 50}
+2025-10-26 11:51:23,041 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT threads.id AS threads_id, threads.lesson_id AS threads_lesson_id, threads.user_id AS threads_user_id, threads.topic AS threads_topic, threads.description AS threads_description 
+FROM threads 
+WHERE threads.lesson_id = %(lesson_id_1)s
+2025-10-26 11:51:23,041 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 261.2s ago] {'lesson_id_1': 51}
+2025-10-26 11:51:23,136 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT preview_files.id, preview_files.course_id, preview_files.file_id 
+FROM preview_files 
+WHERE preview_files.course_id = %(course_id_1)s
+2025-10-26 11:51:23,137 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 260.6s ago] {'course_id_1': 20}
+2025-10-26 11:51:23,232 - sqlalchemy.engine.Engine - INFO - _connection_rollback_impl:2701 - ROLLBACK
+2025-10-26 11:51:23,325 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140352660396032
+2025-10-26 11:53:11,499 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:53:11,501 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:53:13,593 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:53:13,593 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:53:15,716 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:53:15,716 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:16,128 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:53:16,128 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:16,534 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:53:16,534 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:16,944 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 139974538091136
+2025-10-26 11:53:16,944 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:53:16,948 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:16,948 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00018s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:17,354 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:17,354 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4064s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:17,559 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:17,559 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.6118s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:17,764 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:17,764 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8165s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:17,968 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:17,968 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.02s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:18,173 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:18,173 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.226s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:18,378 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:18,379 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.431s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:18,582 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:18,583 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.635s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:18,787 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:18,787 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.84s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:18,992 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:18,993 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.045s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:19,197 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:19,197 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.249s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:19,401 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:19,401 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.453s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:19,607 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:19,608 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.66s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:19,811 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:53:20,016 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 139974538091136
+2025-10-26 11:53:20,016 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:53:20,304 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:53:20,304 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:53:21,062 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:53:21,063 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:53:22,883 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:53:22,884 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:23,293 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:53:23,294 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:23,703 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:53:23,703 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:53:24,111 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 139993876945536
+2025-10-26 11:53:24,111 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:53:24,115 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:24,115 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00019s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:24,522 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:24,522 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4074s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:24,727 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:24,727 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.612s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:24,931 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:24,931 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8165s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:25,136 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:25,137 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.022s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:25,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:25,239 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.124s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:25,443 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:25,443 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.329s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:25,649 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:25,649 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.534s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:25,853 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:25,853 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.738s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:26,059 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:26,059 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.944s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:26,261 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:26,262 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.147s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:26,468 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:26,468 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.353s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:26,672 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:53:26,672 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 2.557s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:53:26,865 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:53:27,082 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 139993876945536
+2025-10-26 11:53:27,082 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:54:10,892 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:54:10,893 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:54:12,544 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:54:12,544 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:54:13,490 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:54:13,490 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:13,692 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:54:13,692 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:13,897 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:54:13,897 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:14,101 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 139962253974464
+2025-10-26 11:54:14,102 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:54:14,104 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,104 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00022s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,307 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,308 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.2039s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,408 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,408 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.3046s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,511 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,511 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4077s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,613 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,613 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.509s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,715 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,715 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.6114s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,818 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,818 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.714s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:14,918 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:14,918 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8145s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,021 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:15,021 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.9177s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,125 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:15,125 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.022s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,226 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:15,226 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.122s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,326 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:15,327 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.223s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,429 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:15,429 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.325s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:15,529 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:54:15,632 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 139962253974464
+2025-10-26 11:54:15,632 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:54:23,378 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:54:23,379 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:54:24,939 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:54:24,940 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:54:26,090 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:54:26,091 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:26,299 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:54:26,300 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:26,498 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:54:26,498 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:26,696 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140598245776000
+2025-10-26 11:54:26,697 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:54:26,700 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:26,700 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00035s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:26,904 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:26,904 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.204s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,005 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,005 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.3056s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,108 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,108 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4081s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,213 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,213 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.5129s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,311 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,311 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.6115s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,410 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,411 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.7106s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,513 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,513 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.813s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,613 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,613 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.9129s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,712 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,713 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.013s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,814 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,814 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.115s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:27,916 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:27,916 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.216s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:28,017 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:28,017 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.317s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:28,117 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:54:28,216 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140598245776000
+2025-10-26 11:54:28,216 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:54:34,167 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+2025-10-26 11:54:34,169 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-call.apigateway to before-call.api-gateway
+2025-10-26 11:54:34,170 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+2025-10-26 11:54:34,171 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+2025-10-26 11:54:34,171 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+2025-10-26 11:54:34,171 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+2025-10-26 11:54:34,171 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+2025-10-26 11:54:34,172 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+2025-10-26 11:54:34,172 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+2025-10-26 11:54:34,173 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+2025-10-26 11:54:34,173 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+2025-10-26 11:54:34,175 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/endpoints.json
+2025-10-26 11:54:34,192 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/sdk-default-configuration.json
+2025-10-26 11:54:34,193 - botocore.hooks - DEBUG - _emit:238 - Event choose-service-name: calling handler <function handle_service_name_alias at 0x7fdf8e4376a0>
+2025-10-26 11:54:34,205 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.json.gz
+2025-10-26 11:54:34,210 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.sdk-extras.json
+2025-10-26 11:54:34,218 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/endpoint-rule-set-1.json.gz
+2025-10-26 11:54:34,223 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/partitions.json
+2025-10-26 11:54:34,224 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_post at 0x7fdf8e5bfd80>
+2025-10-26 11:54:34,224 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function lazy_call.<locals>._handler at 0x7fdf948940e0>
+2025-10-26 11:54:34,243 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_url at 0x7fdf8e5bfb00>
+2025-10-26 11:54:34,244 - botocore.endpoint - DEBUG - create_endpoint:414 - Setting s3 timeout as (60, 60)
+2025-10-26 11:54:34,246 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/_retry.json
+2025-10-26 11:54:34,246 - botocore.client - DEBUG - _register_legacy_retries:286 - Registering retry handlers for service: s3
+2025-10-26 11:54:34,246 - botocore.utils - DEBUG - register:1747 - Registering S3 region redirector handler
+2025-10-26 11:54:34,246 - botocore.utils - DEBUG - register:1695 - Registering S3Express Identity Resolver
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function sse_md5 at 0x7fdf8e440c20>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function validate_bucket_name at 0x7fdf8e440b80>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function remove_bucket_from_url_paths_from_model at 0x7fdf8e442e80>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.annotate_request_context of <botocore.utils.S3RegionRedirectorv2 object at 0x7fdf8dbfda90>>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method ClientCreator._inject_s3_input_parameters of <botocore.client.ClientCreator object at 0x7fdf8e308c20>>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function generate_idempotent_uuid at 0x7fdf8e4409a0>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function _handle_request_validation_mode_member at 0x7fdf8e443560>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <function customize_endpoint_resolver_builtins at 0x7fdf8e443060>
+2025-10-26 11:54:34,247 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <bound method S3RegionRedirectorv2.redirect_from_cache of <botocore.utils.S3RegionRedirectorv2 object at 0x7fdf8dbfda90>>
+2025-10-26 11:54:34,247 - botocore.regions - DEBUG - construct_endpoint:506 - Calling endpoint provider with parameters: {'Bucket': 'bytetech-test', 'Region': 'us-east-1', 'UseFIPS': False, 'UseDualStack': False, 'Endpoint': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com', 'ForcePathStyle': True, 'Accelerate': False, 'UseGlobalEndpoint': True, 'Key': 'af412ef6.mp4', 'DisableMultiRegionAccessPoints': False, 'UseArnRegion': True}
+2025-10-26 11:54:34,248 - botocore.regions - DEBUG - construct_endpoint:521 - Endpoint provider result: https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test
+2025-10-26 11:54:34,248 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:691 - Selecting from endpoint provider's list of auth schemes: "sigv4". User selected auth scheme is: "s3v4"
+2025-10-26 11:54:34,248 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:766 - Selected auth type "v4" as "s3v4" with signing context params: {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}
+2025-10-26 11:54:34,248 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_expect_header at 0x7fdf8e440f40>
+2025-10-26 11:54:34,248 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.apply_signing_cache_key of <botocore.utils.S3ExpressIdentityResolver object at 0x7fdf8dbfdbe0>>
+2025-10-26 11:54:34,248 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_recursion_detection_header at 0x7fdf8e4404a0>
+2025-10-26 11:54:34,248 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function inject_api_version_header_if_needed at 0x7fdf8e442480>
+2025-10-26 11:54:34,248 - botocore.endpoint - DEBUG - make_request:114 - Making request for OperationModel(name=GetObject) with params: {'url_path': '/af412ef6.mp4', 'query_string': {}, 'method': 'GET', 'headers': {'x-amz-checksum-mode': 'ENABLED', 'User-Agent': 'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/N,e,b,D,Z cfg/retry-mode#legacy Botocore/1.40.59'}, 'body': b'', 'auth_path': '/bytetech-test/af412ef6.mp4', 'url': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7fdf8d90f390>, 'has_streaming_input': False, 'auth_type': 's3v4', 'unsigned_payload': None, 'auth_options': ['aws.auth#sigv4'], 's3_redirect': {'redirected': False, 'bucket': 'bytetech-test', 'params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4', 'ChecksumMode': 'ENABLED'}}, 'input_params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4'}, 'signing': {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}, 'endpoint_properties': {'authSchemes': [{'disableDoubleEncoding': True, 'name': 'sigv4', 'signingName': 's3', 'signingRegion': 'us-east-1'}]}, 'checksum': {'response_algorithms': ['crc32', 'sha1', 'sha256']}}}
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7fdf8db2b8c0>>
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function set_operation_specific_signer at 0x7fdf8e440720>
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function _set_auth_scheme_preference_signer at 0x7fdf8e4436a0>
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function remove_arn_from_signing_path at 0x7fdf8e442fc0>
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function _set_extra_headers_for_unsigned_request at 0x7fdf8e443600>
+2025-10-26 11:54:34,249 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.resolve_s3express_identity of <botocore.utils.S3ExpressIdentityResolver object at 0x7fdf8dbfdbe0>>
+2025-10-26 11:54:34,250 - botocore.auth - DEBUG - add_auth:429 - Calculating signature using v4 auth.
+2025-10-26 11:54:34,250 - botocore.auth - DEBUG - add_auth:430 - CanonicalRequest:
+GET
+/bytetech-test/af412ef6.mp4
+
+host:c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com
+x-amz-checksum-mode:ENABLED
+x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+x-amz-date:20251026T165434Z
+
+host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2025-10-26 11:54:34,250 - botocore.auth - DEBUG - add_auth:432 - StringToSign:
+AWS4-HMAC-SHA256
+20251026T165434Z
+20251026/us-east-1/s3/aws4_request
+899de86a508a90964e3ce32ad63bc31ca33be58753ee1fc4987f3a6070d20372
+2025-10-26 11:54:34,250 - botocore.auth - DEBUG - add_auth:434 - Signature:
+9f55460a494cfaf5c03d2630628870a779a9b833a84a0771aa2cfab07d8ac527
+2025-10-26 11:54:34,250 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method UserAgentString.rebuild_and_replace_user_agent_handler of <botocore.useragent.UserAgentString object at 0x7fdf8d7b0190>>
+2025-10-26 11:54:34,250 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <function add_retry_headers at 0x7fdf8e442de0>
+2025-10-26 11:54:34,251 - botocore.endpoint - DEBUG - _do_get_response:263 - Sending http request: <AWSPreparedRequest stream_output=True, method=GET, url=https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4, headers={'x-amz-checksum-mode': b'ENABLED', 'User-Agent': b'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/N,e,b,D,Z cfg/retry-mode#legacy Botocore/1.40.59', 'X-Amz-Date': b'20251026T165434Z', 'X-Amz-Content-SHA256': b'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'Authorization': b'AWS4-HMAC-SHA256 Credential=6044dc580b31e4db00cfbadfbdb162d1/20251026/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date, Signature=9f55460a494cfaf5c03d2630628870a779a9b833a84a0771aa2cfab07d8ac527', 'amz-sdk-invocation-id': b'3a8fbc15-936b-49f0-868d-88f881561e68', 'amz-sdk-request': b'attempt=1'}>
+2025-10-26 11:54:34,251 - botocore.httpsession - DEBUG - get_cert_path:98 - Certificate path: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/certifi/cacert.pem
+2025-10-26 11:54:34,251 - urllib3.connectionpool - DEBUG - _new_conn:1049 - Starting new HTTPS connection (1): c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443
+2025-10-26 11:54:34,735 - urllib3.connectionpool - DEBUG - _make_request:544 - https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443 "GET /bytetech-test/af412ef6.mp4 HTTP/1.1" 200 1579869
+2025-10-26 11:54:34,735 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function _handle_200_error at 0x7fdf8e443380>
+2025-10-26 11:54:34,735 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function handle_expires_header at 0x7fdf8e4431a0>
+2025-10-26 11:54:34,735 - botocore.parsers - DEBUG - parse:255 - Response headers: {'Date': 'Sun, 26 Oct 2025 16:54:34 GMT', 'Content-Type': 'video/mp4', 'Content-Length': '1579869', 'Connection': 'keep-alive', 'Accept-Ranges': 'bytes', 'ETag': '"867268a1450092af45a813d43a791105"', 'Last-Modified': 'Sun, 26 Oct 2025 16:50:34 GMT', 'x-amz-checksum-crc32': 'I87baQ==', 'Vary': 'Accept-Encoding', 'Server': 'cloudflare', 'CF-RAY': '994b79f0492c7b8d-GYE'}
+2025-10-26 11:54:34,735 - botocore.parsers - DEBUG - parse:256 - Response body:
+<botocore.httpchecksum.StreamingChecksumBody object at 0x7fdf8dbccf70>
+2025-10-26 11:54:34,782 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <function _update_status_code at 0x7fdf8e4434c0>
+2025-10-26 11:54:34,782 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <botocore.retryhandler.RetryHandler object at 0x7fdf8dbfd940>
+2025-10-26 11:54:34,783 - botocore.retryhandler - DEBUG - __call__:211 - No retry needed.
+2025-10-26 11:54:34,783 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.redirect_from_error of <botocore.utils.S3RegionRedirectorv2 object at 0x7fdf8dbfda90>>
+2025-10-26 11:54:35,765 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:54:35,766 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:54:36,551 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:54:36,551 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:54:37,567 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:54:37,567 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:37,819 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:54:37,819 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:38,066 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:54:38,067 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:38,315 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 140128439671104
+2025-10-26 11:54:38,316 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:54:38,319 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,319 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00030s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:38,519 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,519 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.2001s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:38,622 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,622 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.3027s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:38,723 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,724 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4047s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:38,829 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,829 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.5098s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:38,931 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:38,931 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.6118s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,035 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,035 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.716s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,137 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,137 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8176s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,237 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,238 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.9185s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,338 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,338 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.019s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,440 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,441 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.121s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,549 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,549 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.23s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,651 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:39,651 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.332s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:39,755 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:54:39,855 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 140128439671104
+2025-10-26 11:54:39,855 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:54:39,976 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+2025-10-26 11:54:39,977 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-call.apigateway to before-call.api-gateway
+2025-10-26 11:54:39,978 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+2025-10-26 11:54:39,978 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+2025-10-26 11:54:39,978 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+2025-10-26 11:54:39,978 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+2025-10-26 11:54:39,979 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+2025-10-26 11:54:39,980 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+2025-10-26 11:54:39,980 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+2025-10-26 11:54:39,980 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+2025-10-26 11:54:39,980 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+2025-10-26 11:54:39,984 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/endpoints.json
+2025-10-26 11:54:39,997 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/sdk-default-configuration.json
+2025-10-26 11:54:39,998 - botocore.hooks - DEBUG - _emit:238 - Event choose-service-name: calling handler <function handle_service_name_alias at 0x7f722ba33600>
+2025-10-26 11:54:40,008 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.json.gz
+2025-10-26 11:54:40,017 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.sdk-extras.json
+2025-10-26 11:54:40,025 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/endpoint-rule-set-1.json.gz
+2025-10-26 11:54:40,027 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/partitions.json
+2025-10-26 11:54:40,028 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_post at 0x7f722bbbfce0>
+2025-10-26 11:54:40,028 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function lazy_call.<locals>._handler at 0x7f7231e8c040>
+2025-10-26 11:54:40,037 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_url at 0x7f722bbbfa60>
+2025-10-26 11:54:40,039 - botocore.endpoint - DEBUG - create_endpoint:414 - Setting s3 timeout as (60, 60)
+2025-10-26 11:54:40,041 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/_retry.json
+2025-10-26 11:54:40,041 - botocore.client - DEBUG - _register_legacy_retries:286 - Registering retry handlers for service: s3
+2025-10-26 11:54:40,041 - botocore.utils - DEBUG - register:1747 - Registering S3 region redirector handler
+2025-10-26 11:54:40,041 - botocore.utils - DEBUG - register:1695 - Registering S3Express Identity Resolver
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function sse_md5 at 0x7f722ba3cb80>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function validate_bucket_name at 0x7f722ba3cae0>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function remove_bucket_from_url_paths_from_model at 0x7f722ba3ede0>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.annotate_request_context of <botocore.utils.S3RegionRedirectorv2 object at 0x7f722b1f9a90>>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method ClientCreator._inject_s3_input_parameters of <botocore.client.ClientCreator object at 0x7f722b908c20>>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function generate_idempotent_uuid at 0x7f722ba3c900>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function _handle_request_validation_mode_member at 0x7f722ba3f4c0>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <function customize_endpoint_resolver_builtins at 0x7f722ba3efc0>
+2025-10-26 11:54:40,042 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <bound method S3RegionRedirectorv2.redirect_from_cache of <botocore.utils.S3RegionRedirectorv2 object at 0x7f722b1f9a90>>
+2025-10-26 11:54:40,042 - botocore.regions - DEBUG - construct_endpoint:506 - Calling endpoint provider with parameters: {'Bucket': 'bytetech-test', 'Region': 'us-east-1', 'UseFIPS': False, 'UseDualStack': False, 'Endpoint': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com', 'ForcePathStyle': True, 'Accelerate': False, 'UseGlobalEndpoint': True, 'Key': 'af412ef6.mp4', 'DisableMultiRegionAccessPoints': False, 'UseArnRegion': True}
+2025-10-26 11:54:40,042 - botocore.regions - DEBUG - construct_endpoint:521 - Endpoint provider result: https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test
+2025-10-26 11:54:40,042 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:691 - Selecting from endpoint provider's list of auth schemes: "sigv4". User selected auth scheme is: "s3v4"
+2025-10-26 11:54:40,042 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:766 - Selected auth type "v4" as "s3v4" with signing context params: {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_expect_header at 0x7f722ba3cea0>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.apply_signing_cache_key of <botocore.utils.S3ExpressIdentityResolver object at 0x7f722b1f9be0>>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_recursion_detection_header at 0x7f722ba3c400>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function inject_api_version_header_if_needed at 0x7f722ba3e3e0>
+2025-10-26 11:54:40,043 - botocore.endpoint - DEBUG - make_request:114 - Making request for OperationModel(name=GetObject) with params: {'url_path': '/af412ef6.mp4', 'query_string': {}, 'method': 'GET', 'headers': {'x-amz-checksum-mode': 'ENABLED', 'User-Agent': 'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/e,Z,b,D,N cfg/retry-mode#legacy Botocore/1.40.59'}, 'body': b'', 'auth_path': '/bytetech-test/af412ef6.mp4', 'url': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7f722af4f250>, 'has_streaming_input': False, 'auth_type': 's3v4', 'unsigned_payload': None, 'auth_options': ['aws.auth#sigv4'], 's3_redirect': {'redirected': False, 'bucket': 'bytetech-test', 'params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4', 'ChecksumMode': 'ENABLED'}}, 'input_params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4'}, 'signing': {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}, 'endpoint_properties': {'authSchemes': [{'disableDoubleEncoding': True, 'name': 'sigv4', 'signingName': 's3', 'signingRegion': 'us-east-1'}]}, 'checksum': {'response_algorithms': ['crc32', 'sha1', 'sha256']}}}
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f722b1278c0>>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function set_operation_specific_signer at 0x7f722ba3c680>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function _set_auth_scheme_preference_signer at 0x7f722ba3f600>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function remove_arn_from_signing_path at 0x7f722ba3ef20>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function _set_extra_headers_for_unsigned_request at 0x7f722ba3f560>
+2025-10-26 11:54:40,043 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.resolve_s3express_identity of <botocore.utils.S3ExpressIdentityResolver object at 0x7f722b1f9be0>>
+2025-10-26 11:54:40,043 - botocore.auth - DEBUG - add_auth:429 - Calculating signature using v4 auth.
+2025-10-26 11:54:40,043 - botocore.auth - DEBUG - add_auth:430 - CanonicalRequest:
+GET
+/bytetech-test/af412ef6.mp4
+
+host:c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com
+x-amz-checksum-mode:ENABLED
+x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+x-amz-date:20251026T165440Z
+
+host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2025-10-26 11:54:40,044 - botocore.auth - DEBUG - add_auth:432 - StringToSign:
+AWS4-HMAC-SHA256
+20251026T165440Z
+20251026/us-east-1/s3/aws4_request
+6c1ed47dddbe725eb9ae9895d3041af7dab1320e98eaa732bc52eaa99ba5a734
+2025-10-26 11:54:40,044 - botocore.auth - DEBUG - add_auth:434 - Signature:
+66a236bfa00fcf1295a86058e3f88c5b4ea6091595b9cdfe75f528c9ba5ce89b
+2025-10-26 11:54:40,044 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method UserAgentString.rebuild_and_replace_user_agent_handler of <botocore.useragent.UserAgentString object at 0x7f722adb4050>>
+2025-10-26 11:54:40,044 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <function add_retry_headers at 0x7f722ba3ed40>
+2025-10-26 11:54:40,044 - botocore.endpoint - DEBUG - _do_get_response:263 - Sending http request: <AWSPreparedRequest stream_output=True, method=GET, url=https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4, headers={'x-amz-checksum-mode': b'ENABLED', 'User-Agent': b'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/e,Z,b,D,N cfg/retry-mode#legacy Botocore/1.40.59', 'X-Amz-Date': b'20251026T165440Z', 'X-Amz-Content-SHA256': b'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'Authorization': b'AWS4-HMAC-SHA256 Credential=6044dc580b31e4db00cfbadfbdb162d1/20251026/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date, Signature=66a236bfa00fcf1295a86058e3f88c5b4ea6091595b9cdfe75f528c9ba5ce89b', 'amz-sdk-invocation-id': b'426956ff-79dd-40ae-b3f9-8df3c7bcefa2', 'amz-sdk-request': b'attempt=1'}>
+2025-10-26 11:54:40,044 - botocore.httpsession - DEBUG - get_cert_path:98 - Certificate path: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/certifi/cacert.pem
+2025-10-26 11:54:40,044 - urllib3.connectionpool - DEBUG - _new_conn:1049 - Starting new HTTPS connection (1): c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443
+2025-10-26 11:54:40,216 - urllib3.connectionpool - DEBUG - _make_request:544 - https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443 "GET /bytetech-test/af412ef6.mp4 HTTP/1.1" 200 1579869
+2025-10-26 11:54:40,216 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function _handle_200_error at 0x7f722ba3f2e0>
+2025-10-26 11:54:40,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function handle_expires_header at 0x7f722ba3f100>
+2025-10-26 11:54:40,217 - botocore.parsers - DEBUG - parse:255 - Response headers: {'Date': 'Sun, 26 Oct 2025 16:54:40 GMT', 'Content-Type': 'video/mp4', 'Content-Length': '1579869', 'Connection': 'keep-alive', 'Accept-Ranges': 'bytes', 'ETag': '"867268a1450092af45a813d43a791105"', 'Last-Modified': 'Sun, 26 Oct 2025 16:50:34 GMT', 'x-amz-checksum-crc32': 'I87baQ==', 'Vary': 'Accept-Encoding', 'Server': 'cloudflare', 'CF-RAY': '994b7a148ff17efb-GYE'}
+2025-10-26 11:54:40,217 - botocore.parsers - DEBUG - parse:256 - Response body:
+<botocore.httpchecksum.StreamingChecksumBody object at 0x7f7231e17dc0>
+2025-10-26 11:54:40,217 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <function _update_status_code at 0x7f722ba3f420>
+2025-10-26 11:54:40,217 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <botocore.retryhandler.RetryHandler object at 0x7f722b1f9940>
+2025-10-26 11:54:40,218 - botocore.retryhandler - DEBUG - __call__:211 - No retry needed.
+2025-10-26 11:54:40,218 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.redirect_from_error of <botocore.utils.S3RegionRedirectorv2 object at 0x7f722b1f9a90>>
+2025-10-26 11:54:47,319 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 11:54:47,319 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: True
+2025-10-26 11:54:48,821 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 11:54:48,821 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 11:54:49,712 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select pg_catalog.version()
+2025-10-26 11:54:49,712 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:49,904 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - select current_schema()
+2025-10-26 11:54:49,905 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:50,100 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - show standard_conforming_strings
+2025-10-26 11:54:50,100 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [raw sql] {}
+2025-10-26 11:54:50,294 - app.database.config - DEBUG - receive_checkout:64 - Connection checked out: 139744537647424
+2025-10-26 11:54:50,294 - sqlalchemy.engine.Engine - INFO - _connection_begin_impl:2698 - BEGIN (implicit)
+2025-10-26 11:54:50,297 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,297 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [generated in 0.00026s] {'table_name': 'users', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,491 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,491 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.1943s ago] {'table_name': 'codes_verify', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,588 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,589 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.2914s ago] {'table_name': 'tokens_reset', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,685 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,685 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.3879s ago] {'table_name': 'courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,784 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,784 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.4873s ago] {'table_name': 'sections', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,887 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,887 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.5899s ago] {'table_name': 'lessons', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:50,983 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:50,983 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.6862s ago] {'table_name': 'threads', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,080 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,081 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.7838s ago] {'table_name': 'messages', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,181 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,181 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.8841s ago] {'table_name': 'my_byd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,278 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,279 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 0.9818s ago] {'table_name': 'my_upldd_courses', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,379 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,379 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.082s ago] {'table_name': 'lessons_complete', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,477 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,477 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.18s ago] {'table_name': 'preview_files', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,575 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - SELECT pg_catalog.pg_class.relname 
+FROM pg_catalog.pg_class JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_class.relnamespace 
+WHERE pg_catalog.pg_class.relname = %(table_name)s AND pg_catalog.pg_class.relkind = ANY (ARRAY[%(param_1)s, %(param_2)s, %(param_3)s, %(param_4)s, %(param_5)s]) AND pg_catalog.pg_table_is_visible(pg_catalog.pg_class.oid) AND pg_catalog.pg_namespace.nspname != %(nspname_1)s
+2025-10-26 11:54:51,575 - sqlalchemy.engine.Engine - INFO - _execute_context:1842 - [cached since 1.278s ago] {'table_name': 'lesson_mark_time', 'param_1': 'r', 'param_2': 'p', 'param_3': 'f', 'param_4': 'v', 'param_5': 'm', 'nspname_1': 'pg_catalog'}
+2025-10-26 11:54:51,673 - sqlalchemy.engine.Engine - INFO - _connection_commit_impl:2704 - COMMIT
+2025-10-26 11:54:51,771 - app.database.config - DEBUG - receive_checkin:69 - Connection checked in: 139744537647424
+2025-10-26 11:54:51,771 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 11:55:03,140 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from creating-client-class.iot-data to creating-client-class.iot-data-plane
+2025-10-26 11:55:03,143 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-call.apigateway to before-call.api-gateway
+2025-10-26 11:55:03,143 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.machinelearning.Predict to request-created.machine-learning.Predict
+2025-10-26 11:55:03,144 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.autoscaling.CreateLaunchConfiguration to before-parameter-build.auto-scaling.CreateLaunchConfiguration
+2025-10-26 11:55:03,144 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.route53 to before-parameter-build.route-53
+2025-10-26 11:55:03,144 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from request-created.cloudsearchdomain.Search to request-created.cloudsearch-domain.Search
+2025-10-26 11:55:03,145 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.autoscaling.CreateLaunchConfiguration.complete-section to docs.*.auto-scaling.CreateLaunchConfiguration.complete-section
+2025-10-26 11:55:03,146 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.logs.CreateExportTask to before-parameter-build.cloudwatch-logs.CreateExportTask
+2025-10-26 11:55:03,146 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.logs.CreateExportTask.complete-section to docs.*.cloudwatch-logs.CreateExportTask.complete-section
+2025-10-26 11:55:03,146 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from before-parameter-build.cloudsearchdomain.Search to before-parameter-build.cloudsearch-domain.Search
+2025-10-26 11:55:03,146 - botocore.hooks - DEBUG - _alias_event_name:482 - Changing event name from docs.*.cloudsearchdomain.Search.complete-section to docs.*.cloudsearch-domain.Search.complete-section
+2025-10-26 11:55:03,148 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/endpoints.json
+2025-10-26 11:55:03,164 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/sdk-default-configuration.json
+2025-10-26 11:55:03,164 - botocore.hooks - DEBUG - _emit:238 - Event choose-service-name: calling handler <function handle_service_name_alias at 0x7f18ce01f600>
+2025-10-26 11:55:03,175 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.json.gz
+2025-10-26 11:55:03,182 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/service-2.sdk-extras.json
+2025-10-26 11:55:03,191 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/s3/2006-03-01/endpoint-rule-set-1.json.gz
+2025-10-26 11:55:03,195 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/partitions.json
+2025-10-26 11:55:03,196 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_post at 0x7f18ce1abce0>
+2025-10-26 11:55:03,196 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function lazy_call.<locals>._handler at 0x7f18cf90c040>
+2025-10-26 11:55:03,212 - botocore.hooks - DEBUG - _emit:238 - Event creating-client-class.s3: calling handler <function add_generate_presigned_url at 0x7f18ce1aba60>
+2025-10-26 11:55:03,214 - botocore.endpoint - DEBUG - create_endpoint:414 - Setting s3 timeout as (60, 60)
+2025-10-26 11:55:03,216 - botocore.loaders - DEBUG - _load_file:181 - Loading JSON file: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/botocore/data/_retry.json
+2025-10-26 11:55:03,217 - botocore.client - DEBUG - _register_legacy_retries:286 - Registering retry handlers for service: s3
+2025-10-26 11:55:03,217 - botocore.utils - DEBUG - register:1747 - Registering S3 region redirector handler
+2025-10-26 11:55:03,217 - botocore.utils - DEBUG - register:1695 - Registering S3Express Identity Resolver
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function sse_md5 at 0x7f18ce028b80>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function validate_bucket_name at 0x7f18ce028ae0>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function remove_bucket_from_url_paths_from_model at 0x7f18ce02ade0>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.annotate_request_context of <botocore.utils.S3RegionRedirectorv2 object at 0x7f18cd7e5a90>>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <bound method ClientCreator._inject_s3_input_parameters of <botocore.client.ClientCreator object at 0x7f18ce0f4c20>>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function generate_idempotent_uuid at 0x7f18ce028900>
+2025-10-26 11:55:03,217 - botocore.hooks - DEBUG - _emit:238 - Event before-parameter-build.s3.GetObject: calling handler <function _handle_request_validation_mode_member at 0x7f18ce02b4c0>
+2025-10-26 11:55:03,218 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <function customize_endpoint_resolver_builtins at 0x7f18ce02afc0>
+2025-10-26 11:55:03,218 - botocore.hooks - DEBUG - _emit:238 - Event before-endpoint-resolution.s3: calling handler <bound method S3RegionRedirectorv2.redirect_from_cache of <botocore.utils.S3RegionRedirectorv2 object at 0x7f18cd7e5a90>>
+2025-10-26 11:55:03,218 - botocore.regions - DEBUG - construct_endpoint:506 - Calling endpoint provider with parameters: {'Bucket': 'bytetech-test', 'Region': 'us-east-1', 'UseFIPS': False, 'UseDualStack': False, 'Endpoint': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com', 'ForcePathStyle': True, 'Accelerate': False, 'UseGlobalEndpoint': True, 'Key': 'af412ef6.mp4', 'DisableMultiRegionAccessPoints': False, 'UseArnRegion': True}
+2025-10-26 11:55:03,218 - botocore.regions - DEBUG - construct_endpoint:521 - Endpoint provider result: https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test
+2025-10-26 11:55:03,218 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:691 - Selecting from endpoint provider's list of auth schemes: "sigv4". User selected auth scheme is: "s3v4"
+2025-10-26 11:55:03,218 - botocore.regions - DEBUG - auth_schemes_to_signing_ctx:766 - Selected auth type "v4" as "s3v4" with signing context params: {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_expect_header at 0x7f18ce028ea0>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.apply_signing_cache_key of <botocore.utils.S3ExpressIdentityResolver object at 0x7f18cd7e5be0>>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function add_recursion_detection_header at 0x7f18ce028400>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-call.s3.GetObject: calling handler <function inject_api_version_header_if_needed at 0x7f18ce02a3e0>
+2025-10-26 11:55:03,219 - botocore.endpoint - DEBUG - make_request:114 - Making request for OperationModel(name=GetObject) with params: {'url_path': '/af412ef6.mp4', 'query_string': {}, 'method': 'GET', 'headers': {'x-amz-checksum-mode': 'ENABLED', 'User-Agent': 'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/D,e,b,N,Z cfg/retry-mode#legacy Botocore/1.40.59'}, 'body': b'', 'auth_path': '/bytetech-test/af412ef6.mp4', 'url': 'https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4', 'context': {'client_region': 'us-east-1', 'client_config': <botocore.config.Config object at 0x7f18cd53b250>, 'has_streaming_input': False, 'auth_type': 's3v4', 'unsigned_payload': None, 'auth_options': ['aws.auth#sigv4'], 's3_redirect': {'redirected': False, 'bucket': 'bytetech-test', 'params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4', 'ChecksumMode': 'ENABLED'}}, 'input_params': {'Bucket': 'bytetech-test', 'Key': 'af412ef6.mp4'}, 'signing': {'region': 'us-east-1', 'signing_name': 's3', 'disableDoubleEncoding': True}, 'endpoint_properties': {'authSchemes': [{'disableDoubleEncoding': True, 'name': 'sigv4', 'signingName': 's3', 'signingRegion': 'us-east-1'}]}, 'checksum': {'response_algorithms': ['crc32', 'sha1', 'sha256']}}}
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method RequestSigner.handler of <botocore.signers.RequestSigner object at 0x7f18cd7138c0>>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function set_operation_specific_signer at 0x7f18ce028680>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event choose-signer.s3.GetObject: calling handler <function _set_auth_scheme_preference_signer at 0x7f18ce02b600>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function remove_arn_from_signing_path at 0x7f18ce02af20>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <function _set_extra_headers_for_unsigned_request at 0x7f18ce02b560>
+2025-10-26 11:55:03,219 - botocore.hooks - DEBUG - _emit:238 - Event before-sign.s3.GetObject: calling handler <bound method S3ExpressIdentityResolver.resolve_s3express_identity of <botocore.utils.S3ExpressIdentityResolver object at 0x7f18cd7e5be0>>
+2025-10-26 11:55:03,219 - botocore.auth - DEBUG - add_auth:429 - Calculating signature using v4 auth.
+2025-10-26 11:55:03,219 - botocore.auth - DEBUG - add_auth:430 - CanonicalRequest:
+GET
+/bytetech-test/af412ef6.mp4
+
+host:c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com
+x-amz-checksum-mode:ENABLED
+x-amz-content-sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+x-amz-date:20251026T165503Z
+
+host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+2025-10-26 11:55:03,219 - botocore.auth - DEBUG - add_auth:432 - StringToSign:
+AWS4-HMAC-SHA256
+20251026T165503Z
+20251026/us-east-1/s3/aws4_request
+754d4975930f244df6d4042db89b20b80614f91f626e4d6de77f0fa0655579c4
+2025-10-26 11:55:03,219 - botocore.auth - DEBUG - add_auth:434 - Signature:
+87c1dbb3b556b5fbff7650f1bcaf7b9a4fbfb953976429f8ef04a0fe57430cfe
+2025-10-26 11:55:03,220 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <bound method UserAgentString.rebuild_and_replace_user_agent_handler of <botocore.useragent.UserAgentString object at 0x7f18cd7f8050>>
+2025-10-26 11:55:03,220 - botocore.hooks - DEBUG - _emit:238 - Event request-created.s3.GetObject: calling handler <function add_retry_headers at 0x7f18ce02ad40>
+2025-10-26 11:55:03,220 - botocore.endpoint - DEBUG - _do_get_response:263 - Sending http request: <AWSPreparedRequest stream_output=True, method=GET, url=https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com/bytetech-test/af412ef6.mp4, headers={'x-amz-checksum-mode': b'ENABLED', 'User-Agent': b'Boto3/1.40.59 md/Botocore#1.40.59 ua/2.1 os/linux#6.16.12-200.fc42.x86_64 md/arch#x86_64 lang/python#3.13.7 md/pyimpl#CPython m/D,e,b,N,Z cfg/retry-mode#legacy Botocore/1.40.59', 'X-Amz-Date': b'20251026T165503Z', 'X-Amz-Content-SHA256': b'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'Authorization': b'AWS4-HMAC-SHA256 Credential=6044dc580b31e4db00cfbadfbdb162d1/20251026/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-checksum-mode;x-amz-content-sha256;x-amz-date, Signature=87c1dbb3b556b5fbff7650f1bcaf7b9a4fbfb953976429f8ef04a0fe57430cfe', 'amz-sdk-invocation-id': b'41818fe8-d86d-4fbf-a3bc-ef6c0b623dd2', 'amz-sdk-request': b'attempt=1'}>
+2025-10-26 11:55:03,220 - botocore.httpsession - DEBUG - get_cert_path:98 - Certificate path: /home/experience/Documents/GitHub/byteTECH/.venv/lib64/python3.13/site-packages/certifi/cacert.pem
+2025-10-26 11:55:03,220 - urllib3.connectionpool - DEBUG - _new_conn:1049 - Starting new HTTPS connection (1): c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443
+2025-10-26 11:55:03,389 - urllib3.connectionpool - DEBUG - _make_request:544 - https://c60e4fbfb09a34e0703f4f75d30dac08.r2.cloudflarestorage.com:443 "GET /bytetech-test/af412ef6.mp4 HTTP/1.1" 200 1579869
+2025-10-26 11:55:03,389 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function _handle_200_error at 0x7f18ce02b2e0>
+2025-10-26 11:55:03,390 - botocore.hooks - DEBUG - _emit:238 - Event before-parse.s3.GetObject: calling handler <function handle_expires_header at 0x7f18ce02b100>
+2025-10-26 11:55:03,390 - botocore.parsers - DEBUG - parse:255 - Response headers: {'Date': 'Sun, 26 Oct 2025 16:55:03 GMT', 'Content-Type': 'video/mp4', 'Content-Length': '1579869', 'Connection': 'keep-alive', 'Accept-Ranges': 'bytes', 'ETag': '"867268a1450092af45a813d43a791105"', 'Last-Modified': 'Sun, 26 Oct 2025 16:50:34 GMT', 'x-amz-checksum-crc32': 'I87baQ==', 'Vary': 'Accept-Encoding', 'Server': 'cloudflare', 'CF-RAY': '994b7aa55b6375b9-GYE'}
+2025-10-26 11:55:03,390 - botocore.parsers - DEBUG - parse:256 - Response body:
+<botocore.httpchecksum.StreamingChecksumBody object at 0x7f18ce0a7970>
+2025-10-26 11:55:03,391 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <function _update_status_code at 0x7f18ce02b420>
+2025-10-26 11:55:03,391 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <botocore.retryhandler.RetryHandler object at 0x7f18cd7e5940>
+2025-10-26 11:55:03,391 - botocore.retryhandler - DEBUG - __call__:211 - No retry needed.
+2025-10-26 11:55:03,391 - botocore.hooks - DEBUG - _emit:238 - Event needs-retry.s3.GetObject: calling handler <bound method S3RegionRedirectorv2.redirect_from_error of <botocore.utils.S3RegionRedirectorv2 object at 0x7f18cd7e5a90>>
+2025-10-26 21:15:56,927 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:15:56,930 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:16:04,323 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:16:04,324 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:16:13,754 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 21:16:21,796 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:16:21,798 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:16:29,021 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:16:29,021 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:16:34,779 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 21:16:53,615 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:16:53,616 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:16:58,994 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:16:58,995 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:17:04,984 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 21:20:27,453 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:20:27,456 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:20:34,598 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:20:34,598 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:20:40,508 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 21:22:19,089 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:22:19,091 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:22:24,195 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:22:24,196 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:22:29,454 - main - INFO - initialize_database_with_retry:88 - Database initialization successful
+2025-10-26 21:23:58,698 - root - INFO - setup_logging:73 - Logging configuration initialized
+2025-10-26 21:23:58,701 - main - INFO - <module>:18 - ByteTech API starting - Version: v1.0.0, Debug: False
+2025-10-26 21:24:06,575 - main - INFO - <module>:115 - Starting database initialization with extended retry logic...
+2025-10-26 21:24:06,575 - main - INFO - initialize_database_with_retry:78 - Attempting database initialization (attempt 1/3)
+2025-10-26 21:24:12,592 - main - INFO - initialize_database_with_retry:88 - Database initialization successful

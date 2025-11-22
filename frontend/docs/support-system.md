@@ -29,7 +29,7 @@ El sistema de soporte de ByteTechEdu es una solución completa para manejar cons
 - **Selección rápida** de tipos de problemas predefinidos
 
 ### 2. Tipos de Problemas Soportados
-```typescript
+\`\`\`typescript
 SUPPORT_ISSUES = {
   TECHNICAL: "Problema Técnico",
   ACCOUNT: "Problema de Cuenta", 
@@ -39,17 +39,17 @@ SUPPORT_ISSUES = {
   BUG: "Reporte de Bug",
   OTHER: "Otro"
 }
-```
+\`\`\`
 
 ### 3. Sistema de Prioridades
-```typescript
+\`\`\`typescript
 SUPPORT_PRIORITIES = {
   LOW: "Baja",
   MEDIUM: "Media",
   HIGH: "Alta", 
   URGENT: "Urgente"
 }
-```
+\`\`\`
 
 ### 4. Validación de Formularios
 - **Nombre**: 2-100 caracteres
@@ -70,7 +70,7 @@ SUPPORT_PRIORITIES = {
 ### Para Desarrolladores
 
 #### Importar el hook de soporte
-```typescript
+\`\`\`typescript
 import { useSupport } from '@/hooks/use-support';
 
 const MyComponent = () => {
@@ -87,10 +87,10 @@ const MyComponent = () => {
   
   // Usar las funciones según sea necesario
 };
-```
+\`\`\`
 
 #### Usar el componente de formulario
-```typescript
+\`\`\`typescript
 import { SupportForm } from '@/components/support-form';
 
 const SupportPage = () => {
@@ -101,10 +101,10 @@ const SupportPage = () => {
     </div>
   );
 };
-```
+\`\`\`
 
 #### Llamar directamente a la API
-```typescript
+\`\`\`typescript
 import { sendSupportEmail } from '@/lib/api';
 
 const handleSupportRequest = async (data: SupportForm) => {
@@ -117,7 +117,7 @@ const handleSupportRequest = async (data: SupportForm) => {
     console.error('Error al enviar mensaje:', error);
   }
 };
-```
+\`\`\`
 
 ## 📧 Sistema de Email
 
@@ -167,16 +167,16 @@ El sistema utiliza **Resend API** para el envío de emails:
 ## 🧪 Testing y Desarrollo
 
 ### Funciones de Testing (Solo en Desarrollo)
-```typescript
+\`\`\`typescript
 // Probar conectividad con el backend
 const isConnected = await testConnection();
 
 // Limpiar cookies de sesión
 clearSessionCookies();
-```
+\`\`\`
 
 ### Variables de Entorno
-```bash
+\`\`\`bash
 # API URL del backend
 NEXT_PUBLIC_API_URL=http://localhost:8000/api
 
@@ -184,7 +184,7 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 RESEND_API_KEY=your_resend_api_key
 SENDER_MAIL=soporte@bytetech.edu
 RECEIVER_MAIL=soporte@bytetech.edu
-```
+\`\`\`
 
 ## 🔄 Flujo de Trabajo del Soporte
 

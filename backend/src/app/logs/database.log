@@ -1,0 +1,6 @@
+2025-10-26 11:42:13,664 - DB_ERROR - ERROR - [CONNECTION_ERROR] (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) | Context: {'context': 'session_creation'}
+2025-10-26 11:43:13,153 - DB_ERROR - ERROR - [CONNECTION_ERROR] (psycopg2.OperationalError) connection to server at "aws-0-us-east-2.pooler.supabase.com" (13.59.95.192), port 6543 failed: FATAL:  Tenant or user not found
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8) | Context: {'context': 'session_creation'}

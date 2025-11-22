@@ -1,76 +1,71 @@
 import os
 import uuid
-from pathlib import Path
+from typing import Optional, Tuple
+import boto3
+from botocore.client import Config
+
 from app.parameters import settings
 
-prod = settings.DEBUG
 
-upload_dir = "./uploads" if prod else "/app/uploads"
+# --- Configuración R2 ---
+r2_client = boto3.client(
+    "s3",
+    endpoint_url=settings.R2_ENDPOINT,
+    aws_access_key_id=settings.R2_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.R2_SECRET_ACCESS_KEY,
+    config=Config(signature_version="s3v4"),
+)
+
+BUCKET = settings.R2_BUCKET
 
 
-def get_unique_name(extension=""):
-
-    name = str(uuid.uuid4())[:8]
+# --- Utilidades ---
+def get_unique_name(extension: str = "") -> str:
+    name = uuid.uuid4().hex[:8]
     return f"{name}{extension}" if extension else name
 
 
-def save_file(
-    content: bytes,
-    name: str,
-    directory: str = upload_dir
-):
-
-    Path(directory).mkdir(parents=True, exist_ok=True)
-    
-    ruta = Path(directory) / name
-    
-    modo = 'w' if isinstance(content, str) else 'wb'
-    encoding = {'encoding': 'utf-8'} if isinstance(content, str) else {}
-    
-    with open(ruta, modo, **encoding) as f:
-        f.write(content)
-    
-    return str(ruta)
-
-
-def get_file_by_name(
-    name: str,
-    directory: str = upload_dir
-):
-    import magic    
-
-    ruta = Path(directory) / name
-    
-    if not ruta.exists():
-        print(f"Archivo '{name}' no encontrado en {directory}")
-        return None
-    
+# --- Guardar archivo en R2 ---
+def save_file(content: bytes, name: str) -> str:
+    """Guarda el archivo en Cloudflare R2 y devuelve la URL pública."""
     try:
-        with open(ruta, 'rb') as f:
-            bytes = f.read()
-            mime_type = magic.from_file(str(ruta), mime=True)
-            return bytes, mime_type
-    except UnicodeDecodeError:
-        with open(ruta, 'rb') as f:
-            mime_type = magic.from_file(str(ruta), mime=True)
-            bytes = f.read()
-            return bytes, mime_type
-
-
-def delete_file(
-    name: str,
-    directory: str = upload_dir
-):
-    ruta = Path(directory) / name
-    
-    if not ruta.exists():
-        print(f"Archivo '{name}' no encontrado en {directory}")
-        return False
-    
-    try:
-        ruta.unlink()
-        print(f"Archivo '{name}' borrado exitosamente")
-        return True
+        r2_client.put_object(
+            Bucket=BUCKET,
+            Key=name,
+            Body=content,
+        )
+        return f"{settings.R2_ENDPOINT.rstrip('/')}/{BUCKET}/{name}"
     except Exception as e:
-        print(f"Error al borrar '{name}': {str(e)}")
+        print(f"[R2] Error al subir '{name}': {e}")
+        raise
+
+
+# --- Obtener archivo desde R2 ---
+def get_file_by_name(name: str) -> Optional[Tuple[bytes, str]]:
+    """Obtiene un archivo de R2 (bytes, mime_type) o None si no existe."""
+    try:
+        resp = r2_client.get_object(Bucket=BUCKET, Key=name)
+        raw = resp["Body"].read()
+        mime_type = resp.get("ContentType", "application/octet-stream")
+        return raw, mime_type
+    except r2_client.exceptions.NoSuchKey:
+        print(f"[R2] Archivo '{name}' no encontrado en el bucket.")
+        return None
+    except Exception as e:
+        print(f"[R2] Error al obtener '{name}': {e}")
+        return None
+
+
+# --- Eliminar archivo en R2 ---
+def delete_file(name: str) -> bool:
+    """Elimina un archivo del bucket R2."""
+    try:
+        r2_client.delete_object(Bucket=BUCKET, Key=name)
+        print(f"[R2] Archivo '{name}' eliminado correctamente.")
+        return True
+    except r2_client.exceptions.NoSuchKey:
+        print(f"[R2] Archivo '{name}' no existe en el bucket.")
+        return False
+    except Exception as e:
+        print(f"[R2] Error al eliminar '{name}': {e}")
         return False
