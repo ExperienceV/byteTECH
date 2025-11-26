@@ -160,9 +160,7 @@ export default function PrevistaPage() {
       <div className="min-h-screen bg-dynamic-gradient flex items-center justify-center">
         <div className="bg-slate-900/80 backdrop-blur-sm border border-red-800 rounded-xl p-8 text-center max-w-md mx-auto">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-4" />
-          <p className="text-red-400 font-mono mb-4">
-            {error || "Curso no encontrado"}
-          </p>
+          <p className="text-red-400 font-mono mb-4">{error || "Curso no encontrado"}</p>
           <div className="space-y-2">
             <Link href="/cursos">
               <Button className="w-full px-4 py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-600 transition-colors">
@@ -187,7 +185,7 @@ export default function PrevistaPage() {
   const totalSections = Object.keys(contentMap).length
   const totalLessons =
     (courseData as any).progress?.total_lessons ??
-    Object.values(contentMap).reduce((sum: number, section: any) => sum + ((section?.lessons || []).length), 0)
+    Object.values(contentMap).reduce((sum: number, section: any) => sum + (section?.lessons || []).length, 0)
 
   return (
     <div className="min-h-screen bg-dynamic-gradient">
@@ -200,7 +198,10 @@ export default function PrevistaPage() {
           <div className="max-w-7xl mx-auto">
             {/* Navigation */}
             <div className="mb-6">
-              <Link href="/cursos" className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-mono">
+              <Link
+                href="/cursos"
+                className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 font-mono"
+              >
                 <ArrowLeft className="w-4 h-4" /> Volver a cursos
               </Link>
             </div>
@@ -215,7 +216,7 @@ export default function PrevistaPage() {
                 </div>
 
                 <h1 className="font-mono font-bold leading-tight text-white text-2xl sm:text-3xl lg:text-4xl mb-4">
-                  {">"} <span className="text-green-400">{courseData.name.toUpperCase()}</span>
+                  {">"} <span className="text-cyan-400">{courseData.name.toUpperCase()}</span>
                 </h1>
 
                 <p className="text-slate-300 text-lg leading-relaxed mb-6 max-w-2xl">
@@ -229,7 +230,7 @@ export default function PrevistaPage() {
                     <span className="text-slate-300 font-mono text-sm">{courseData.hours || "-"} horas</span>
                   </div>
                   <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
-                    <BookOpen className="w-4 h-4 text-green-400" />
+                    <BookOpen className="w-4 h-4 text-cyan-400" />
                     <span className="text-slate-300 font-mono text-sm">{totalLessons} lecciones</span>
                   </div>
                   <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-700 rounded-lg px-3 py-2">
@@ -237,7 +238,9 @@ export default function PrevistaPage() {
                     <span className="text-slate-300 font-mono text-sm">{totalSections} secciones</span>
                   </div>
                   {(courseData as any).difficulty && (
-                    <Badge className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}>
+                    <Badge
+                      className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}
+                    >
                       {(courseData as any).difficulty}
                     </Badge>
                   )}
@@ -246,7 +249,9 @@ export default function PrevistaPage() {
 
               {/* Right: Purchase Card */}
               <div className="lg:col-span-1">
-                <div className={`backdrop-blur-sm rounded-xl p-6 ${isPaid ? 'bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/40' : 'bg-gradient-to-br from-green-900/30 to-cyan-900/30 border border-green-500/40'}`}>
+                <div
+                  className={`backdrop-blur-sm rounded-xl p-6 ${isPaid ? "bg-gradient-to-br from-blue-900/30 to-purple-900/30 border border-blue-500/40" : "bg-gradient-to-br from-cyan-900/30 to-cyan-900/30 border border-cyan-500/40"}`}
+                >
                   <div className="text-center mb-4">
                     {isPaid ? (
                       <>
@@ -255,12 +260,12 @@ export default function PrevistaPage() {
                       </>
                     ) : (
                       <>
-                        <div className="text-4xl font-bold text-green-400 font-mono mb-2">${courseData.price}</div>
+                        <div className="text-4xl font-bold text-cyan-400 font-mono mb-2">${courseData.price}</div>
                         <div className="text-slate-300 font-mono text-sm">Acceso completo</div>
                       </>
                     )}
                   </div>
-                  
+
                   {!isLoggedIn ? (
                     <div className="space-y-3">
                       <div className="text-center text-yellow-400 font-mono text-sm mb-3">
@@ -268,15 +273,15 @@ export default function PrevistaPage() {
                       </div>
                       <Button
                         onClick={handlePurchase}
-                        className="w-full bg-green-500 hover:bg-green-600 text-black font-mono font-bold py-3"
+                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono font-bold py-3"
                       >
                         <ShoppingCart className="mr-2 h-5 w-5" />
                         REGISTRARSE Y COMPRAR
                       </Button>
                       <Link href="/auth/ingresar" className="block">
-                        <Button 
-                          variant="outline" 
-                          className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono"
+                        <Button
+                          variant="outline"
+                          className="w-full border-cyan-500 text-cyan-400 hover:bg-cyan-500 hover:text-black font-mono bg-transparent"
                         >
                           YA TENGO CUENTA
                         </Button>
@@ -300,13 +305,11 @@ export default function PrevistaPage() {
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {error && (
-                        <div className="text-center text-red-400 font-mono text-xs mb-2">{error}</div>
-                      )}
+                      {error && <div className="text-center text-red-400 font-mono text-xs mb-2">{error}</div>}
                       <Button
                         onClick={handlePurchase}
                         disabled={isPurchasing}
-                        className="w-full bg-green-500 hover:bg-green-600 text-black font-mono font-bold py-3 text-lg"
+                        className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-mono font-bold py-3 text-lg"
                       >
                         {isPurchasing ? (
                           <>
@@ -322,7 +325,7 @@ export default function PrevistaPage() {
                       </Button>
                     </div>
                   )}
-                  
+
                   <div className="mt-4 space-y-1 text-center">
                     <div className="text-slate-400 font-mono text-xs">✓ Acceso de por vida</div>
                     <div className="text-slate-400 font-mono text-xs">✓ Material didáctico</div>
@@ -340,7 +343,6 @@ export default function PrevistaPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-green-900/5 via-transparent to-cyan-900/5" />
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 relative z-10">
           <div className="max-w-7xl mx-auto">
-
             <div className="grid grid-cols-1 xl:grid-cols-5 gap-8">
               {/* Left Column - Video and Content Preview */}
               <div className="xl:col-span-3 space-y-8">
@@ -374,9 +376,11 @@ export default function PrevistaPage() {
                           <Lock className="w-16 h-16 text-slate-500" />
                         </div>
                         <div className="text-center relative z-10">
-                          <Play className="w-16 h-16 text-green-400 mx-auto mb-4 opacity-50" />
-                          <p className="text-green-400 font-mono text-lg">VISTA PREVIA</p>
-                          <p className="text-slate-400 font-mono text-sm mt-2">Sin video de previsualización disponible</p>
+                          <Play className="w-16 h-16 text-cyan-400 mx-auto mb-4 opacity-50" />
+                          <p className="text-cyan-400 font-mono text-lg">VISTA PREVIA</p>
+                          <p className="text-slate-400 font-mono text-sm mt-2">
+                            Sin video de previsualización disponible
+                          </p>
                         </div>
                       </div>
                     )}
@@ -385,7 +389,6 @@ export default function PrevistaPage() {
 
                 {/* Content metadata (sections and lessons names) */}
                 <CourseContentPreview courseData={courseData} />
-
               </div>
 
               {/* Right Column - Course Info */}
@@ -405,9 +408,9 @@ export default function PrevistaPage() {
                   </div>
 
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-green-400 font-mono mb-4">INSTRUCTOR</h3>
+                    <h3 className="text-xl font-bold text-cyan-400 font-mono mb-4">INSTRUCTOR</h3>
                     <div className="flex items-center gap-4 mb-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-cyan-400 rounded-full flex items-center justify-center">
+                      <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-cyan-300 rounded-full flex items-center justify-center">
                         <span className="text-black font-mono font-bold text-xl">
                           {((courseData as any).sensei_name || "").charAt(0)}
                         </span>
@@ -433,63 +436,69 @@ export default function PrevistaPage() {
                       </div>
                       <span className="text-xs font-mono text-slate-400">~/course/description.md</span>
                     </div>
-                    <BookOpen className="w-4 h-4 text-green-400" />
+                    <BookOpen className="w-4 h-4 text-cyan-400" />
                   </div>
 
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-green-400 font-mono mb-4">DESCRIPCIÓN</h3>
+                    <h3 className="text-xl font-bold text-cyan-400 font-mono mb-4">DESCRIPCIÓN</h3>
                     <div className="prose prose-slate max-w-none">
                       {formatTextForHTML(courseData.description).map((element) => {
-                        if (element.type === 'list') {
+                        if (element.type === "list") {
                           return (
                             <div key={element.key} className="ml-4 text-slate-300 leading-relaxed text-base">
                               {element.content}
                             </div>
-                          );
-                        } else if (element.type === 'normal') {
+                          )
+                        } else if (element.type === "normal") {
                           return (
                             <p key={element.key} className="text-slate-300 leading-relaxed text-base mb-2">
                               {element.content}
                             </p>
-                          );
+                          )
                         } else {
-                          return <div key={element.key} className="h-2" />;
+                          return <div key={element.key} className="h-2" />
                         }
                       })}
                     </div>
-                    
+
                     {/* Course metadata integrated */}
                     <div className="mt-6 pt-6 border-t border-slate-700">
                       <div className="grid grid-cols-1 gap-4">
                         {(courseData as any).difficulty && (
                           <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
                             <span className="text-slate-400 font-mono text-sm">Nivel:</span>
-                            <Badge className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}>
+                            <Badge
+                              className={`${difficultyColors[(courseData as any).difficulty as keyof typeof difficultyColors] || difficultyColors.Intermedio} font-mono`}
+                            >
                               {(courseData as any).difficulty}
                             </Badge>
                           </div>
                         )}
-                        
+
                         {(courseData as any).language && (
                           <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
                             <span className="text-slate-400 font-mono text-sm">Idioma:</span>
                             <span className="text-slate-300 font-mono text-sm">{(courseData as any).language}</span>
                           </div>
                         )}
-                        
+
                         {(courseData as any).students && (
                           <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
                             <span className="text-slate-400 font-mono text-sm">Estudiantes:</span>
-                            <span className="text-cyan-400 font-mono text-sm font-bold">{(courseData as any).students.toLocaleString()}</span>
+                            <span className="text-cyan-400 font-mono text-sm font-bold">
+                              {(courseData as any).students.toLocaleString()}
+                            </span>
                           </div>
                         )}
-                        
+
                         {(courseData as any).rating && (
                           <div className="flex items-center justify-between p-3 bg-slate-800/40 rounded-lg">
                             <span className="text-slate-400 font-mono text-sm">Rating:</span>
                             <div className="flex items-center gap-1">
                               <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                              <span className="text-yellow-400 font-mono text-sm font-bold">{(courseData as any).rating}</span>
+                              <span className="text-yellow-400 font-mono text-sm font-bold">
+                                {(courseData as any).rating}
+                              </span>
                             </div>
                           </div>
                         )}
@@ -517,20 +526,20 @@ export default function PrevistaPage() {
                       <h3 className="text-xl font-bold text-orange-400 font-mono mb-4">REQUISITOS</h3>
                       <div className="prose prose-slate max-w-none">
                         {formatTextForHTML((courseData as any).requirements).map((element) => {
-                          if (element.type === 'list') {
+                          if (element.type === "list") {
                             return (
                               <div key={element.key} className="ml-4 text-slate-300 leading-relaxed text-base">
                                 {element.content}
                               </div>
-                            );
-                          } else if (element.type === 'normal') {
+                            )
+                          } else if (element.type === "normal") {
                             return (
                               <p key={element.key} className="text-slate-300 leading-relaxed text-base mb-2">
                                 {element.content}
                               </p>
-                            );
+                            )
                           } else {
-                            return <div key={element.key} className="h-2" />;
+                            return <div key={element.key} className="h-2" />
                           }
                         })}
                       </div>

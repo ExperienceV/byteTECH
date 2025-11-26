@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, useRef, useCallback } from "react"
+import type React from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 
 // Función de utilidad para formatear fechas en formato relativo
 const formatRelativeDate = (date: string | Date) => {
@@ -10,20 +11,19 @@ const formatRelativeDate = (date: string | Date) => {
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
 
   if (diffDays === 0) {
-    return `Hoy ${messageDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
+    return `Hoy ${messageDate.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`
   } else if (diffDays === 1) {
-    return `Ayer ${messageDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
+    return `Ayer ${messageDate.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" })}`
   } else {
-    return messageDate.toLocaleDateString('es-ES', { 
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return messageDate.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     })
   }
 }
-import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -116,7 +116,11 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   // Estado para mostrar el progreso de marcado
   const [marking, setMarking] = useState(false)
   // Estado local del progreso (para actualizaciones inmediatas)
-  const [localProgress, setLocalProgress] = useState<{ total_lessons: number; completed_lessons: number; progress_percentage: number } | null>(null)
+  const [localProgress, setLocalProgress] = useState<{
+    total_lessons: number
+    completed_lessons: number
+    progress_percentage: number
+  } | null>(null)
   // Estado para lecciones completadas localmente
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set())
   // Referencia para el temporizador
@@ -138,10 +142,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   // Inicializar progreso local desde props o calculado por las lecciones
   useEffect(() => {
     const total = sections.reduce((acc, s) => acc + s.lessons.length, 0)
-    const initialCompleted = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
+    const initialCompleted = sections.reduce((acc, s) => acc + s.lessons.filter((l) => Boolean(l.completed)).length, 0)
     const pct = total > 0 ? (initialCompleted / total) * 100 : 0
-    setLocalProgress(prev => prev ?? { total_lessons: total, completed_lessons: initialCompleted, progress_percentage: pct })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    setLocalProgress(
+      (prev) => prev ?? { total_lessons: total, completed_lessons: initialCompleted, progress_percentage: pct },
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sections])
 
   // Auto-select next incomplete lesson on mount
@@ -149,7 +155,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
     if (sections.length > 0 && !selectedLesson) {
       // Find the first incomplete lesson
       let nextIncompleteLesson: Lesson | null = null
-      
+
       for (const section of sections) {
         for (const lesson of section.lessons) {
           if (!Boolean(lesson.completed) && !completedLessons.has(String(lesson.id))) {
@@ -159,12 +165,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         }
         if (nextIncompleteLesson) break
       }
-      
+
       // If no incomplete lesson found, select the first lesson
       if (!nextIncompleteLesson && sections[0].lessons.length > 0) {
         nextIncompleteLesson = sections[0].lessons[0]
       }
-      
+
       if (nextIncompleteLesson && !nextIncompleteLesson.locked) {
         setSelectedLesson(nextIncompleteLesson)
       }
@@ -186,25 +192,28 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   }, [forumView, selectedThread?.id, threadMessages.length])
 
   // Función para encontrar la siguiente lección
-  const findNextLesson = useCallback((currentLesson: Lesson): Lesson | null => {
-    for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
-      const section = sections[sectionIndex]
-      const lessonIndex = section.lessons.findIndex(l => l.id === currentLesson.id)
-      
-      if (lessonIndex !== -1) {
-        // Encontramos la lección actual, buscar la siguiente
-        if (lessonIndex + 1 < section.lessons.length) {
-          // Siguiente lección en la misma sección
-          return section.lessons[lessonIndex + 1]
-        } else if (sectionIndex + 1 < sections.length) {
-          // Primera lección de la siguiente sección
-          const nextSection = sections[sectionIndex + 1]
-          return nextSection.lessons.length > 0 ? nextSection.lessons[0] : null
+  const findNextLesson = useCallback(
+    (currentLesson: Lesson): Lesson | null => {
+      for (let sectionIndex = 0; sectionIndex < sections.length; sectionIndex++) {
+        const section = sections[sectionIndex]
+        const lessonIndex = section.lessons.findIndex((l) => l.id === currentLesson.id)
+
+        if (lessonIndex !== -1) {
+          // Encontramos la lección actual, buscar la siguiente
+          if (lessonIndex + 1 < section.lessons.length) {
+            // Siguiente lección en la misma sección
+            return section.lessons[lessonIndex + 1]
+          } else if (sectionIndex + 1 < sections.length) {
+            // Primera lección de la siguiente sección
+            const nextSection = sections[sectionIndex + 1]
+            return nextSection.lessons.length > 0 ? nextSection.lessons[0] : null
+          }
         }
       }
-    }
-    return null
-  }, [sections])
+      return null
+    },
+    [sections],
+  )
 
   // Función para marcar lección como completada
   const markLessonAsCompleted = useCallback(async () => {
@@ -215,11 +224,11 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
     try {
       setMarking(true)
       await coursesApi.markProgress(Number(selectedLesson.id))
-      
+
       // Mostrar notificación de completado
       setCompletedLessonTitle(selectedLesson.title)
       setShowCompletionNotification(true)
-      
+
       // Buscar la siguiente lección
       const next = findNextLesson(selectedLesson)
       if (next) {
@@ -227,7 +236,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         setNextLessonTimer(10)
         setShowNextLessonPopup(true)
       }
-      
+
       // Actualizar estado local de completado
       setCompletedLessons((prev) => new Set(prev).add(String(selectedLesson.id)))
       setSelectedLesson((prev) => (prev ? { ...prev, completed: true } : prev))
@@ -237,14 +246,17 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         const currentCompletedSet = new Set(completedLessons)
         currentCompletedSet.add(String(selectedLesson.id))
         // Calcular completados reales combinando props y estado local
-        const completedCountFromProps = sections.reduce((acc, s) => acc + s.lessons.filter(l => Boolean(l.completed)).length, 0)
+        const completedCountFromProps = sections.reduce(
+          (acc, s) => acc + s.lessons.filter((l) => Boolean(l.completed)).length,
+          0,
+        )
         const additional = currentCompletedSet.size - completedLessons.size // normalmente 1
         const completed = Math.min(total, (prev?.completed_lessons ?? completedCountFromProps) + additional)
         const pct = total > 0 ? (completed / total) * 100 : 0
         return { total_lessons: total, completed_lessons: completed, progress_percentage: pct }
       })
     } catch (e) {
-      console.error('Error marking progress:', e)
+      console.error("Error marking progress:", e)
     } finally {
       setMarking(false)
     }
@@ -256,7 +268,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
     if (showNextLessonPopup && nextLessonTimer > 0) {
       intervalId = setInterval(() => {
-        setNextLessonTimer(prev => {
+        setNextLessonTimer((prev) => {
           if (prev <= 1) {
             // Tiempo agotado, ir a la siguiente lección automáticamente
             if (nextLesson) {
@@ -283,13 +295,13 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   // Función para actualizar mark_time en el backend
   const updateMarkTime = useCallback(async () => {
     if (!selectedLesson?.mark_time || !videoRef.current) return
-    
+
     const currentTime = Math.floor(videoRef.current.currentTime)
     if (currentTime > 0) {
       try {
         await coursesApi.updateMarkTime(selectedLesson.mark_time.id, currentTime)
       } catch (error) {
-        console.error('Error updating mark time:', error)
+        console.error("Error updating mark time:", error)
       }
     }
   }, [selectedLesson])
@@ -301,10 +313,10 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       if (markTimeIntervalRef.current) {
         clearInterval(markTimeIntervalRef.current)
       }
-      
+
       // Iniciar nuevo temporizador cada 15 segundos
       markTimeIntervalRef.current = setInterval(updateMarkTime, 15000)
-      
+
       return () => {
         if (markTimeIntervalRef.current) {
           clearInterval(markTimeIntervalRef.current)
@@ -426,7 +438,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       await forumsApi.createThread({
         lesson_id: Number(selectedLesson.id),
         topic: newThreadData.title,
-        message: newThreadData.message
+        message: newThreadData.message,
       })
 
       // Recargar threads
@@ -473,11 +485,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
       // Actualizar el mensaje temporal a confirmado (sin recargar)
       setThreadMessages((prev) =>
-        prev.map((m) => (
-          m.id === tempId
-            ? { ...m, pending: false, id: (apiResp as any)?.message_id ?? m.id }
-            : m
-        ))
+        prev.map((m) => (m.id === tempId ? { ...m, pending: false, id: (apiResp as any)?.message_id ?? m.id } : m)),
       )
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     } catch (err: any) {
@@ -520,12 +528,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   const renderForumThreads = () => (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-green-400 font-mono">
+        <h2 className="text-xl font-bold text-cyan-400 font-mono">
           HILOS {selectedLesson ? `- ${selectedLesson.title}` : ""}
         </h2>
         <Button
           onClick={() => setForumView("create")}
-          className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-3 py-1 h-auto"
+          className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono text-xs px-3 py-1 h-auto"
           disabled={!selectedLesson || loadingThreads}
         >
           <Plus className="w-3 h-3 mr-1" />
@@ -555,8 +563,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         </div>
       ) : loadingThreads ? (
         <div className="text-center py-8">
-          <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
-          <p className="text-green-400 font-mono">Cargando hilos...</p>
+          <Loader2 className="w-8 h-8 text-cyan-400 mx-auto mb-4 animate-spin" />
+          <p className="text-cyan-400 font-mono">Cargando hilos...</p>
         </div>
       ) : threads.length === 0 ? (
         <div className="text-center py-8">
@@ -564,7 +572,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
           <p className="text-slate-400 font-mono mb-4">No hay hilos para esta lección</p>
           <Button
             onClick={() => setForumView("create")}
-            className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-4 py-2"
+            className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono text-sm px-4 py-2"
           >
             <Plus className="w-4 h-4 mr-2" />
             CREAR PRIMER HILO
@@ -578,7 +586,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
             return (
               <div
                 key={thread.id}
-                className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:bg-slate-800/70 hover:border-green-400/30 transition-all"
+                className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 hover:bg-slate-800/70 hover:border-cyan-400/30 transition-all"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0 cursor-pointer" onClick={() => handleThreadClick(thread)}>
@@ -589,7 +597,12 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       {parsed.description && (
                         <div
                           className="text-slate-400 font-mono text-xs mt-0.5 break-words"
-                          style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                          style={{
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}
                         >
                           {parsed.description}
                         </div>
@@ -627,7 +640,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
   const renderCreateThread = () => (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-green-400 font-mono">ABRIR HILO</h2>
+        <h2 className="text-xl font-bold text-cyan-400 font-mono">ABRIR HILO</h2>
         <Button
           onClick={() => setForumView("threads")}
           variant="outline"
@@ -690,7 +703,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
 
         <Button
           type="submit"
-          className="bg-green-500 hover:bg-green-600 text-black font-mono text-sm px-6 py-2"
+          className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono text-sm px-6 py-2"
           disabled={loadingThreads || !newThreadData.title.trim() || !newThreadData.message.trim()}
         >
           {loadingThreads ? (
@@ -721,21 +734,29 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
           </Button>
           <div className="min-w-0">
             {(() => {
-              const parsed = selectedThread?.title
-                ? { title: selectedThread.title }
-                : parseTopic(selectedThread?.topic)
+              const parsed = selectedThread?.title ? { title: selectedThread.title } : parseTopic(selectedThread?.topic)
               return (
                 <>
                   <h2
-                    className="text-lg font-bold text-green-400 font-mono break-words"
-                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                    className="text-lg font-bold text-cyan-400 font-mono break-words"
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
                   >
                     {parsed.title || `Hilo #${selectedThread?.id}`}
                   </h2>
                   {parsed.description && (
                     <p
                       className="text-[13px] text-slate-400 font-mono mt-0.5 break-words"
-                      style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+                      style={{
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
                     >
                       {parsed.description}
                     </p>
@@ -770,8 +791,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
       <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
         {loadingMessages ? (
           <div className="text-center py-8">
-            <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
-            <p className="text-green-400 font-mono">Cargando mensajes...</p>
+            <Loader2 className="w-8 h-8 text-cyan-400 mx-auto mb-4 animate-spin" />
+            <p className="text-cyan-400 font-mono">Cargando mensajes...</p>
           </div>
         ) : threadMessages.length === 0 ? (
           <div className="text-center py-8">
@@ -786,14 +807,14 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
             const rawText = String(message.message || message.content || "")
             const isLong = rawText.length > 220
             const clampStyleCollapsed = {
-              display: '-webkit-box',
+              display: "-webkit-box",
               WebkitLineClamp: 6,
-              WebkitBoxOrient: 'vertical' as const,
-              overflow: 'hidden',
+              WebkitBoxOrient: "vertical" as const,
+              overflow: "hidden",
             }
             const toggleExpand = (e: React.MouseEvent) => {
               e.stopPropagation()
-              setExpandedMessages(prev => {
+              setExpandedMessages((prev) => {
                 const next = new Set(prev)
                 if (next.has(msgId)) next.delete(msgId)
                 else next.add(msgId)
@@ -801,53 +822,55 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
               })
             }
             return (
-            <div
-              key={message.id}
-              className={`bg-slate-800/50 border border-slate-700 rounded-lg p-4 overflow-hidden w-full max-w-full ${message.pending ? "opacity-60" : ""}`}
-            >
-              <div className="flex items-start gap-3 w-full max-w-full" style={{ overflowWrap: 'anywhere' }}>
-                <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <User className="w-4 h-4 text-white" />
-                </div>
-                <div className="flex-1 min-w-0 break-words overflow-hidden" style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="font-mono text-sm font-semibold text-cyan-400">
-                      {message.username || `Usuario #${message.user_id}`}
-                    </span>
-                    <span className="font-mono text-[11px] text-slate-500">
-                      {message.created_at ? formatRelativeDate(message.created_at) : ''}
-                    </span>
-                    {message.pending && (
-                      <span className="font-mono text-[11px] text-yellow-400">Enviando...</span>
+              <div
+                key={message.id}
+                className={`bg-slate-800/50 border border-slate-700 rounded-lg p-4 overflow-hidden w-full max-w-full ${message.pending ? "opacity-60" : ""}`}
+              >
+                <div className="flex items-start gap-3 w-full max-w-full" style={{ overflowWrap: "anywhere" }}>
+                  <div className="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <div
+                    className="flex-1 min-w-0 break-words overflow-hidden"
+                    style={{ overflowWrap: "anywhere", wordBreak: "break-word" }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-mono text-sm font-semibold text-cyan-400">
+                        {message.username || `Usuario #${message.user_id}`}
+                      </span>
+                      <span className="font-mono text-[11px] text-slate-500">
+                        {message.created_at ? formatRelativeDate(message.created_at) : ""}
+                      </span>
+                      {message.pending && <span className="font-mono text-[11px] text-yellow-400">Enviando...</span>}
+                    </div>
+                    <p
+                      className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap w-full max-w-full overflow-hidden"
+                      style={{
+                        overflowWrap: "anywhere",
+                        wordBreak: "break-word",
+                        ...(isExpanded ? {} : clampStyleCollapsed),
+                      }}
+                    >
+                      {rawText}
+                    </p>
+                    {isLong && (
+                      <div className="mt-2">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={toggleExpand}
+                          className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 font-mono h-auto px-2 py-1 text-xs"
+                        >
+                          {isExpanded ? "Ver menos" : "Ver más"}
+                        </Button>
+                      </div>
                     )}
                   </div>
-                  <p
-                    className="font-mono text-sm text-slate-300 leading-relaxed whitespace-pre-wrap w-full max-w-full overflow-hidden"
-                    style={{
-                      overflowWrap: 'anywhere',
-                      wordBreak: 'break-word',
-                      ...(isExpanded ? {} : clampStyleCollapsed),
-                    }}
-                  >
-                    {rawText}
-                  </p>
-                  {isLong && (
-                    <div className="mt-2">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={toggleExpand}
-                        className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 font-mono h-auto px-2 py-1 text-xs"
-                      >
-                        {isExpanded ? 'Ver menos' : 'Ver más'}
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
-            </div>
-          )})
+            )
+          })
         )}
         {/* Sentinel to autoscroll */}
         <div ref={messagesEndRef} />
@@ -868,7 +891,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
           />
           <Button
             type="submit"
-            className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-4 py-2"
+            className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono text-xs px-4 py-2"
             disabled={sendingMessage || !newMessage.trim()}
           >
             {sendingMessage ? (
@@ -894,22 +917,22 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         {/* Course Title */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-slate-900/80 backdrop-blur-sm border border-slate-800 rounded-full px-4 py-2 mb-6">
-            <Terminal className="w-4 h-4 text-green-400" />
-            <span className="text-green-400 text-sm font-mono">./course --active</span>
+            <Terminal className="w-4 h-4 text-cyan-400" />
+            <span className="text-cyan-400 text-sm font-mono">./course --active</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-green-400 font-mono">{courseTitle.toUpperCase()}</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-cyan-400 font-mono">{courseTitle.toUpperCase()}</h1>
           {/* Progress bar */}
           {localProgress && (
             <div className="mt-6 max-w-2xl mx-auto text-left">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-slate-300 font-mono text-sm">Progreso del curso</span>
-                <span className="text-green-400 font-mono text-sm">
+                <span className="text-cyan-400 font-mono text-sm">
                   {Math.round(localProgress.progress_percentage)}%
                 </span>
               </div>
               <div className="w-full h-3 bg-slate-800 rounded-full border border-slate-700 overflow-hidden">
                 <div
-                  className="h-full bg-green-500"
+                  className="h-full bg-cyan-500"
                   style={{ width: `${Math.min(100, Math.max(0, localProgress.progress_percentage))}%` }}
                 />
               </div>
@@ -931,108 +954,118 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                   <div className="flex space-x-1">
                     <div className="w-3 h-3 bg-red-500 rounded-full" />
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
+                    <div className="w-3 h-3 bg-cyan-500 rounded-full" />
                   </div>
                   <span className="text-xs font-mono text-slate-400">~CONTENIDO</span>
                 </div>
-                <Code className="w-4 h-4 text-green-400" />
+                <Code className="w-4 h-4 text-cyan-400" />
               </div>
 
               <div className="p-6">
-                <h2 className="text-xl font-bold text-green-400 font-mono mb-4">CONTENIDO</h2>
+                <h2 className="text-xl font-bold text-cyan-400 font-mono mb-4">CONTENIDO</h2>
                 <div className="h-[500px] overflow-y-auto custom-scrollbar pr-2">
                   <Accordion type="multiple" className="w-full">
-                  {sections.map((section, sidx) => {
-                    const sectionCompleted = section.lessons.every(lesson => 
-                      Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
-                    )
-                    
-                    return (
-                      <AccordionItem value={`section-${section.id}`} key={section.id} className="border-slate-800">
-                        <AccordionTrigger className="text-left px-2">
-                          <div className="flex items-center justify-between w-full">
-                            <div className="flex items-center gap-3">
-                              {sectionCompleted ? (
-                                <div className="w-5 h-5 bg-green-400 rounded-full flex items-center justify-center">
-                                  <CheckCircle className="w-3 h-3 text-slate-900" />
-                                </div>
-                              ) : (
-                                <div className="w-5 h-5 border-2 border-slate-600 rounded-full"></div>
-                              )}
-                              <span className="font-mono text-slate-300 font-semibold truncate mr-2">{section.title}</span>
-                            </div>
-                            <span className="text-xs text-slate-500 font-mono">{section.lessons.length} lecciones</span>
-                          </div>
-                        </AccordionTrigger>
-                      <AccordionContent className="px-2">
-                        <div className="relative">
-                          {section.lessons.map((lesson, lessonIndex) => {
-                            const isCompleted = Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
-                            const isVideo = lesson.type === 'video'
-                            const nextLesson = section.lessons[lessonIndex + 1]
-                            const nextIsCompleted = nextLesson ? (Boolean(nextLesson.completed) || completedLessons.has(String(nextLesson.id))) : false
-                            const showConnectingLine = isCompleted && nextIsCompleted
-                            
-                            return (
-                              <div key={lesson.id} className="relative mb-6">
-                                <div className="relative flex items-center">
-                                  {/* Lesson Icon with connecting line */}
-                                  <div className="relative flex flex-col items-center mr-4">
-                                    {/* Connecting Line from previous lesson (arrives at circle) */}
-                                    {isCompleted && lessonIndex > 0 && (
-                                      <div className="w-0.5 h-12 bg-green-400 absolute -top-12"></div>
-                                    )}
-                                    
-                                    <div className="w-6 h-6 flex items-center justify-center z-20 relative">
-                                      {isCompleted ? (
-                                        <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
-                                          <CheckCircle className="w-4 h-4 text-slate-900" />
-                                        </div>
-                                      ) : isVideo ? (
-                                        <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
-                                          <Play className="w-3 h-3 text-cyan-400" />
-                                        </div>
-                                      ) : (
-                                        <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
-                                          <FileText className="w-3 h-3 text-blue-400" />
-                                        </div>
-                                      )}
-                                    </div>
-                                    
-                                    {/* Connecting Line to next lesson (leaves from circle) */}
-                                    {showConnectingLine && lessonIndex < section.lessons.length - 1 && (
-                                      <div className="w-0.5 h-12 bg-green-400 absolute top-3"></div>
-                                    )}
+                    {sections.map((section, sidx) => {
+                      const sectionCompleted = section.lessons.every(
+                        (lesson) => Boolean(lesson.completed) || completedLessons.has(String(lesson.id)),
+                      )
+
+                      return (
+                        <AccordionItem value={`section-${section.id}`} key={section.id} className="border-slate-800">
+                          <AccordionTrigger className="text-left px-2">
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center gap-3">
+                                {sectionCompleted ? (
+                                  <div className="w-5 h-5 bg-cyan-400 rounded-full flex items-center justify-center">
+                                    <CheckCircle className="w-3 h-3 text-slate-900" />
                                   </div>
-                                  
-                                  {/* Lesson Content */}
-                                  <div
-                                    onClick={() => handleLessonClick(lesson)}
-                                    className={`flex-1 p-3 border-t border-b border-slate-800 bg-slate-900/60 hover:bg-slate-800/70 cursor-pointer transition-colors ${
-                                      selectedLesson?.id === lesson.id ? 'border-t-green-400/50 border-b-green-400/50 bg-green-400/10' : ''
-                                    }`}
-                                  >
-                                    <div className="min-w-0">
-                                      <div className="text-sm font-mono text-slate-300 truncate">{lesson.title}</div>
-                                      <div className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-2">
-                                        {lesson.duration && <span>{lesson.duration}</span>}
-                                        <span> {isVideo ? 'VIDEO' : 'TEXTO'} •</span>
-                                        {typeof lesson.time_validator !== 'undefined' && (
-                                          <span> {String(lesson.time_validator)} MIN</span>
+                                ) : (
+                                  <div className="w-5 h-5 border-2 border-slate-600 rounded-full"></div>
+                                )}
+                                <span className="font-mono text-slate-300 font-semibold truncate mr-2">
+                                  {section.title}
+                                </span>
+                              </div>
+                              <span className="text-xs text-slate-500 font-mono">
+                                {section.lessons.length} lecciones
+                              </span>
+                            </div>
+                          </AccordionTrigger>
+                          <AccordionContent className="px-2">
+                            <div className="relative">
+                              {section.lessons.map((lesson, lessonIndex) => {
+                                const isCompleted = Boolean(lesson.completed) || completedLessons.has(String(lesson.id))
+                                const isVideo = lesson.type === "video"
+                                const nextLesson = section.lessons[lessonIndex + 1]
+                                const nextIsCompleted = nextLesson
+                                  ? Boolean(nextLesson.completed) || completedLessons.has(String(nextLesson.id))
+                                  : false
+                                const showConnectingLine = isCompleted && nextIsCompleted
+
+                                return (
+                                  <div key={lesson.id} className="relative mb-6">
+                                    <div className="relative flex items-center">
+                                      {/* Lesson Icon with connecting line */}
+                                      <div className="relative flex flex-col items-center mr-4">
+                                        {/* Connecting Line from previous lesson (arrives at circle) */}
+                                        {isCompleted && lessonIndex > 0 && (
+                                          <div className="w-0.5 h-12 bg-cyan-400 absolute -top-12"></div>
                                         )}
+
+                                        <div className="w-6 h-6 flex items-center justify-center z-20 relative">
+                                          {isCompleted ? (
+                                            <div className="w-6 h-6 bg-cyan-400 rounded-full flex items-center justify-center">
+                                              <CheckCircle className="w-4 h-4 text-slate-900" />
+                                            </div>
+                                          ) : isVideo ? (
+                                            <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
+                                              <Play className="w-3 h-3 text-cyan-400" />
+                                            </div>
+                                          ) : (
+                                            <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center">
+                                              <FileText className="w-3 h-3 text-blue-400" />
+                                            </div>
+                                          )}
+                                        </div>
+
+                                        {/* Connecting Line to next lesson (leaves from circle) */}
+                                        {showConnectingLine && lessonIndex < section.lessons.length - 1 && (
+                                          <div className="w-0.5 h-12 bg-cyan-400 absolute top-3"></div>
+                                        )}
+                                      </div>
+
+                                      {/* Lesson Content */}
+                                      <div
+                                        onClick={() => handleLessonClick(lesson)}
+                                        className={`flex-1 p-3 border-t border-b border-slate-800 bg-slate-900/60 hover:bg-slate-800/70 cursor-pointer transition-colors ${
+                                          selectedLesson?.id === lesson.id
+                                            ? "border-t-cyan-400/50 border-b-cyan-400/50 bg-cyan-400/10"
+                                            : ""
+                                        }`}
+                                      >
+                                        <div className="min-w-0">
+                                          <div className="text-sm font-mono text-slate-300 truncate">
+                                            {lesson.title}
+                                          </div>
+                                          <div className="text-xs text-slate-500 font-mono mt-0.5 flex items-center gap-2">
+                                            {lesson.duration && <span>{lesson.duration}</span>}
+                                            <span> {isVideo ? "VIDEO" : "TEXTO"} •</span>
+                                            {typeof lesson.time_validator !== "undefined" && (
+                                              <span> {String(lesson.time_validator)} MIN</span>
+                                            )}
+                                          </div>
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </AccordionContent>
-                      </AccordionItem>
-                    )
-                  })}
-                </Accordion>
+                                )
+                              })}
+                            </div>
+                          </AccordionContent>
+                        </AccordionItem>
+                      )
+                    })}
+                  </Accordion>
                 </div>
               </div>
             </div>
@@ -1045,7 +1078,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                   <div className="flex space-x-1">
                     <div className="w-3 h-3 bg-red-500 rounded-full" />
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
+                    <div className="w-3 h-3 bg-cyan-500 rounded-full" />
                   </div>
                   <span className="text-xs font-mono text-slate-400">~FORO</span>
                 </div>
@@ -1070,7 +1103,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                   <div className="flex space-x-1">
                     <div className="w-3 h-3 bg-red-500 rounded-full" />
                     <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
+                    <div className="w-3 h-3 bg-cyan-500 rounded-full" />
                   </div>
                   <span className="text-xs font-mono text-slate-400">~ARCHIVO</span>
                 </div>
@@ -1106,7 +1139,9 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                                 <FileText className="w-8 h-8 text-blue-400" />
                               )}
                             </div>
-                            <p className="text-slate-400 font-mono text-sm">Esta lección no tiene un archivo asociado.</p>
+                            <p className="text-slate-400 font-mono text-sm">
+                              Esta lección no tiene un archivo asociado.
+                            </p>
                           </div>
                         )
                       }
@@ -1114,7 +1149,11 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       if (mime.startsWith("image/")) {
                         return (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={src} alt={selectedLesson.title} className="max-h-[60vh] max-w-full rounded-lg border border-slate-700" />
+                          <img
+                            src={src || "/placeholder.svg"}
+                            alt={selectedLesson.title}
+                            className="max-h-[60vh] max-w-full rounded-lg border border-slate-700"
+                          />
                         )
                       }
                       if (mime.startsWith("video/")) {
@@ -1162,8 +1201,8 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                           <div className="w-full">
                             {textLoading ? (
                               <div className="text-center py-8">
-                                <Loader2 className="w-8 h-8 text-green-400 mx-auto mb-4 animate-spin" />
-                                <p className="text-green-400 font-mono">Cargando archivo de texto...</p>
+                                <Loader2 className="w-8 h-8 text-cyan-400 mx-auto mb-4 animate-spin" />
+                                <p className="text-cyan-400 font-mono">Cargando archivo de texto...</p>
                               </div>
                             ) : textError ? (
                               <div className="text-center py-8">
@@ -1181,12 +1220,14 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       // Otros tipos de documentos: ofrecer descarga/visualización genérica
                       return (
                         <div className="text-center space-y-3">
-                          <p className="text-slate-400 font-mono text-sm">Tipo de archivo no soportado para vista previa.</p>
+                          <p className="text-slate-400 font-mono text-sm">
+                            Tipo de archivo no soportado para vista previa.
+                          </p>
                           <a
                             href={src}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-block px-4 py-2 bg-green-500 hover:bg-green-600 text-black rounded-md font-mono text-sm"
+                            className="inline-block px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-black rounded-md font-mono text-sm"
                           >
                             ABRIR / DESCARGAR
                           </a>
@@ -1197,9 +1238,9 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                 ) : (
                   <div className="text-center">
                     <div className="w-24 h-24 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-slate-700">
-                      <Play className="w-12 h-12 text-green-400" />
+                      <Play className="w-12 h-12 text-cyan-400" />
                     </div>
-                    <p className="text-green-400 font-mono text-2xl">VIDEO/TEXTO</p>
+                    <p className="text-cyan-400 font-mono text-2xl">VIDEO/TEXTO</p>
                     <p className="text-slate-500 font-mono text-sm mt-2">Selecciona una lección para comenzar</p>
                   </div>
                 )}
@@ -1221,23 +1262,21 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
         <div className="fixed bottom-6 right-6 z-50 max-w-sm">
           <div className="bg-slate-900/95 backdrop-blur-sm border border-slate-700 rounded-xl p-4 shadow-2xl">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
-                <Play className="w-5 h-5 text-green-400" />
+              <div className="w-10 h-10 bg-cyan-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                <Play className="w-5 h-5 text-cyan-400" />
               </div>
-              
+
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-green-400 font-mono mb-1">
-                  ¡Lección Completada!
-                </h3>
-                
+                <h3 className="text-sm font-bold text-cyan-400 font-mono mb-1">¡Lección Completada!</h3>
+
                 <p className="text-slate-300 font-mono text-xs mb-2">
                   Continuando en: <span className="text-cyan-400 font-bold">{nextLessonTimer}s</span>
                 </p>
-                
+
                 <p className="text-slate-400 font-mono text-xs mb-3 truncate">
                   Siguiente: <span className="text-cyan-400">{nextLesson.title}</span>
                 </p>
-                
+
                 <div className="flex gap-2">
                   <Button
                     onClick={() => {
@@ -1248,7 +1287,7 @@ export function CourseContentViewer({ courseTitle, courseSlug, sections, progres
                       setShowNextLessonPopup(false)
                     }}
                     size="sm"
-                    className="bg-green-500 hover:bg-green-600 text-black font-mono text-xs px-3 py-1 h-auto"
+                    className="bg-cyan-500 hover:bg-cyan-600 text-black font-mono text-xs px-3 py-1 h-auto"
                   >
                     Continuar
                   </Button>

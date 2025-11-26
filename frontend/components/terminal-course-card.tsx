@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { User, DollarSign, BookOpen } from "lucide-react"
+import { User, BookOpen } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 
@@ -74,7 +74,7 @@ export function TerminalCourseCard({
         <h3 className="font-mono text-white font-semibold text-lg line-clamp-2 group-hover:text-cyan-400 transition-colors">
           {title}
         </h3>
-        
+
         <p className="text-slate-400 text-sm line-clamp-2 font-mono">{description}</p>
 
         <div className="space-y-2 text-sm border-t border-slate-700/50 pt-2">
@@ -84,7 +84,7 @@ export function TerminalCourseCard({
           </div>
           <div className="flex items-center gap-2 text-slate-400">
             <BookOpen className="w-4 h-4" />
-            <span className="font-mono">{lessons_count}</span>
+            <span className="font-mono">Lecciones: {lessons_count}</span>
           </div>
         </div>
       </CardContent>
