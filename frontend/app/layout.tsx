@@ -1,19 +1,28 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Raleway, Geist_Mono } from "next/font/google"
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google"
 import { AuthProvider } from "@/lib/auth-context"
 import "./globals.css"
 
-const raleway = Raleway({
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-raleway",
+  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
 })
 
-const geistMono = Geist_Mono({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-geist-mono",
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+  weight: ["400", "500", "600", "700"],
 })
 
 export const metadata: Metadata = {
@@ -66,7 +75,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${raleway.variable} ${geistMono.variable} antialiased`}>
+    <html lang="es" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}>
       <head>
         <link rel="icon" href="/act.ico" sizes="any" />
       </head>
