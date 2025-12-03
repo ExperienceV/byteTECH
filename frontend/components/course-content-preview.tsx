@@ -45,7 +45,7 @@ export function CourseContentPreview({ courseData }: CourseContentPreviewProps) 
             </div>
             <div className="flex items-center gap-1 text-slate-400">
               <Clock className="w-4 h-4" />
-              <span>{totalDuration}</span>
+              <span>{totalDuration} horas</span>
             </div>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function CourseContentPreview({ courseData }: CourseContentPreviewProps) 
             {sections.map((section: any, idx: number) => {
               const isExpanded = expandedSections.has(idx)
               const sectionLessons = section.lessons || []
-              const sectionDuration = "Duración no especificada"
+              const sectionDuration = "" // IMPLEMENTAR CÁLCULO DE DURACIÓN DE SECCIÓN
 
               return (
                 <div
