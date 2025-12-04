@@ -1,7 +1,0 @@
-{
-  "/editor/[courseId]/page": "app/editor/[courseId]/page.js",
-  "/success/page": "app/success/page.js",
-  "/cursos/[nombre_curso]/page": "app/cursos/[nombre_curso]/page.js",
-  "/perfil/page": "app/perfil/page.js",
-  "/auth/ingresar/page": "app/auth/ingresar/page.js"
-}

@@ -1,0 +1,32 @@
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+self["webpackHotUpdate_N_E"]("app/layout",{
+
+/***/ "(app-pages-browser)/./app/globals.css":
+/*!*************************!*\
+  !*** ./app/globals.css ***!
+  \*************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval(__webpack_require__.ts("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (\"573a97e69e81\");\nif (true) { module.hot.accept() }\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKGFwcC1wYWdlcy1icm93c2VyKS8uL2FwcC9nbG9iYWxzLmNzcyIsIm1hcHBpbmdzIjoiOzs7O0FBQUEsaUVBQWUsY0FBYztBQUM3QixJQUFJLElBQVUsSUFBSSxpQkFBaUIiLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xcemhveWVcXE9uZURyaXZlXFxEb2N1bWVudG9zXFxHaXRodWJcXGJ5dGV0ZWNcXGJ5dGVURUNIXFxmcm9udGVuZFxcYXBwXFxnbG9iYWxzLmNzcyJdLCJzb3VyY2VzQ29udGVudCI6WyJleHBvcnQgZGVmYXVsdCBcIjU3M2E5N2U2OWU4MVwiXG5pZiAobW9kdWxlLmhvdCkgeyBtb2R1bGUuaG90LmFjY2VwdCgpIH1cbiJdLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(app-pages-browser)/./app/globals.css\n"));
+
+/***/ }),
+
+/***/ "(app-pages-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-client-entry-loader.js?modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Capp%5C%5Cglobals.css%22%2C%22ids%22%3A%5B%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Clib%5C%5Cauth-context.tsx%22%2C%22ids%22%3A%5B%22AuthProvider%22%5D%7D&server=false!":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/next/dist/build/webpack/loaders/next-flight-client-entry-loader.js?modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Capp%5C%5Cglobals.css%22%2C%22ids%22%3A%5B%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Clib%5C%5Cauth-context.tsx%22%2C%22ids%22%3A%5B%22AuthProvider%22%5D%7D&server=false! ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
+
+eval(__webpack_require__.ts("Promise.resolve(/*! import() eager */).then(__webpack_require__.bind(__webpack_require__, /*! ./app/globals.css */ \"(app-pages-browser)/./app/globals.css\"));\n;\nPromise.resolve(/*! import() eager */).then(__webpack_require__.bind(__webpack_require__, /*! ./lib/auth-context.tsx */ \"(app-pages-browser)/./lib/auth-context.tsx\"));\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKGFwcC1wYWdlcy1icm93c2VyKS8uL25vZGVfbW9kdWxlcy9uZXh0L2Rpc3QvYnVpbGQvd2VicGFjay9sb2FkZXJzL25leHQtZmxpZ2h0LWNsaWVudC1lbnRyeS1sb2FkZXIuanM/bW9kdWxlcz0lN0IlMjJyZXF1ZXN0JTIyJTNBJTIyQyUzQSU1QyU1Q1VzZXJzJTVDJTVDemhveWUlNUMlNUNPbmVEcml2ZSU1QyU1Q0RvY3VtZW50b3MlNUMlNUNHaXRodWIlNUMlNUNieXRldGVjJTVDJTVDYnl0ZVRFQ0glNUMlNUNmcm9udGVuZCU1QyU1Q2FwcCU1QyU1Q2dsb2JhbHMuY3NzJTIyJTJDJTIyaWRzJTIyJTNBJTVCJTVEJTdEJm1vZHVsZXM9JTdCJTIycmVxdWVzdCUyMiUzQSUyMkMlM0ElNUMlNUNVc2VycyU1QyU1Q3pob3llJTVDJTVDT25lRHJpdmUlNUMlNUNEb2N1bWVudG9zJTVDJTVDR2l0aHViJTVDJTVDYnl0ZXRlYyU1QyU1Q2J5dGVURUNIJTVDJTVDZnJvbnRlbmQlNUMlNUNsaWIlNUMlNUNhdXRoLWNvbnRleHQudHN4JTIyJTJDJTIyaWRzJTIyJTNBJTVCJTIyQXV0aFByb3ZpZGVyJTIyJTVEJTdEJnNlcnZlcj1mYWxzZSEiLCJtYXBwaW5ncyI6IkFBQUEsNEpBQWtJO0FBQ2xJO0FBQ0Esc0tBQXlLIiwic291cmNlcyI6WyIiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0KC8qIHdlYnBhY2tNb2RlOiBcImVhZ2VyXCIgKi8gXCJDOlxcXFxVc2Vyc1xcXFx6aG95ZVxcXFxPbmVEcml2ZVxcXFxEb2N1bWVudG9zXFxcXEdpdGh1YlxcXFxieXRldGVjXFxcXGJ5dGVURUNIXFxcXGZyb250ZW5kXFxcXGFwcFxcXFxnbG9iYWxzLmNzc1wiKTtcbjtcbmltcG9ydCgvKiB3ZWJwYWNrTW9kZTogXCJlYWdlclwiLCB3ZWJwYWNrRXhwb3J0czogW1wiQXV0aFByb3ZpZGVyXCJdICovIFwiQzpcXFxcVXNlcnNcXFxcemhveWVcXFxcT25lRHJpdmVcXFxcRG9jdW1lbnRvc1xcXFxHaXRodWJcXFxcYnl0ZXRlY1xcXFxieXRlVEVDSFxcXFxmcm9udGVuZFxcXFxsaWJcXFxcYXV0aC1jb250ZXh0LnRzeFwiKTtcbiJdLCJuYW1lcyI6W10sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VSb290IjoiIn0=\n//# sourceURL=webpack-internal:///(app-pages-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-client-entry-loader.js?modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Capp%5C%5Cglobals.css%22%2C%22ids%22%3A%5B%5D%7D&modules=%7B%22request%22%3A%22C%3A%5C%5CUsers%5C%5Czhoye%5C%5COneDrive%5C%5CDocumentos%5C%5CGithub%5C%5Cbytetec%5C%5CbyteTECH%5C%5Cfrontend%5C%5Clib%5C%5Cauth-context.tsx%22%2C%22ids%22%3A%5B%22AuthProvider%22%5D%7D&server=false!\n"));
+
+/***/ })
+
+});

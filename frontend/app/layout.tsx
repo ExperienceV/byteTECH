@@ -1,29 +1,23 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google"
+import { Raleway, Geist_Mono } from "next/font/google"
 import { AuthProvider } from "@/lib/auth-context"
 import "./globals.css"
 
-const inter = Inter({
+const raleway = Raleway({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-raleway",
   weight: ["400", "500", "600", "700", "800"],
 })
 
-const spaceGrotesk = Space_Grotesk({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-space-grotesk",
+  variable: "--font-geist-mono",
   weight: ["400", "500", "600", "700"],
 })
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-jetbrains-mono",
-  weight: ["400", "500", "600", "700"],
-})
 
 export const metadata: Metadata = {
   title: "byteTECH - Plataforma de Cursos Online",
@@ -75,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}>
+    <html lang="es" className={`${raleway.variable} ${geistMono.variable} antialiased`}>
       <head>
         <link rel="icon" href="/act.ico" sizes="any" />
       </head>
